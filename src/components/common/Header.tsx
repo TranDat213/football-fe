@@ -107,6 +107,12 @@ export default function Header() {
               >
                 Register
               </Link>
+              <Link
+                href={ROUTES.ownerRegister}
+                className="text-sm font-medium text-emerald-700 hover:underline"
+              >
+                Become an Owner
+              </Link>
             </div>
           )}
         </div>
