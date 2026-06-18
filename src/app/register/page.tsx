@@ -3,15 +3,16 @@
 import Link from "next/link";
 import { useState, ChangeEvent, FormEvent, ReactNode } from "react";
 
-import { SignUpPayload } from "@/types/auth.types";
-import { useSignUp } from "@/hooks/useSignUp";
+import { SignUpPayload } from "@/features/auth/types/auth.types";
+import { useSignUp } from "@/features/auth/hooks/useSignUp";
 import { ROUTES } from "@/lib/route.constants";
 
 const initialForm: SignUpPayload = {
-  firstName: "",
-  lastName: "",
-  email: "",
+  first_name: "",
+  last_name: "",
+  user_name: "",
   phone: "",
+  email: "",
   password: "",
   confirmPassword: "",
 };
@@ -126,23 +127,23 @@ export default function SignUpPage() {
                 <div className="grid grid-cols-2 gap-3">
                   <Field
                     label="Tên"
-                    name="firstName"
+                    name="first_name"
                     type="text"
                     placeholder="John"
-                    value={form.firstName}
+                    value={form.first_name}
                     onChange={handleChange}
-                    error={fieldErrors.firstName}
+                    error={fieldErrors.first_name}
                     autoComplete="given-name"
                     icon={<UserIcon />}
                   />
                   <Field
                     label="Họ"
-                    name="lastName"
+                    name="last_name"
                     type="text"
                     placeholder="Doe"
-                    value={form.lastName}
+                    value={form.last_name}
                     onChange={handleChange}
-                    error={fieldErrors.lastName}
+                    error={fieldErrors.last_name}
                     autoComplete="family-name"
                     icon={<UserIcon />}
                   />

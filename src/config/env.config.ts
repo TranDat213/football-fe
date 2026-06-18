@@ -1,5 +1,3 @@
-import { log } from "console";
-
 export const env = {
   // API
   apiUrl: process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api/v1",

@@ -3,22 +3,20 @@
 import Link from "next/link";
 import { useState, ChangeEvent, FormEvent, ReactNode } from "react";
 
-import { SignInPayload } from "@/types/auth.types";
-import { useSignIn } from "@/hooks/useSignIn";
+import { SignInPayload } from "@/features/auth/types/auth.types";
+import { useSignIn } from "@/features/auth/hooks/useSignIn";
 import { ROUTES } from "@/lib/route.constants";
 
 
 const initialForm: SignInPayload = {
   email: "",
-  password: "",
-  rememberMe: false,
+  password: ""
 };
 
 export default function SignInPage() {
   const { isLoading, error, fieldErrors, signIn } = useSignIn();
   const [form, setForm] = useState<SignInPayload>(initialForm);
   const [showPassword, setShowPassword] = useState(false);
-  const [remember, setRemember] = useState(false);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -26,7 +24,9 @@ export default function SignInPage() {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    await signIn({ ...form, rememberMe: remember });
+
+
+  await signIn(form);
   };
 
   return (
@@ -161,19 +161,6 @@ export default function SignInPage() {
                     </Link>
                   }
                 />
-
-                {/* Ghi nhớ đăng nhập */}
-                <label className="flex items-center gap-2.5 pt-1 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={remember}
-                    onChange={(e) => setRemember(e.target.checked)}
-                    className="h-4 w-4 rounded border-[#D1E5DA] text-[#40916C] focus:ring-[#40916C]/30"
-                  />
-                  <span className="text-[12.5px] text-[#6B8C7A] leading-snug">
-                    Ghi nhớ đăng nhập trong 30 ngày
-                  </span>
-                </label>
 
                 {/* Submit */}
                 <button

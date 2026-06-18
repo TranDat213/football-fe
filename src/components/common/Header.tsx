@@ -46,6 +46,7 @@ function IconBell({ className = 'h-5 w-5' }: { className?: string }) {
 
 export default function Header() {
   const user = useSelector((state: RootState) => state.auth.user);
+  console.log(user);
   return (
     <header className="sticky top-0 z-10 border-b border-gray-100 bg-white">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
@@ -79,7 +80,7 @@ export default function Header() {
             <div className="hidden items-center gap-2 border-l border-gray-200 pl-4 sm:flex">
               <div className="text-right leading-tight">
                 <p className="text-sm font-semibold text-gray-900">
-                  {user.username}
+                  {user.user_name}
                 </p>
                 <p className="text-xs text-gray-400">{user.role}</p>
               </div>
@@ -88,7 +89,7 @@ export default function Header() {
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={user.avatar}
-                  alt={user.username}
+                  alt={user.user_name}
                   className="h-full w-full object-cover"
                 />
               </div>
