@@ -1,10 +1,14 @@
 'use client';
 
 import Link from 'next/link';
+import { useState } from 'react';
 
 import SignInForm from '@/features/auth/components/signInForm';
+import ForgotPasswordForm from '@/features/auth/components/forgotPasswordForm';
 
 export default function SignInPage() {
+  const [showForgot, setShowForgot] = useState(false);
+
   return (
     <div className="min-h-screen bg-[#F6F9F7] flex flex-col">
       <div className="flex-1 grid lg:grid-cols-2">
@@ -79,7 +83,11 @@ export default function SignInPage() {
 
             {/* Card */}
             <div className="bg-white rounded-2xl border border-[#E2EDE8] px-8 py-9 shadow-[0_1px_6px_rgba(0,0,0,0.05)]">
-              <SignInForm />
+              {showForgot ? (
+                <ForgotPasswordForm onClose={() => setShowForgot(false)} />
+              ) : (
+                <SignInForm onForgot={() => setShowForgot(true)} />
+              )}
             </div>
           </div>
         </div>

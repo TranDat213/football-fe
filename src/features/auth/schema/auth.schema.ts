@@ -64,3 +64,23 @@ export const verifyOtpSchema = z.object({
 
 export type RequestOtpFormData = z.infer<typeof requestOtpSchema>;
 export type VerifyOtpFormData = z.infer<typeof verifyOtpSchema>;
+
+export const forgotPasswordSchema = z
+  .object({
+    email: z
+      .string()
+      .min(1, 'Email không được để trống')
+      .email('Email không hợp lệ'),
+
+    password: z.string().min(8, 'Mật khẩu phải có ít nhất 8 ký tự'),
+
+    confirmPassword: z
+      .string()
+      .min(8, 'Xác nhận mật khẩu phải có ít nhất 8 ký tự'),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'Mật khẩu xác nhận không khớp',
+    path: ['confirmPassword'],
+  });
+
+export type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;

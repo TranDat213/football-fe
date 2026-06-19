@@ -25,7 +25,11 @@ const initialForm: SignInPayload = {
 
 /* ─── Component ──────────────────────────────────────────────── */
 
-export default function SignInForm() {
+interface SignInFormProps {
+  onForgot?: () => void;
+}
+
+export default function SignInForm({ onForgot }: SignInFormProps = {}) {
   const { isLoading, error, fieldErrors, signIn } = useSignIn();
   const [form, setForm] = useState<SignInPayload>(initialForm);
   const [showPassword, setShowPassword] = useState(false);
@@ -83,12 +87,13 @@ export default function SignInForm() {
           autoComplete="current-password"
           icon={<LockIcon />}
           rightLabel={
-            <Link
-              href="/forgot-password"
+            <button
+              type="button"
+              onClick={onForgot}
               className="text-[12px] font-medium text-[#40916C] hover:underline"
             >
               Quên mật khẩu?
-            </Link>
+            </button>
           }
         />
 

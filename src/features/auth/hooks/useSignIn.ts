@@ -32,7 +32,7 @@ console.log(res);
       }
 
       const message =
-        err?.data?.message ?? 'Đăng ký thất bại. Vui lòng thử lại.';
+        err?.data?.message ?? 'Đăng nhập thất bại. Vui lòng thử lại.';
 
       setError(message);
       toast.error(message);

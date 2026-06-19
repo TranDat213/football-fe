@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { useOauthMutation } from '../api/authAPI';
 import { useDispatch } from 'react-redux';
 import { useRouter } from 'next/navigation';
@@ -18,33 +19,37 @@ function decodeGoogleJwt(token: string): { email: string; sub: string } {
 }
 
 export function useOAuth() {
+  const [oauthMutate, { isLoading }] = useOauthMutation();
   const dispatch = useDispatch();
   const router = useRouter();
-  const [oauthMutate, { isLoading }] = useOauthMutation();
 
   /**
    * Called by the Google Identity Services callback once the user picks
    * an account. Sends the decoded credentials to the backend.
    */
-  const handleGoogleCallback = async (response: GoogleCredentialResponse) => {
-    try {
-      const { email, sub: providerId } = decodeGoogleJwt(response.credential);
+  const handleGoogleCallback = useCallback(
+    async (response: GoogleCredentialResponse) => {
+      try {
+        const { email, sub: providerId } = decodeGoogleJwt(response.credential);
 
-      const res = await oauthMutate({
-        email,
-        provider: 'GOOGLE',
-        providerId,
-      }).unwrap();
+        const res = await oauthMutate({
+          email,
+          provider: 'GOOGLE',
+          providerId,
+        }).unwrap();
 
-      dispatch(setUser(res.data.user));
-      toast.success('Đăng nhập với Google thành công!');
-      router.push(ROUTES.home);
-    } catch (err: any) {
-      const message =
-        err?.data?.message ?? 'Đăng nhập với Google thất bại. Vui lòng thử lại.';
-      toast.error(message);
-    }
-  };
+        dispatch(setUser(res.data.user));
+        toast.success('Đăng nhập với Google thành công!');
+        router.push(ROUTES.home);
+      } catch (err: any) {
+        const message =
+          err?.data?.message ??
+          'Đăng nhập với Google thất bại. Vui lòng thử lại.';
+        toast.error(message);
+      }
+    },
+    [dispatch, oauthMutate, router],
+  );
 
   return { handleGoogleCallback, isLoading };
 }
