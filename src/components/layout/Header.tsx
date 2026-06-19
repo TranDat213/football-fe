@@ -4,6 +4,7 @@ import { ROUTES } from '@/lib/route.constants';
 import { RootState } from '@/store/store';
 import Link from 'next/link';
 import { useSelector } from 'react-redux';
+import { useLogout } from '@/features/auth/hooks/useLogout';
 
 const NAV_LINKS = ['Find Pitches', 'Leagues', 'Book a Match', 'My Bookings'];
 
@@ -45,6 +46,7 @@ function IconBell({ className = 'h-5 w-5' }: { className?: string }) {
 }
 
 export default function Header() {
+  const { handleLogout } = useLogout();
   const user = useSelector((state: RootState) => state.auth.user);
   console.log(user);
   return (
@@ -93,6 +95,13 @@ export default function Header() {
                   className="h-full w-full object-cover"
                 />
               </div>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="rounded-md border border-emerald-600 px-4 py-2 text-sm font-medium text-emerald-600 hover:bg-emerald-50"
+              >
+                Logout
+              </button>
             </div>
           ) : (
             <div className="flex items-center gap-3 border-l border-gray-200 pl-4 sm:flex">

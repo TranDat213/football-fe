@@ -56,3 +56,25 @@ export interface RefreshResponse {
     accessToken: string;
   };
 }
+
+export interface ForgotPasswordPayload {
+  user_name?: string;
+  email?: string;
+  password: string;
+  confirmPassword: string;
+}
+
+export interface RequestOtpPayload {
+  email: string;
+}
+
+export interface VerifyOtpPayload {
+  email: string;
+  otp: string;
+}
+
+export interface OAuthPayload {
+  email:string;
+  provider: string;
+ providerId: string;
+}

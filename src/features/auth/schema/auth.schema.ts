@@ -43,3 +43,24 @@ export const signInSchema = z.object({
 });
 export type RegisterFormData = z.infer<typeof registerSchema>;
 export type SignInFormData = z.infer<typeof signInSchema>;
+
+export const requestOtpSchema = z.object({
+  email: z
+    .string()
+    .min(1, 'Email không được để trống')
+    .email('Email không hợp lệ'),
+});
+
+export const verifyOtpSchema = z.object({
+  email: z
+    .string()
+    .min(1, 'Email không được để trống')
+    .email('Email không hợp lệ'),
+  otp: z
+    .string()
+    .length(6, 'Mã OTP phải có đúng 6 ký tự')
+    .regex(/^\d{6}$/, 'Mã OTP chỉ gồm chữ số'),
+});
+
+export type RequestOtpFormData = z.infer<typeof requestOtpSchema>;
+export type VerifyOtpFormData = z.infer<typeof verifyOtpSchema>;
