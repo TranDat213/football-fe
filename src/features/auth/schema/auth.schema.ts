@@ -6,7 +6,7 @@ export const registerSchema = z
 
     last_name: z.string().min(1, 'Tên không được để trống'),
 
-    user_name: z
+    username: z
       .string()
       .min(3, 'Tên người dùng phải có ít nhất 3 ký tự')
       .max(50, 'Tên người dùng không được quá 50 ký tự'),
@@ -37,7 +37,7 @@ export const registerSchema = z
   );
 
 export const signInSchema = z.object({
-  user_name: z.string().optional(),
+  username: z.string().optional(),
   email: z.string().email('Email không hợp lệ'),
   password: z.string().min(1, 'Mật khẩu không được để trống'),
 });

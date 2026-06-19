@@ -5,6 +5,7 @@ import { RootState } from '@/store/store';
 import Link from 'next/link';
 import { useSelector } from 'react-redux';
 import { useLogout } from '@/features/auth/hooks/useLogout';
+import { useGetProfileQuery } from '@/features/user/api/userAPI';
 
 const NAV_LINKS = ['Find Pitches', 'Leagues', 'Book a Match', 'My Bookings'];
 
@@ -48,7 +49,15 @@ function IconBell({ className = 'h-5 w-5' }: { className?: string }) {
 export default function Header() {
   const { handleLogout } = useLogout();
   const user = useSelector((state: RootState) => state.auth.user);
-  console.log(user);
+  
+  // Use query directly as fallback for persistence on reload
+  const { data: profileResponse } = useGetProfileQuery(undefined, {
+    skip: !!user,
+  });
+  
+  const currentUser = user || profileResponse?.data;
+  
+  console.log('Current User in Header:', currentUser);
   return (
     <header className="sticky top-0 z-10 border-b border-gray-100 bg-white">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
@@ -78,20 +87,20 @@ export default function Header() {
           >
             <IconBell />
           </button>
-          {user ? (
+          {currentUser ? (
             <div className="hidden items-center gap-2 border-l border-gray-200 pl-4 sm:flex">
               <div className="text-right leading-tight">
                 <p className="text-sm font-semibold text-gray-900">
-                  {user.user_name}
+                  {currentUser.username}
                 </p>
-                <p className="text-xs text-gray-400">{user.role}</p>
+                <p className="text-xs text-gray-400">{currentUser.role}</p>
               </div>
 
               <div className="h-9 w-9 overflow-hidden rounded-full bg-emerald-100">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={user.avatar}
-                  alt={user.user_name}
+                  src={currentUser.avatar}
+                  alt={currentUser.username}
                   className="h-full w-full object-cover"
                 />
               </div>

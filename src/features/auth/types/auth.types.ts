@@ -1,29 +1,24 @@
 export interface SignUpPayload {
   first_name: string;
   last_name: string;
-  user_name: string;
+  username: string;
   phone?: string;
   email: string;
   password: string;
   confirmPassword: string;
-}
-
-interface ApiResponse<T> {
-  message: string;
-  data: T;
 }
 export type SignInResponse = ApiResponse<{
   accessToken: string;
   refreshToken: string;
   user: UserProfile;
 }>;
-export interface SignUpResponse {
+export type SignUpResponse = ApiResponse<{
   message: string;
-}
+}>;
 
 export interface UserProfile {
   id: string;
-  user_name: string;
+  username: string;
   email: string;
   role: string;
   first_name: string;
@@ -46,7 +41,7 @@ export interface ApiError {
 }
 
 export interface SignInPayload {
-  user_name?: string;
+  username?: string;
   email: string;
   password: string;
 }
@@ -58,7 +53,7 @@ export interface RefreshResponse {
 }
 
 export interface ForgotPasswordPayload {
-  user_name?: string;
+  username?: string;
   email?: string;
   password: string;
   confirmPassword: string;
