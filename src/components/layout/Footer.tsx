@@ -41,7 +41,7 @@ export default function Footer() {
           <div className="flex items-center gap-2">
             <LogoMark />
             <span className="text-lg font-bold text-white">
-              Pitch<span className="text-emerald-500">Perfect</span>
+              ChanDen<span className="text-emerald-500">Club</span>
             </span>
           </div>
           <p className="mt-4 max-w-xs text-sm leading-relaxed">
@@ -66,7 +66,7 @@ export default function Footer() {
       </div>
 
       <div className="mx-auto mt-10 max-w-7xl border-t border-gray-800 px-6 pt-6 text-center text-xs text-gray-500">
-        © 2026 PitchPerfect. All rights reserved.
+        © 2026 ChanDenClub. All rights reserved.
       </div>
     </footer>
   );

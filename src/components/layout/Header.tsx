@@ -1,13 +1,11 @@
 'use client';
 
+import { useState } from 'react';
 import { ROUTES } from '@/lib/route.constants';
 import { RootState } from '@/store/store';
 import Link from 'next/link';
 import { useSelector } from 'react-redux';
 import { useLogout } from '@/features/auth/hooks/useLogout';
-import { useGetProfileQuery } from '@/features/user/api/userAPI';
-
-const NAV_LINKS = ['Find Pitches', 'Leagues', 'Book a Match', 'My Bookings'];
 
 function LogoMark({ className = 'h-8 w-8' }: { className?: string }) {
   return (
@@ -46,40 +44,87 @@ function IconBell({ className = 'h-5 w-5' }: { className?: string }) {
   );
 }
 
+function IconMenu({ className = 'h-6 w-6' }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className}>
+      <path 
+        d="M4 6h16M4 12h16M4 18h16" 
+        stroke="currentColor" 
+        strokeWidth="2" 
+        strokeLinecap="round" 
+        strokeLinejoin="round" 
+      />
+    </svg>
+  );
+}
+
+function IconClose({ className = 'h-6 w-6' }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className}>
+      <path 
+        d="M6 18L18 6M6 6l12 12" 
+        stroke="currentColor" 
+        strokeWidth="2" 
+        strokeLinecap="round" 
+        strokeLinejoin="round" 
+      />
+    </svg>
+  );
+}
+
 export default function Header() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { handleLogout } = useLogout();
   const user = useSelector((state: RootState) => state.auth.user);
   
-  // Use query directly as fallback for persistence on reload
-  const { data: profileResponse } = useGetProfileQuery(undefined, {
-    skip: !!user,
-  });
-  
-  const currentUser = user || profileResponse?.data;
-  
-  console.log('Current User in Header:', currentUser);
+  const isGuest = !user;
+  const isAdmin = user?.role === 'ADMIN';
+  const isOwner = user?.role === 'OWNER';
+  const isUser = !!user && !isAdmin && !isOwner;
+
+  const navLinks = [
+    { label: 'Find Pitches', href: ROUTES.pitch },
+    { label: 'Leagues', href: ROUTES.leagues },
+    { label: 'Book a Match', href: ROUTES.book },
+  ];
+
+  if (isUser || isGuest) {
+    navLinks.push({ label: 'My Bookings', href: ROUTES.booking });
+  }
+
+  if (isOwner) {
+    navLinks.push({ label: 'Dashboard', href: ROUTES.ownerDashboard });
+  }
+
+  if (isAdmin) {
+    navLinks.push({ label: 'Dashboard', href: ROUTES.adminDashboard });
+  }
+
   return (
     <header className="sticky top-0 z-10 border-b border-gray-100 bg-white">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-        <div className="flex items-center gap-2">
+        {/* Logo */}
+        <Link href={ROUTES.home} className="flex items-center gap-2">
           <LogoMark />
           <span className="text-lg font-bold tracking-tight">
             ChanDen<span className="text-emerald-600">Club</span>
           </span>
-        </div>
+        </Link>
 
+        {/* Desktop Navigation */}
         <nav className="hidden items-center gap-8 text-sm font-medium text-gray-600 md:flex">
-          {NAV_LINKS.map((link) => (
-            <a
-              key={link}
-              href="#"
+          {navLinks.map((link) => (
+            <Link
+              key={link.label}
+              href={link.href}
               className="transition-colors hover:text-emerald-700"
             >
-              {link}
-            </a>
+              {link.label}
+            </Link>
           ))}
         </nav>
 
+        {/* Action Area */}
         <div className="flex items-center gap-4">
           <button
             aria-label="Notifications"
@@ -87,55 +132,147 @@ export default function Header() {
           >
             <IconBell />
           </button>
-          {currentUser ? (
-            <div className="hidden items-center gap-2 border-l border-gray-200 pl-4 sm:flex">
-              <div className="text-right leading-tight">
-                <p className="text-sm font-semibold text-gray-900">
-                  {currentUser.username}
-                </p>
-                <p className="text-xs text-gray-400">{currentUser.role}</p>
-              </div>
 
-              <div className="h-9 w-9 overflow-hidden rounded-full bg-emerald-100">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
+          {/* Desktop Auth/Profile - Hidden on Mobile */}
+          <div className="hidden items-center gap-3 border-l border-gray-200 pl-4 md:flex">
+            {user ? (
+              <>
+                <div className="text-right leading-tight">
+                  <p className="text-sm font-semibold text-gray-900">{user.username}</p>
+                  <p className="text-xs text-gray-400">{user.role}</p>
+                </div>
+                <div className="h-9 w-9 overflow-hidden rounded-full bg-emerald-100">
+                  <img
+                    src={user.avatarUrl}
+                    alt={user.username}
+                    className="h-full w-full object-cover"
+                    referrerPolicy="no-referrer"
+                  />
+                </div>
+                {isUser && (
+                  <Link href={ROUTES.ownerRegister} className="text-sm font-medium text-emerald-700 hover:underline px-2">
+                    Become an Owner
+                  </Link>
+                )}
+                <button
+                  onClick={handleLogout}
+                  className="ml-2 rounded-md border border-emerald-600 px-4 py-2 text-sm font-medium text-emerald-600 hover:bg-emerald-50"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link href={ROUTES.login} className="rounded-md border border-emerald-600 px-4 py-2 text-sm font-medium text-emerald-600 hover:bg-emerald-50">
+                  Login
+                </Link>
+                <Link href={ROUTES.register} className="rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700">
+                  Register
+                </Link>
+                <Link href={ROUTES.ownerRegister} className="text-sm font-medium text-emerald-700 hover:underline">
+                  Become an Owner
+                </Link>
+              </>
+            )}
+          </div>
+
+          {/* Mobile Menu Toggle */}
+          <button
+            type="button"
+            className="text-gray-600 md:hidden"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label="Toggle Menu"
+          >
+            {isMenuOpen ? <IconClose /> : <IconMenu />}
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Sidebar/Dropdown */}
+      {isMenuOpen && (
+        <div className="border-t border-gray-100 bg-white px-6 py-6 md:hidden">
+          {user && (
+            <div className="mb-6 flex items-center gap-3 border-b border-gray-100 pb-6">
+              <div className="h-12 w-12 overflow-hidden rounded-full bg-emerald-100">
                 <img
-                  src={currentUser.avatar}
-                  alt={currentUser.username}
+                  src={user.avatarUrl}
+                  alt={user.username}
                   className="h-full w-full object-cover"
+                  referrerPolicy="no-referrer"
                 />
               </div>
-              <button
-                type="button"
-                onClick={handleLogout}
-                className="rounded-md border border-emerald-600 px-4 py-2 text-sm font-medium text-emerald-600 hover:bg-emerald-50"
-              >
-                Logout
-              </button>
+              <div>
+                <p className="text-base font-bold text-gray-900">{user.username}</p>
+                <p className="text-sm text-gray-500">{user.role}</p>
+              </div>
             </div>
-          ) : (
-            <div className="flex items-center gap-3 border-l border-gray-200 pl-4 sm:flex">
+          )}
+
+          <nav className="flex flex-col gap-4">
+            {navLinks.map((link) => (
               <Link
-                href={ROUTES.login}
-                className="rounded-md border border-emerald-600 px-4 py-2 text-sm font-medium text-emerald-600 hover:bg-emerald-50"
+                key={link.label}
+                href={link.href}
+                className="text-base font-medium text-gray-600 transition-colors hover:text-emerald-700"
+                onClick={() => setIsMenuOpen(false)}
               >
-                Login
+                {link.label}
               </Link>
-              <Link
-                href={ROUTES.register}
-                className="rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
-              >
-                Register
-              </Link>
+            ))}
+            
+            {isUser && (
               <Link
                 href={ROUTES.ownerRegister}
-                className="text-sm font-medium text-emerald-700 hover:underline"
+                className="text-base font-medium text-emerald-700"
+                onClick={() => setIsMenuOpen(false)}
               >
                 Become an Owner
               </Link>
-            </div>
-          )}
+            )}
+
+            {!user && (
+              <div className="flex flex-col gap-3 pt-2">
+                <Link
+                  href={ROUTES.login}
+                  className="flex h-11 items-center justify-center rounded-lg border border-emerald-600 text-sm font-medium text-emerald-600"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Login
+                </Link>
+                <Link
+                  href={ROUTES.register}
+                  className="flex h-11 items-center justify-center rounded-lg bg-emerald-600 text-sm font-medium text-white"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Register
+                </Link>
+                <Link
+                  href={ROUTES.ownerRegister}
+                  className="text-center text-sm font-medium text-emerald-700"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Become an Owner
+                </Link>
+              </div>
+            )}
+            
+            {user && (
+              <div className="mt-4 border-t border-gray-100 pt-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    handleLogout();
+                    setIsMenuOpen(false);
+                  }}
+                  className="flex w-full items-center justify-center rounded-lg bg-red-50 h-11 text-sm font-semibold text-red-600 transition-colors hover:bg-red-100"
+                >
+                  Logout
+                </button>
+              </div>
+            )}
+          </nav>
         </div>
-      </div>
+      )}
     </header>
   );
 }

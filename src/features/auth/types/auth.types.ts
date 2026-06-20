@@ -8,8 +8,6 @@ export interface SignUpPayload {
   confirmPassword: string;
 }
 export type SignInResponse = ApiResponse<{
-  accessToken: string;
-  refreshToken: string;
   user: UserProfile;
 }>;
 export type SignUpResponse = ApiResponse<{
@@ -21,18 +19,14 @@ export interface UserProfile {
   username: string;
   email: string;
   role: string;
-  first_name: string;
-  last_name: string;
+  firstName: string;
+  lastName: string;
   phone?: string;
-  avatar?: string;
+  avatarUrl?: string;
   createdAt: Date;
   updatedAt: Date;
 }
 
-export interface AuthTokens {
-  accessToken: string;
-  refreshToken: string;
-}
 
 export interface ApiError {
   message: string;
@@ -47,9 +41,7 @@ export interface SignInPayload {
 }
 
 export interface RefreshResponse {
-  data: {
-    accessToken: string;
-  };
+  message: string;
 }
 
 export interface ForgotPasswordPayload {

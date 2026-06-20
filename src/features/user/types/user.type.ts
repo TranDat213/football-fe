@@ -17,10 +17,10 @@ export interface UserProfile {
   username: string;
   email: string;
   role: string;
-  first_name: string;
-  last_name: string;
+  firstName: string;
+  lastName: string;
   phone?: string;
-  avatar?: string;
+  avatarUrl?: string;
   createdAt: Date;
   updatedAt: Date;
 }

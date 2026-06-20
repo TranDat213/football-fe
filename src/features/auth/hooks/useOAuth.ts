@@ -12,10 +12,22 @@ interface GoogleCredentialResponse {
 }
 
 /** Decode a Google JWT (no verification needed — trust from GSI). */
-function decodeGoogleJwt(token: string): { email: string; sub: string } {
+function decodeGoogleJwt(token: string): { 
+  email: string; 
+  sub: string;
+  firstName?: string;
+  lastName?: string;
+  avatarUrl?: string;
+} {
   const payload = token.split('.')[1];
   const json = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')));
-  return { email: json.email as string, sub: json.sub as string };
+  return { 
+    email: json.email as string, 
+    sub: json.sub as string,
+    firstName: json.given_name as string,
+    lastName: json.family_name as string,
+    avatarUrl: json.picture as string
+  };
 }
 
 export function useOAuth() {
