@@ -1,7 +1,7 @@
 export interface OwnerRegisterPayload {
     user_id?: string;
-    first_name: string;
-    last_name: string;
+    firstName: string;
+    lastName: string;
     email: string;
     phone: string;
     stadium_name: string;
@@ -36,8 +36,8 @@ export type UpdateRoleResponse = ApiResponse<{
 }>  
 
 export interface CreateOwnerPayload {
-    first_name: string;
-    last_name: string;
+    firstName: string;
+    lastName: string;
     email: string;
     phone: string;
     password?: string;
@@ -48,9 +48,8 @@ export type CreateOwnerResponse = ApiResponse<{
 }>
 
 export interface UpdateProfilePayload {
-    id: string;
-    first_name?: string;
-    last_name?: string;
+    firstName?: string;
+    lastName?: string;
     username?: string;
     email?: string;
     phone?: string;

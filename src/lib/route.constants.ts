@@ -10,4 +10,5 @@ export const ROUTES = {
     booking:        "/booking",
     ownerDashboard: "/owner/dashboard",
     adminDashboard: "/admin/dashboard",
+    profile:        "/profile",
 }

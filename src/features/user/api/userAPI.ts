@@ -46,7 +46,7 @@ export const userApi = createApi({
 
     getProfile: builder.query<UserProfileResponse, void>({
       query: () => ({
-        url: '/user/profile',
+        url: `/user/profile`,
         method: 'GET',
       }),
     }),
@@ -56,7 +56,7 @@ export const userApi = createApi({
       UpdateProfilePayload
     >({
       query: (payload) => ({
-        url: '/user/profile',
+        url: `/user/profile`,
         method: 'PUT',
         body: payload,
       }),
