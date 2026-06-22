@@ -9,6 +9,12 @@ export const ROUTES = {
     book:           "/book",
     booking:        "/booking",
     ownerDashboard: "/owner/dashboard",
-    adminDashboard: "/admin/dashboard",
+    ownerPitches:   "/owner/pitches",
+    ownerCustomers: "/owner/customers",
+    ownerAnalytics: "/owner/analytics",
+    community:      "/community",
+    bookingSuccess: "/booking/success",
+    checkout:       "/checkout",
+    adminDashboard: "/admin",
     profile:        "/profile",
 }

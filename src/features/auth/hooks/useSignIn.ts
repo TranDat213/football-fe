@@ -24,7 +24,15 @@ console.log(res);
       dispatch(setUser(res.data.user));
 
       toast.success('Đăng nhập thành công!');
-      router.push(ROUTES.home);
+      
+      const role = res.data.user.role;
+      if (role === 'OWNER') {
+        router.push('/owner/dashboard');
+      } else if (role === 'ADMIN') {
+        router.push('/admin/dashboard');
+      } else {
+        router.push(ROUTES.home);
+      }
     } catch (err: any) {
       // Nếu backend trả về validation errors
       if (err?.data?.errors) {

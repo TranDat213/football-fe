@@ -21,6 +21,7 @@ export function useHeader() {
       { label: 'Leagues', href: ROUTES.leagues },
       { label: 'Book a Match', href: ROUTES.book },
       { label: 'My Bookings', href: ROUTES.booking },
+      { label: 'Community', href: ROUTES.community },
     ];
 
     if (isOwner) {

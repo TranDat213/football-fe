@@ -109,16 +109,16 @@ export default function OwnerRegisterForm() {
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           <TextField
             label="First Name"
-            name="first_name"
+            name="firstName"
             placeholder="John"
-            value={form.first_name}
+            value={form.firstName}
             onChange={handleChange}
           />
           <TextField
             label="Last Name"
-            name="last_name"
+            name="lastName"
             placeholder="Doe"
-            value={form.last_name}
+            value={form.lastName}
             onChange={handleChange}
           />
         </div>
