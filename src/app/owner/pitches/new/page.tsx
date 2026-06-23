@@ -1,7 +1,7 @@
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import OwnerSidebar from '@/components/layout/OwnerSidebar';
-import PitchForm from '@/features/pitch/components/PitchForm';
+import FootballFieldStepper from '@/features/pitch/components/FootballFieldStepper';
 import { ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
 
@@ -29,16 +29,10 @@ export default function AddPitchPage() {
               <h1 className="text-2xl font-bold text-gray-900">Add New Pitch</h1>
               <p className="mt-1 text-sm text-gray-500">Provide details about your football facility to start receiving bookings.</p>
             </div>
-            <div className="hidden sm:block text-right">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Step 1 of 2</p>
-                <div className="mt-2 h-1.5 w-32 bg-gray-100 rounded-full overflow-hidden">
-                    <div className="h-full w-1/2 bg-emerald-600 rounded-full" />
-                </div>
-            </div>
           </div>
 
           <div className="rounded-3xl border border-gray-100 bg-white p-8 shadow-sm">
-            <PitchForm />
+            <FootballFieldStepper />
           </div>
 
           {/* Quick Support */}
