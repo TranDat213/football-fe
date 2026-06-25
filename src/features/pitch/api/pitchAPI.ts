@@ -1,16 +1,16 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 import { customBaseQueryWithReauth } from '@/lib/api/baseQuery';
-import { ApiResponse } from '@/features/booking/types/booking.types';
+import { ApiResponse, FieldYard } from '@/features/booking/types/booking.types';
 
 export interface Pitch {
   id: string;
   name: string;
   description: string;
   address: string;
-  price: number;
   rating?: number;
+  reviews?: any[]; // Added reviews
   images: { url: string; isCover: boolean }[];
-  yards: { id: string; name: string; type: string }[];
+  yards: FieldYard[]; // Will be defined in booking.types.ts
 }
 
 export const pitchApi = createApi({
@@ -20,15 +20,19 @@ export const pitchApi = createApi({
   endpoints: (builder) => ({
     getPitches: builder.query<ApiResponse<Pitch[]>, { page?: number; limit?: number }>({
       query: (params) => ({
-        url: '/field',
+        url: '/field/active',
         params,
       }),
     }),
     getPitchById: builder.query<ApiResponse<Pitch>, string>({
-      query: (id) => `/field/${id}`,
+      query: (id) => `/field/find/${id}`,
       providesTags: (result, error, id) => [{ type: 'Pitch', id }],
+    }),
+    getPitchByOwnerId: builder.query<ApiResponse<Pitch[]>, string>({
+      query: (ownerId) => `/field/owner/${ownerId}`,
+      providesTags: (result, error, ownerId) => [{ type: 'Pitch', ownerId }],
     }),
   }),
 });
 
-export const { useGetPitchesQuery, useGetPitchByIdQuery } = pitchApi;
+export const { useGetPitchesQuery, useGetPitchByIdQuery, useGetPitchByOwnerIdQuery } = pitchApi;

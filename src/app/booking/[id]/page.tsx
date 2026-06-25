@@ -97,11 +97,11 @@ export default function BookingDetailPage() {
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-500">Booking Fee</span>
-                  <span className="text-gray-900">${booking.totalPrice.toFixed(2)}</span>
+                  <span className="text-gray-900">${Number(booking.totalPrice).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-base font-bold pt-2 border-t border-gray-100">
                   <span className="text-gray-900">Total Amount</span>
-                  <span className="text-emerald-700 font-price">${booking.totalPrice.toFixed(2)}</span>
+                  <span className="text-emerald-700 font-price">${Number(booking.totalPrice).toFixed(2)}</span>
                 </div>
               </div>
             </div>

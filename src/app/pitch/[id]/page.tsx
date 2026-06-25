@@ -13,8 +13,18 @@ export default function PitchDetailPage() {
   const id = params.id as string;
   const { data: response, isLoading, error } = useGetPitchByIdQuery(id);
 
-  if (isLoading) return <div className="flex min-h-screen items-center justify-center">Loading...</div>;
-  if (error || !response) return <div className="flex min-h-screen items-center justify-center text-red-500">Error loading pitch details</div>;
+  if (isLoading)
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        Loading...
+      </div>
+    );
+  if (error || !response)
+    return (
+      <div className="flex min-h-screen items-center justify-center text-red-500">
+        Error loading pitch details
+      </div>
+    );
 
   const pitch = response.data;
 
@@ -26,24 +36,25 @@ export default function PitchDetailPage() {
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-12">
           {/* Main Content (Left) */}
           <div className="lg:col-span-7 xl:col-span-8 space-y-12">
-            <PitchGallery images={pitch.images.map(img => img.url)} />
-            
+            <PitchGallery images={pitch.images.map((img) => img.url)} />
+
             <div className="hidden lg:block">
               <PitchInfo
                 name={pitch.name}
                 rating={pitch.rating || 4.5}
                 reviewCount={100} // Mock review count as it's not in API yet
-                location={pitch.address}
-                price={pitch.price}
-                features={['Professional Turf', 'Floodlights']} // Mock features
-                capacity="5v5, 7v7"
+                address={pitch.address}
+                description={pitch.description}
               />
             </div>
-            
+
             <section className="space-y-4">
-              <h2 className="text-xl font-bold text-gray-900 border-l-4 border-emerald-600 pl-4">About this pitch</h2>
+              <h2 className="text-xl font-bold text-gray-900 border-l-4 border-emerald-600 pl-4">
+                About this pitch
+              </h2>
               <p className="text-gray-600 leading-relaxed">
-                {pitch.description || 'No description available for this pitch.'}
+                {pitch.description ||
+                  'No description available for this pitch.'}
               </p>
             </section>
           </div>
@@ -55,17 +66,20 @@ export default function PitchDetailPage() {
                 name={pitch.name}
                 rating={pitch.rating || 4.5}
                 reviewCount={100}
-                location={pitch.address}
-                price={pitch.price}
-                features={['Professional Turf', 'Floodlights']}
-                capacity="5v5, 7v7"
+                address={pitch.address}
+                description={pitch.description}
               />
             </div>
 
-            <BookingScheduler pitchId={id} price={pitch.price} yards={pitch.yards} />
+            <BookingScheduler
+ pitchId={id}
+ yards={pitch.yards}
+/>
 
             <div className="rounded-2xl border border-gray-100 bg-white p-5">
-              <h4 className="text-sm font-bold text-gray-900">Health & Safety</h4>
+              <h4 className="text-sm font-bold text-gray-900">
+                Health & Safety
+              </h4>
               <ul className="mt-3 space-y-2 text-xs text-gray-500">
                 <li className="flex items-center gap-2">
                   <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
