@@ -1,6 +1,5 @@
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
-import OwnerSidebar from '@/components/layout/OwnerSidebar';
 import { Search, Mail, Phone, MoreVertical, MessageSquare, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -24,7 +23,6 @@ export default function CustomerStatsPage() {
       <Header />
 
       <div className="flex flex-1 mx-auto max-w-7xl w-full">
-        <OwnerSidebar />
 
         <main className="flex-1 px-6 py-8">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -118,18 +116,6 @@ export default function CustomerStatsPage() {
                         ))}
                     </tbody>
                 </table>
-            </div>
-
-            {/* Quick Reward Banner */}
-            <div className="rounded-3xl bg-indigo-900 p-8 text-white flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden">
-                <div className="absolute left-0 top-0 h-full w-2/3 bg-gradient-to-r from-indigo-800/50 to-transparent pointer-events-none" />
-                <div className="relative z-10 text-center md:text-left">
-                    <h3 className="text-xl font-black uppercase tracking-tight text-indigo-300">Boost Retention</h3>
-                    <p className="mt-2 text-sm text-indigo-100/70 max-w-md">Send a 10% discount voucher to your top 10 most active players to keep them coming back this month.</p>
-                </div>
-                <Button className="relative z-10 rounded-xl bg-white text-indigo-900 hover:bg-indigo-50 h-12 px-8 text-xs font-bold uppercase tracking-widest shadow-xl shadow-indigo-900/40">
-                    Send Rewards Now
-                </Button>
             </div>
           </div>
         </main>

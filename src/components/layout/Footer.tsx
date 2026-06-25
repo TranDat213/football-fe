@@ -2,16 +2,16 @@
 
 const FOOTER_COLUMNS = [
   {
-    heading: "FIND PITCHES",
-    links: ["Indoor Arenas", "Outdoor Pitches", "Futsal Courts"],
+    heading: "TÌM SÂN",
+    links: ["Sân Trong Nhà", "Sân Ngoài Trời", "Sân Futsal"],
   },
   {
-    heading: "FOR HOSTS",
-    links: ["List your Property", "Host Dashboard", "Partner Support"],
+    heading: "DÀNH CHO CHỦ SÂN",
+    links: ["Đăng Ký Cho Thuê Sân", "Bảng Điều Khiển Cho Chủ Sân", "Hỗ Trợ Đối Tác"],
   },
   {
-    heading: "LEGAL & SUPPORT",
-    links: ["Help Center", "Terms of Service", "Privacy Policy"],
+    heading: "PHÁP LÝ & HỖ TRỢ",
+    links: ["Trung Tâm Trợ Giúp", "Điều Khoản Dịch Vụ", "Chính Sách Bảo Mật"],
   },
 ];
 
@@ -45,7 +45,7 @@ export default function Footer() {
             </span>
           </div>
           <p className="mt-4 max-w-xs text-sm leading-relaxed">
-            Connecting players with premium sports facilities. The professional way to book your next match.
+            Kết nối người chơi với các cơ sở thể thao chất lượng cao. Cách chuyên nghiệp để đặt trận đấu tiếp theo của bạn.
           </p>
         </div>
 
@@ -66,7 +66,7 @@ export default function Footer() {
       </div>
 
       <div className="mx-auto mt-10 max-w-7xl border-t border-gray-800 px-6 pt-6 text-center text-xs text-gray-500">
-        © 2026 ChanDenClub. All rights reserved.
+        © 2026 ChanDenClub. Bảo lưu mọi quyền.
       </div>
     </footer>
   );

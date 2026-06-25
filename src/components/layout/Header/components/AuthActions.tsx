@@ -17,21 +17,21 @@ export default function AuthActions({ isMobile = false, onLinkClick }: AuthActio
           className="flex h-11 items-center justify-center rounded-lg border border-emerald-600 text-sm font-medium text-emerald-600"
           onClick={onLinkClick}
         >
-          Login
+          Đăng Nhập
         </Link>
         <Link
           href={ROUTES.register}
           className="flex h-11 items-center justify-center rounded-lg bg-emerald-600 text-sm font-medium text-white"
           onClick={onLinkClick}
         >
-          Register
+          Đăng Ký
         </Link>
         <Link
           href={ROUTES.ownerRegister}
           className="text-center text-sm font-medium text-emerald-700"
           onClick={onLinkClick}
         >
-          Become an Owner
+          Đăng ký chủ sân
         </Link>
       </div>
     );
@@ -43,19 +43,19 @@ export default function AuthActions({ isMobile = false, onLinkClick }: AuthActio
         href={ROUTES.login}
         className="rounded-md border border-emerald-600 px-4 py-2 text-sm font-medium text-emerald-600 hover:bg-emerald-50"
       >
-        Login
+        Đăng Nhập
       </Link>
       <Link
         href={ROUTES.register}
         className="rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
       >
-        Register
+        Đăng Ký
       </Link>
       <Link
         href={ROUTES.ownerRegister}
         className="text-sm font-medium text-emerald-700 hover:underline"
       >
-        Become an Owner
+        Đăng ký chủ sân
       </Link>
     </div>
   );

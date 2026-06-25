@@ -4,87 +4,145 @@ import { useState } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
-import { Check, ArrowRight, ArrowLeft } from 'lucide-react';
+import { Check, ArrowRight, ArrowLeft, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { PitchFormSchema, PitchFormData } from '../schema/pitch.schema';
+import { useSubmitPitch } from '../hooks/useSubmitPitch';
+
 import FieldInformationStep from './steps/FieldInformationStep';
 import FieldYardsStep from './steps/FieldYardsStep';
 import FieldImagesStep from './steps/FieldImagesStep';
 import PriceRulesStep from './steps/PriceRulesStep';
 import OperatingHoursStep from './steps/OperatingHoursStep';
 import ReviewSubmitStep from './steps/ReviewSubmitStep';
+import { useRouter } from 'next/navigation';
+import { ROUTES } from '@/lib/route.constants';
 
 const STEPS = [
-  'Field Information',
-  'Field Yards',
+  'Field Info',
+  'Yards',
   'Images',
   'Price Rules',
   'Operating Hours',
-  'Review & Submit'
+  'Review & Submit',
+];
+
+const STEP_FIELDS: (keyof PitchFormData)[][] = [
+  [
+    'category_id',
+    'name',
+    'description',
+    'address',
+    'province',
+    'district',
+    'ward',
+    'open_time',
+    'close_time',
+  ],
+  ['yards'],
+  ['images'],
+  ['priceRules'],
+  ['operatingHours'],
+  [],
 ];
 
 export default function FootballFieldStepper() {
+  const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
-  
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { submitPitch } = useSubmitPitch();
+
   const methods = useForm<PitchFormData>({
     resolver: zodResolver(PitchFormSchema),
+    mode: 'onTouched',
     defaultValues: {
-      name: '', categoryId: '', description: '', address: '', province: '', district: '', ward: '',
-      yards: [{ name: '', code: '', type: 'FIVE_A_SIDE' }],
+      category_id: '',
+      name: '',
+      description: '',
+      address: '',
+      province: '',
+      district: '',
+      ward: '',
+      open_time: '06:00',
+      close_time: '22:00',
+      yards: [{ name: '', type: 'FIVE_A_SIDE', status: 'ACTIVE' }],
       images: [],
       priceRules: [],
-      operatingHours: []
-    }
+      operatingHours: [],
+    },
   });
 
   const { handleSubmit, trigger } = methods;
 
   const handleNext = async () => {
-    let fieldsToValidate: any = [];
-    if (currentStep === 0) fieldsToValidate = ['name', 'address', 'province', 'district'];
-    else if (currentStep === 1) fieldsToValidate = ['yards'];
-    else if (currentStep === 2) fieldsToValidate = ['images'];
-    else if (currentStep === 3) fieldsToValidate = ['priceRules'];
-    else if (currentStep === 4) fieldsToValidate = ['operatingHours'];
-
-    const isValid = await trigger(fieldsToValidate);
-    if (isValid && currentStep < STEPS.length - 1) {
-      setCurrentStep(curr => curr + 1);
-    }
+    const fields = STEP_FIELDS[currentStep];
+    const isValid = await trigger(fields.length ? fields : undefined);
+    if (isValid) setCurrentStep((s) => Math.min(s + 1, STEPS.length - 1));
   };
 
-  const handlePrev = () => {
-    if (currentStep > 0) setCurrentStep(curr => curr - 1);
-  };
+  const handlePrev = () => setCurrentStep((s) => Math.max(s - 1, 0));
 
   const onSubmit = async (data: PitchFormData) => {
+    setIsSubmitting(true);
     try {
-      // Simulate API submit
-      console.log('Submitting Football Field Payload:', data);
-      toast.success('Football Field creation request submitted successfully!');
-    } catch (err) {
-      toast.error('Failed to submit football field request.');
+      await submitPitch(data);
+      toast.success('Field submitted! Awaiting admin approval.');
+      router.push(ROUTES.ownerPitchSuccess);
+    } catch (err: any) {
+      toast.error(err?.data?.message ?? 'Submission failed. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
     <FormProvider {...methods}>
       <div className="space-y-8">
-        {/* Stepper Header */}
-        <div className="flex items-center justify-between mb-8 overflow-x-auto pb-4">
+        {/* Stepper header */}
+        <div className="flex items-center justify-between overflow-x-auto pb-2">
           {STEPS.map((step, index) => (
-            <div key={index} className="flex items-center gap-2 min-w-max">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${currentStep >= index ? 'bg-emerald-600 text-white' : 'bg-gray-100 text-gray-400'}`}>
-                {currentStep > index ? <Check className="w-4 h-4" /> : index + 1}
+            <div key={index} className="flex items-center gap-1.5 min-w-max">
+              <div
+                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${
+                  currentStep > index
+                    ? 'bg-emerald-600 text-white'
+                    : currentStep === index
+                      ? 'bg-emerald-600 text-white ring-4 ring-emerald-600/20'
+                      : 'bg-gray-100 text-gray-400'
+                }`}
+              >
+                {currentStep > index ? (
+                  <Check className="w-4 h-4" />
+                ) : (
+                  index + 1
+                )}
               </div>
-              <span className={`text-xs font-bold uppercase tracking-wider ${currentStep >= index ? 'text-gray-900' : 'text-gray-400'}`}>{step}</span>
-              {index < STEPS.length - 1 && <div className={`w-8 h-0.5 mx-2 ${currentStep > index ? 'bg-emerald-600' : 'bg-gray-100'}`} />}
+              <span
+                className={`text-[10px] font-bold uppercase tracking-wider hidden sm:block ${currentStep >= index ? 'text-gray-900' : 'text-gray-400'}`}
+              >
+                {step}
+              </span>
+              {index < STEPS.length - 1 && (
+                <div
+                  className={`w-6 h-px mx-1 ${currentStep > index ? 'bg-emerald-500' : 'bg-gray-200'}`}
+                />
+              )}
             </div>
           ))}
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+        {/* Step content */}
+        {/* <form onSubmit={handleSubmit(onSubmit)} className="space-y-8"> */}
+        <form
+          onSubmit={handleSubmit(
+            onSubmit,
+            (errors) => {
+              console.log("❌ VALIDATION ERRORS:", errors);
+            }
+          )}
+          className="space-y-8"
+        >
           {currentStep === 0 && <FieldInformationStep />}
           {currentStep === 1 && <FieldYardsStep />}
           {currentStep === 2 && <FieldImagesStep />}
@@ -92,31 +150,42 @@ export default function FootballFieldStepper() {
           {currentStep === 4 && <OperatingHoursStep />}
           {currentStep === 5 && <ReviewSubmitStep />}
 
+          {/* Navigation */}
           <div className="pt-6 border-t border-gray-100 flex items-center justify-between">
-            <Button 
-              type="button" 
-              variant="ghost" 
+            <Button
+              type="button"
+              variant="ghost"
               onClick={handlePrev}
-              disabled={currentStep === 0}
+              disabled={currentStep === 0 || isSubmitting}
               className="text-xs font-bold uppercase tracking-widest text-gray-500 hover:text-gray-900"
             >
-              <ArrowLeft className="w-4 h-4 mr-2" /> Back
+              <ArrowLeft className="w-4 h-4 mr-2" /> Quay lại
             </Button>
-            
+
             {currentStep < STEPS.length - 1 ? (
-              <Button 
-                type="button" 
+              <Button
+                type="button"
                 onClick={handleNext}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl px-8 h-12 text-sm font-bold shadow-lg shadow-emerald-700/10 active:scale-95 transition-all"
+                className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl px-8 h-12 text-sm font-bold"
               >
-                Next Step <ArrowRight className="w-4 h-4 ml-2" />
+                Tiếp theo <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             ) : (
-              <Button 
-                type="submit" 
-                className="bg-emerald-800 hover:bg-emerald-900 text-white rounded-xl px-8 h-12 text-sm font-bold shadow-lg shadow-emerald-900/10 active:scale-95 transition-all"
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="bg-emerald-800 hover:bg-emerald-900 text-white rounded-xl px-8 h-12 text-sm font-bold disabled:opacity-60"
               >
-                Submit Field Request <Check className="w-4 h-4 ml-2" />
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />{' '}
+                    Đang gửi...
+                  </>
+                ) : (
+                  <>
+                    <Check className="w-4 h-4 mr-2" /> Gửi sân
+                  </>
+                )}
               </Button>
             )}
           </div>

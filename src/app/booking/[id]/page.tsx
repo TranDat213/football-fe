@@ -17,8 +17,8 @@ export default function BookingDetailPage() {
   const { data: response, isLoading, error } = useGetBookingByIdQuery(id);
   const [createPayment, { isLoading: isPaying }] = useCreatePaymentMutation();
 
-  if (isLoading) return <div className="flex min-h-screen items-center justify-center">Loading booking details...</div>;
-  if (error || !response) return <div className="flex min-h-screen items-center justify-center text-red-500">Booking not found</div>;
+  if (isLoading) return <div className="flex min-h-screen items-center justify-center">Đang tải thông tin đặt chỗ...</div>;
+  if (error || !response) return <div className="flex min-h-screen items-center justify-center text-red-500">Không tìm thấy thông tin đặt chỗ</div>;
 
   const booking = response.data;
 
@@ -51,8 +51,8 @@ export default function BookingDetailPage() {
             <div className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-white/20 mb-4">
               <CheckCircle2 className="h-8 w-8 text-white" />
             </div>
-            <h1 className="text-2xl font-bold">Booking Confirmation</h1>
-            <p className="text-emerald-100 mt-2">Please review your booking and proceed to payment</p>
+            <h1 className="text-2xl font-bold">Xác nhận đặt chỗ</h1>
+            <p className="text-emerald-100 mt-2">Vui lòng xem lại thông tin đặt chỗ và tiến hành thanh toán</p>
           </div>
 
           <div className="p-8 space-y-8">
@@ -77,14 +77,14 @@ export default function BookingDetailPage() {
 
             <div className="grid grid-cols-2 gap-6 border-y border-gray-100 py-6">
               <div className="space-y-1">
-                <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Date</span>
+                <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Ngày</span>
                 <div className="flex items-center gap-2 text-gray-900 font-semibold">
                   <Calendar className="h-4 w-4 text-emerald-600" />
                   {format(new Date(booking.bookingDate), 'PPP')}
                 </div>
               </div>
               <div className="space-y-1">
-                <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Time Slot</span>
+                <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Khung giờ</span>
                 <div className="flex items-center gap-2 text-gray-900 font-semibold">
                   <Clock className="h-4 w-4 text-emerald-600" />
                   {booking.startTime} - {booking.endTime}
@@ -93,21 +93,21 @@ export default function BookingDetailPage() {
             </div>
 
             <div className="space-y-4">
-              <h3 className="font-bold text-gray-900">Order Summary</h3>
+              <h3 className="font-bold text-gray-900">Tổng quan</h3>
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">Booking Fee</span>
+                  <span className="text-gray-500">Phí đặt sân</span>
                   <span className="text-gray-900">${Number(booking.totalPrice).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-base font-bold pt-2 border-t border-gray-100">
-                  <span className="text-gray-900">Total Amount</span>
+                  <span className="text-gray-900">Tổng tiền</span>
                   <span className="text-emerald-700 font-price">${Number(booking.totalPrice).toFixed(2)}</span>
                 </div>
               </div>
             </div>
 
             <div className="space-y-4 pt-4">
-              <h3 className="font-bold text-gray-900">Select Payment Method</h3>
+              <h3 className="font-bold text-gray-900">Chọn phương thức thanh toán</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <button 
                   onClick={() => handlePayment('VNPAY')}
@@ -120,7 +120,7 @@ export default function BookingDetailPage() {
                     </div>
                     <div className="text-left">
                       <p className="text-sm font-bold text-gray-900">VNPay</p>
-                      <p className="text-[10px] text-gray-500">Fast & Secure</p>
+                      <p className="text-[10px] text-gray-500">Nhanh chóng và an toàn</p>
                     </div>
                   </div>
                 </button>
@@ -135,8 +135,8 @@ export default function BookingDetailPage() {
                        <CreditCard className="h-5 w-5 text-gray-600" />
                     </div>
                     <div className="text-left">
-                      <p className="text-sm font-bold text-gray-900">Pay at Pitch</p>
-                      <p className="text-[10px] text-gray-500">Cash or Transfer</p>
+                      <p className="text-sm font-bold text-gray-900">Thanh toán tại sân</p>
+                      <p className="text-[10px] text-gray-500">Tiền mặt hoặc chuyển khoản</p>
                     </div>
                   </div>
                 </button>
@@ -149,7 +149,7 @@ export default function BookingDetailPage() {
               disabled={isPaying}
             >
               {isPaying ? <Loader2 className="h-5 w-5 animate-spin mr-2" /> : null}
-              Confirm & Pay Now
+              Xác nhận và thanh toán
             </Button>
           </div>
         </div>

@@ -4,7 +4,7 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import PitchGallery from '@/features/pitch/components/PitchGallery';
 import PitchInfo from '@/features/pitch/components/PitchInfo';
-import BookingScheduler from '@/features/pitch/components/BookingScheduler';
+import BookingScheduler from '@/features/booking/components/schedule/BookingScheduler';
 import { useParams } from 'next/navigation';
 import { useGetPitchByIdQuery } from '@/features/pitch/api/pitchAPI';
 
@@ -50,11 +50,11 @@ export default function PitchDetailPage() {
 
             <section className="space-y-4">
               <h2 className="text-xl font-bold text-gray-900 border-l-4 border-emerald-600 pl-4">
-                About this pitch
+                Thông tin sân
               </h2>
               <p className="text-gray-600 leading-relaxed">
                 {pitch.description ||
-                  'No description available for this pitch.'}
+                  'Không có mô tả cho sân này.'}
               </p>
             </section>
           </div>
@@ -78,16 +78,16 @@ export default function PitchDetailPage() {
 
             <div className="rounded-2xl border border-gray-100 bg-white p-5">
               <h4 className="text-sm font-bold text-gray-900">
-                Health & Safety
+                Sức khỏe & An toàn
               </h4>
               <ul className="mt-3 space-y-2 text-xs text-gray-500">
                 <li className="flex items-center gap-2">
                   <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                  Regularly sanitized surfaces
+                  Thường xuyên khử trùng bề mặt
                 </li>
                 <li className="flex items-center gap-2">
                   <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                  First aid kit available on site
+                  Có sẵn bộ sơ cứu tại chỗ
                 </li>
               </ul>
             </div>

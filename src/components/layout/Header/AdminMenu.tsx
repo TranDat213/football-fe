@@ -32,7 +32,7 @@ export default function AdminMenu({
             onClick={handleLogout}
             className="flex w-full items-center justify-center rounded-lg bg-red-50 h-11 text-sm font-semibold text-red-600 transition-colors hover:bg-red-100"
           >
-            Logout
+            Đăng Xuất
           </button>
         </div>
       </div>
@@ -50,7 +50,7 @@ export default function AdminMenu({
         onClick={handleLogout}
         className="ml-2 rounded-md border border-emerald-600 px-4 py-2 text-sm font-medium text-emerald-600 hover:bg-emerald-50"
       >
-        Logout
+        Đăng Xuất
       </button>
     </div>
   );

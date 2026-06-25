@@ -1,12 +1,13 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 import { customBaseQueryWithReauth } from '@/lib/api/baseQuery';
-import { 
+import {
   ApiResponse,
-  AvailabilityResponse, 
-  Booking, 
-  CreateBookingPayload, 
-  PaymentPayload, 
-  PaymentResponse 
+  AvailabilityResponse,
+  Booking,
+  CreateBookingPayload,
+  PaymentPayload,
+  PaymentResponse,
+  UpdateBookingStatusPayload,
 } from '../types/booking.types';
 
 export const bookingApi = createApi({
@@ -14,31 +15,61 @@ export const bookingApi = createApi({
   baseQuery: customBaseQueryWithReauth,
   tagTypes: ['Booking', 'Availability'],
   endpoints: (builder) => ({
-    getAvailability: builder.query<ApiResponse<AvailabilityResponse>, { fieldId: string; date: string }>({
-      query: ({ fieldId, date }) => `/field/${fieldId}/availability?date=${date}`,
+    getAvailability: builder.query<
+      ApiResponse<AvailabilityResponse>,
+      { fieldId: string; date: string }
+    >({
+      query: ({ fieldId, date }) =>
+        `/field/${fieldId}/availability?date=${date}`,
       providesTags: ['Availability'],
     }),
-    
-    createBooking: builder.mutation<ApiResponse<Booking>, CreateBookingPayload>({
-      query: (data) => ({
-        url: '/bookings',
-        method: 'POST',
-        body: data,
-      }),
-      invalidatesTags: ['Booking', 'Availability'],
-    }),
-    
+
+    createBooking: builder.mutation<ApiResponse<Booking>, CreateBookingPayload>(
+      {
+        query: (data) => ({
+          url: '/bookings',
+          method: 'POST',
+          body: data,
+        }),
+        invalidatesTags: ['Booking', 'Availability'],
+      },
+    ),
+
     getBookingById: builder.query<ApiResponse<Booking>, string>({
       query: (id) => `/bookings/${id}`,
       providesTags: (result, error, id) => [{ type: 'Booking', id }],
     }),
-    
+
+    getMyBookings: builder.query<ApiResponse<Booking[]>, void>({
+      query: () => '/bookings/my-bookings',
+      providesTags: ['Booking'],
+    }),
+
+    getOwnerBookings: builder.query<ApiResponse<Booking[]>, void>({
+      query: () => '/bookings/owner/bookings',
+      providesTags: ['Booking'],
+    }),
+
+    updateBookingStatus: builder.mutation<ApiResponse<Booking>, UpdateBookingStatusPayload>({
+      query: ({ id, status }) => ({
+        url: `/bookings/${id}/status`,
+        method: 'PATCH',
+        body: { status },
+      }),
+      invalidatesTags: ['Booking'],
+    }),
+
     createPayment: builder.mutation<PaymentResponse, PaymentPayload>({
       query: (data) => ({
         url: '/payments/create',
         method: 'POST',
         body: data,
       }),
+    }),
+
+    getTotalBookingByOwner: builder.query<ApiResponse<number>, void>({
+      query: () => '/bookings/owner/total',
+      providesTags: ['Booking'],
     }),
   }),
 });
@@ -47,5 +78,10 @@ export const {
   useGetAvailabilityQuery,
   useCreateBookingMutation,
   useGetBookingByIdQuery,
+  useGetMyBookingsQuery,
+  useGetOwnerBookingsQuery,
+  useUpdateBookingStatusMutation,
+  
   useCreatePaymentMutation,
+  useGetTotalBookingByOwnerQuery,
 } = bookingApi;

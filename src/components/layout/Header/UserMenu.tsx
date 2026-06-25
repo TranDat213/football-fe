@@ -27,7 +27,7 @@ export default function UserMenu({
           className="text-base font-medium text-emerald-700"
           onClick={onActionClick}
         >
-          Become an Owner
+          Đăng ký chủ sân
         </Link>
         <div className="mt-4 border-t border-gray-100 pt-4">
           <button
@@ -35,7 +35,7 @@ export default function UserMenu({
             onClick={handleLogout}
             className="flex w-full items-center justify-center rounded-lg bg-red-50 h-11 text-sm font-semibold text-red-600 transition-colors hover:bg-red-100"
           >
-            Logout
+            Đăng Xuất
           </button>
         </div>
       </div>

@@ -81,14 +81,14 @@ export default function PersonalInfoForm({ profile }: PersonalInfoFormProps) {
     <form onSubmit={handleSubmit} className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h3 className="font-semibold text-gray-900">Personal Information</h3>
-          <p className="mt-0.5 text-xs text-gray-500">Update your personal details below.</p>
+          <h3 className="font-semibold text-gray-900">Thông tin cá nhân</h3>
+          <p className="mt-0.5 text-xs text-gray-500">Cập nhật thông tin cá nhân của bạn dưới đây.</p>
         </div>
         <span className="hidden sm:inline-flex items-center gap-1 text-xs text-gray-400">
           <svg className="h-3.5 w-3.5 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
           </svg>
-          Secure form
+          Biểu mẫu bảo mật
         </span>
       </div>
 
@@ -148,7 +148,7 @@ export default function PersonalInfoForm({ profile }: PersonalInfoFormProps) {
           <svg className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
             <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/>
           </svg>
-          Profile updated successfully!
+          Cập nhật thông tin cá nhân thành công!
         </div>
       )}
       {error && (
@@ -172,10 +172,10 @@ export default function PersonalInfoForm({ profile }: PersonalInfoFormProps) {
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.4 0 0 5.4 0 12h4z"/>
               </svg>
-              Saving…
+              Đang lưu…
             </>
           ) : (
-            'Save Changes'
+            'Lưu thay đổi'
           )}
         </button>
       </div>

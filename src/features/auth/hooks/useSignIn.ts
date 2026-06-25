@@ -27,9 +27,9 @@ console.log(res);
       
       const role = res.data.user.role;
       if (role === 'OWNER') {
-        router.push('/owner/dashboard');
+        router.push(ROUTES.ownerDashboard);
       } else if (role === 'ADMIN') {
-        router.push('/admin/dashboard');
+        router.push(ROUTES.adminDashboard);
       } else {
         router.push(ROUTES.home);
       }

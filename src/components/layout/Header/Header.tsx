@@ -8,7 +8,6 @@ import Navigation from './components/Navigation';
 import Notification from './components/Notification';
 import { IconMenu, IconClose } from './components/Icons';
 
-// Role-specific menus
 import UserMenu from './UserMenu';
 import OwnerMenu from './OwnerMenu';
 import AdminMenu from './AdminMenu';
@@ -19,21 +18,20 @@ export default function Header() {
   const { handleLogout } = useLogout();
   const { user, role, isGuest, isAdmin, isOwner, isUser, navLinks } = useHeader();
 
-  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+  const toggleMenu = () => setIsMenuOpen((prev) => !prev);
   const closeMenu = () => setIsMenuOpen(false);
+
+  // Owner và Admin tự quản lý nav trong menu riêng của họ
+  const showSharedNav = isGuest || isUser;
 
   const renderRoleMenu = (isMobile = false) => {
     if (isGuest) return <GuestMenu isMobile={isMobile} onActionClick={closeMenu} />;
-    
-    // User is authenticated
-    const props = { 
-      user: user!, 
-      handleLogout: () => {
-        handleLogout();
-        closeMenu();
-      },
+
+    const props = {
+      user: user!,
+      handleLogout: () => { handleLogout(); closeMenu(); },
       isMobile,
-      onActionClick: closeMenu
+      onActionClick: closeMenu,
     };
 
     if (isAdmin) return <AdminMenu {...props} />;
@@ -44,22 +42,18 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-10 border-b border-gray-100 bg-white">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-        {/* Logo */}
         <Logo />
 
-        {/* Desktop Navigation */}
-        <Navigation links={navLinks} />
+        {/* Nav chung chỉ hiện với guest/user */}
+        {showSharedNav && <Navigation links={navLinks} />}
 
-        {/* Action Area */}
         <div className="flex items-center gap-4">
           <Notification />
 
-          {/* Desktop Role Menu */}
           <div className="hidden md:block">
             {renderRoleMenu()}
           </div>
 
-          {/* Mobile Menu Toggle */}
           <button
             type="button"
             className="text-gray-600 md:hidden"
@@ -71,14 +65,13 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Mobile Sidebar/Dropdown */}
       {isMenuOpen && (
         <div className="border-t border-gray-100 bg-white px-6 py-6 md:hidden">
           <div className="flex flex-col gap-6">
-            {/* Mobile Navigation */}
-            <Navigation links={navLinks} isMobile onLinkClick={closeMenu} />
-            
-            {/* Mobile Role Menu */}
+            {/* Nav mobile cũng chỉ hiện với guest/user */}
+            {showSharedNav && (
+              <Navigation links={navLinks} isMobile onLinkClick={closeMenu} />
+            )}
             {renderRoleMenu(true)}
           </div>
         </div>

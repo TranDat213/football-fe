@@ -40,7 +40,7 @@ export default function PitchInfo({
             </span>
 
             <span className="text-sm text-gray-500">
-              ({reviewCount} reviews)
+              ({reviewCount} đánh giá)
             </span>
           </div>
 

@@ -1,6 +1,5 @@
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
-import OwnerSidebar from '@/components/layout/OwnerSidebar';
 import FootballFieldStepper from '@/features/pitch/components/FootballFieldStepper';
 import { ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
@@ -11,8 +10,6 @@ export default function AddPitchPage() {
       <Header />
 
       <div className="flex flex-1 mx-auto max-w-7xl w-full">
-        {/* Sidebar */}
-        <OwnerSidebar />
 
         {/* Main Content */}
         <main className="flex-1 px-6 py-8">
@@ -26,8 +23,8 @@ export default function AddPitchPage() {
 
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Add New Pitch</h1>
-              <p className="mt-1 text-sm text-gray-500">Provide details about your football facility to start receiving bookings.</p>
+              <h1 className="text-2xl font-bold text-gray-900">Thêm sân mới</h1>
+              <p className="mt-1 text-sm text-gray-500">Hãy cung cấp thông tin chi tiết về sân bóng đá của bạn để bắt đầu.</p>
             </div>
           </div>
 
@@ -41,11 +38,11 @@ export default function AddPitchPage() {
                 <span className="text-xl">💡</span>
             </div>
             <div className="flex-1 text-center md:text-left">
-                <h4 className="font-bold text-gray-900">Need help listing your pitch?</h4>
-                <p className="mt-1 text-[13px] text-gray-500">Check out our <Link href="#" className="text-emerald-700 font-semibold hover:underline">Listing Guide</Link> or contact our support team for a professional photography session.</p>
+                <h4 className="font-bold text-gray-900">Cần trợ giúp để đăng ký sân của bạn?</h4>
+                <p className="mt-1 text-[13px] text-gray-500">Hãy xem <Link href="#" className="text-emerald-700 font-semibold hover:underline">Hướng dẫn đăng ký</Link> của chúng tôi hoặc liên hệ với nhóm hỗ trợ của chúng tôi để có buổi chụp ảnh chuyên nghiệp.</p>
             </div>
             <button className="text-xs font-bold uppercase tracking-widest text-emerald-700 hover:text-emerald-800">
-                Contact Support
+                Liên hệ hỗ trợ
             </button>
           </div>
         </main>

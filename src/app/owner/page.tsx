@@ -60,7 +60,7 @@ function Stepper({ currentStep }: { currentStep: number }) {
 function WhyPitchProCard() {
   return (
     <div className="rounded-2xl bg-gray-900 p-6">
-      <h3 className="text-base font-bold text-emerald-400">Why PitchPro?</h3>
+      <h3 className="text-base font-bold text-emerald-400">Tại sao chọn Chân Đèn Club</h3>
       <ul className="mt-4 space-y-3">
         {BENEFITS.map((benefit) => (
           <li key={benefit} className="flex items-start gap-2.5">
@@ -84,7 +84,7 @@ function PromoImageCard() {
       />
       <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/30 to-black/80" />
       <p className="absolute bottom-4 left-4 right-4 text-[15px] font-bold leading-snug text-emerald-400">
-        Elevate your facility to pro level.
+        Nâng tầm cơ sở của bạn lên đẳng cấp chuyên nghiệp.
       </p>
     </div>
   );
@@ -96,9 +96,9 @@ export default function HostRegistrationPage() {
       <Header />
 
       <main className="mx-auto w-full max-w-7xl flex-1 px-6 py-10">
-        <h1 className="text-2xl font-bold text-gray-900">Host Registration</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Đăng ký chủ sân</h1>
         <p className="mt-1 text-sm text-gray-500">
-          Join our network of professional pitch owners and start managing your bookings with ease.
+          Tham gia mạng lưới chủ sân chuyên nghiệp của chúng tôi và bắt đầu quản lý đặt chỗ của bạn một cách dễ dàng.
         </p>
 
         <Stepper currentStep={1} />
@@ -120,4 +120,4 @@ export default function HostRegistrationPage() {
       <Footer />
     </div>
   );
-}
+}

@@ -1,53 +1,17 @@
-export interface ApiResponse<T> {
-  message: string;
-  data: T;
-}
+// src/features/booking/types/booking.types.ts
+// ─── Chỉ chứa types liên quan đến feature Booking ────────────────────────────
 
-export interface FieldOperatingHour {
-  id: string;
-  fieldYardId: string;
-  dayOfWeek: number;
-  openingTime: string;
-  closingTime: string;
-}
+import type { FieldYard, FootballFieldDetail, ApiResponse } from '@/types/field.types';
 
-export interface FieldPriceRule {
-  id: string;
-  fieldYardId: string;
-  dayOfWeek: number;
-  startTime: string;
-  endTime: string;
-  price: number;
-}
+export type { ApiResponse, FieldYard, FootballFieldDetail };
 
-export interface FieldYard {
-  id: string;
-  name: string;
-  code: string;
-  type: string;
-  description?: string;
-  status?: string;
-  operatingHours: FieldOperatingHour[];
-  priceRules: FieldPriceRule[];
-  images: { url: string; isCover: boolean }[];
-}
-
-export interface FootballFieldDetail {
-  id: string;
-  name: string;
-  description: string;
-  address: string;
-  rating?: number;
-  reviewCount?: number;
-  images: { url: string; isCover: boolean }[];
-  yards: FieldYard[];
-}
+// ─── Availability ─────────────────────────────────────────────────────────────
 
 export interface TimeSlot {
   startTime: string;
   endTime: string;
   status: 'AVAILABLE' | 'BOOKED' | 'DISABLED';
-  price: number; // Added price
+  price: number;
   priceLabel: string | null;
 }
 
@@ -63,6 +27,8 @@ export interface AvailabilityResponse {
   date: string;
   yards: YardAvailability[];
 }
+
+// ─── Booking ──────────────────────────────────────────────────────────────────
 
 export interface CreateBookingPayload {
   fieldYardId: string;
@@ -83,8 +49,17 @@ export interface Booking {
   status: 'PENDING' | 'CONFIRMED' | 'CANCELLED';
   paymentStatus: 'UNPAID' | 'PAID' | 'REFUNDED';
   note?: string;
-  fieldYard: Pick<FieldYard, 'name' | 'type'> & { footballField: Pick<FootballFieldDetail, 'name' | 'address'> };
+  fieldYard: Pick<FieldYard, 'name' | 'type'> & {
+    footballField: Pick<FootballFieldDetail, 'name' | 'address'>;
+  };
 }
+
+export interface UpdateBookingStatusPayload {
+  id: string;
+  status: Booking['status'];
+}
+
+// ─── Payment ──────────────────────────────────────────────────────────────────
 
 export interface PaymentPayload {
   bookingId: string;

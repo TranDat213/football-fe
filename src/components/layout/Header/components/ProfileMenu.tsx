@@ -43,7 +43,7 @@ export default function ProfileMenu({ user, isMobile = false, onLinkClick }: Pro
         <div>
           <p className="text-base font-bold text-gray-900">{user.username}</p>
           <p className="text-sm text-gray-500 uppercase">{user.role}</p>
-          <p className="text-xs text-emerald-600 mt-0.5">View Profile →</p>
+          <p className="text-xs text-emerald-600 mt-0.5">Xem thông tin cá nhân →</p>
         </div>
       </Link>
     );
@@ -53,7 +53,7 @@ export default function ProfileMenu({ user, isMobile = false, onLinkClick }: Pro
     <Link
       href={ROUTES.profile}
       className="flex items-center gap-3 rounded-lg px-1 py-1 transition-colors hover:bg-gray-50"
-      title="View Profile"
+      title="Xem thông tin cá nhân"
     >
       <div className="text-right leading-tight">
         <p className="text-sm font-semibold text-gray-900">{user.username}</p>

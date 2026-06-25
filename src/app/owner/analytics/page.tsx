@@ -1,6 +1,5 @@
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
-import OwnerSidebar from '@/components/layout/OwnerSidebar';
 import { Calendar, Download, TrendingUp, ArrowUpRight, BarChart3, PieChart as PieChartIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -10,7 +9,6 @@ export default function OwnerAnalyticsPage() {
       <Header />
 
       <div className="flex flex-1 mx-auto max-w-7xl w-full">
-        <OwnerSidebar />
 
         <main className="flex-1 px-6 py-8">
           {/* Header */}
@@ -124,22 +122,6 @@ export default function OwnerAnalyticsPage() {
                             <p className="text-sm font-bold text-amber-600">10%</p>
                         </div>
                     </div>
-                </div>
-            </div>
-
-            {/* Top Customers Mini-Table */}
-            <div className="rounded-3xl border border-gray-100 bg-gray-900 p-8 text-white relative overflow-hidden group">
-                <div className="absolute right-0 top-0 h-full w-1/3 bg-gradient-to-l from-emerald-600/10 to-transparent pointer-events-none" />
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
-                    <div>
-                        <h3 className="text-lg font-black text-emerald-400 uppercase tracking-tight">Performance Summary</h3>
-                        <p className="mt-2 text-sm text-gray-400 leading-relaxed max-w-lg">
-                            Your facilities are performing <span className="text-white font-bold">above benchmark</span> for this season. Customer retention has increased by 12% following your recent loyalty promotion.
-                        </p>
-                    </div>
-                    <Button className="rounded-xl bg-emerald-600 hover:bg-emerald-700 h-12 px-8 text-xs font-bold uppercase tracking-widest shadow-lg shadow-emerald-900/50">
-                        View Detailed Report <ArrowUpRight className="ml-2 h-4 w-4" />
-                    </Button>
                 </div>
             </div>
           </div>

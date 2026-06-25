@@ -61,9 +61,9 @@ export default function ProfilePage() {
       <main className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
         {/* Page Title */}
         <div className="mb-7">
-          <h1 className="text-2xl font-bold text-gray-900">Account Settings</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Cài đặt tài khoản</h1>
           <p className="mt-1 text-sm text-gray-500">
-            Manage your professional profile and account credentials
+            Quản lý thông tin cá nhân và tài khoản của bạn
           </p>
         </div>
 
@@ -72,7 +72,7 @@ export default function ProfilePage() {
         {isError && (
           <div className="rounded-2xl border border-red-200 bg-red-50 p-8 text-center">
             <p className="text-sm font-medium text-red-700">
-              Failed to load profile. Please refresh and try again.
+              Không thể tải thông tin cá nhân. Vui lòng làm mới và thử lại.
             </p>
           </div>
         )}

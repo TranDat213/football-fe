@@ -49,7 +49,7 @@ export default function MatchmakingCard({
         </div>
         <div className="flex items-center gap-2 text-xs text-gray-500">
           <Users className="h-3.5 w-3.5 text-gray-400" />
-          {joined} joined • {needed} more needed
+          {joined} đã tham gia • {needed} cần thêm
         </div>
       </div>
 
@@ -58,7 +58,7 @@ export default function MatchmakingCard({
             <div className="h-full bg-emerald-500 rounded-full transition-all" style={{ width: `${percent}%` }} />
         </div>
         <Button className="w-full h-9 rounded-xl bg-gray-900 hover:bg-gray-800 text-[11px] font-bold uppercase tracking-widest transition-all active:scale-[0.98]">
-          Join Match
+          Tham gia trận đấu
         </Button>
       </div>
     </div>

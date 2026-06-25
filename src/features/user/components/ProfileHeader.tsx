@@ -57,14 +57,14 @@ export default function ProfileHeader({ profile }: ProfileHeaderProps) {
               <svg className="h-3 w-3" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M9 12L11 14L15 10M21 12C21 16.97 16.97 21 12 21C7.03 21 3 16.97 3 12C3 7.03 7.03 3 12 3C16.97 3 21 7.03 21 12Z" stroke="currentColor" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-              Identity Verified
+              Đã xác minh danh tính
             </span>
           </div>
         </div>
 
         {/* Member since */}
         <div className="hidden text-right text-xs text-gray-400 sm:block">
-          <p>Member since</p>
+          <p>Ngày tham gia</p>
           <p className="font-medium text-gray-600">
             {new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(new Date(profile.createdAt))}
           </p>

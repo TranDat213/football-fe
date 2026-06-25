@@ -27,16 +27,16 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
             className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-emerald-700 hover:text-emerald-800 transition-colors mb-6 group"
         >
             <ChevronLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
-            Modify Booking
+            Sửa đổi đặt sân
         </Link>
 
-        <h1 className="text-3xl font-black text-gray-900 mb-8 uppercase tracking-tight">Checkout</h1>
+        <h1 className="text-3xl font-black text-gray-900 mb-8 uppercase tracking-tight">Thanh toán</h1>
 
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-5 items-start">
             {/* Payment & Details (Left) */}
             <div className="lg:col-span-3 space-y-8">
                 <section className="space-y-4">
-                    <h2 className="text-sm font-bold uppercase tracking-widest text-gray-400">Payment Method</h2>
+                    <h2 className="text-sm font-bold uppercase tracking-widest text-gray-400">Phương thức thanh toán</h2>
                     <div className="grid grid-cols-1 gap-3">
                         {PAYMENT_METHODS.map((method) => {
                             const isSelected = selectedMethod === method.id;
@@ -73,22 +73,22 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
                 </section>
 
                 <div className="rounded-3xl border border-gray-100 bg-white p-8">
-                    <h3 className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-6 font-mono">Guest Details</h3>
+                    <h3 className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-6 font-mono">Thông tin khách hàng</h3>
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Full Name</label>
+                            <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Họ và tên</label>
                             <input type="text" defaultValue="Alex Johnson" className="w-full rounded-xl border border-gray-100 bg-gray-50/50 px-4 py-3 text-sm font-medium focus:outline-none" />
                         </div>
                         <div className="space-y-2">
-                             <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Phone</label>
+                             <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Số điện thoại</label>
                              <input type="text" defaultValue="090-xxx-xxxx" className="w-full rounded-xl border border-gray-100 bg-gray-50/50 px-4 py-3 text-sm font-medium focus:outline-none" />
                         </div>
                     </div>
-                    <p className="mt-4 text-[11px] text-gray-400 italic">These details will be used for your reservation confirmation and check-in.</p>
+                    <p className="mt-4 text-[11px] text-gray-400 italic">Thông tin này sẽ được sử dụng để xác nhận đặt sân và check-in.</p>
                 </div>
 
                 <Button className="w-full h-14 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-sm font-bold uppercase tracking-widest shadow-xl shadow-emerald-700/20 active:scale-[0.98] transition-transform">
-                    Complete Booking & Pay
+                    Hoàn tất đặt sân & Thanh toán
                 </Button>
             </div>
 
@@ -104,7 +104,7 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
                 />
                 
                 <div className="mt-6 text-center">
-                    <p className="text-[11px] text-gray-400">By completing this booking, you agree to our <Link href="#" className="hover:text-emerald-700 underline underline-offset-2">Terms of Service</Link> and <Link href="#" className="hover:text-emerald-700 underline underline-offset-2">Refund Policy</Link>.</p>
+                    <p className="text-[11px] text-gray-400">Bằng cách hoàn tất đặt sân này, bạn đồng ý với <Link href="#" className="hover:text-emerald-700 underline underline-offset-2">Điều khoản dịch vụ</Link> và <Link href="#" className="hover:text-emerald-700 underline underline-offset-2">Chính sách hoàn tiền</Link>.</p>
                 </div>
             </div>
         </div>
