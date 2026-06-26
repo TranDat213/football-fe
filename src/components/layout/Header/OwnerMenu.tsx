@@ -4,16 +4,16 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import ProfileMenu from './components/ProfileMenu';
 import { 
-  LayoutDashboard, MapPin, PlusCircle, BarChart3, Users 
+  LayoutDashboard, MapPin, PlusCircle, BarChart3 
 } from 'lucide-react';
 import { User } from './types';
+import { ROUTES } from '@/lib/route.constants';
 
 const OWNER_NAV_LINKS = [
-  { href: '/owner/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/owner/pitches',   label: 'Sân của tôi', icon: MapPin },
-  { href: '/owner/pitches/new', label: 'Thêm sân', icon: PlusCircle },
-  { href: '/owner/analytics', label: 'Thống kê',  icon: BarChart3 },
-  { href: '/owner/customers', label: 'Khách hàng',  icon: Users },
+  { href: ROUTES.ownerDashboard, label: 'Dashboard', icon: LayoutDashboard },
+  { href: ROUTES.ownerPitches,   label: 'Sân của tôi', icon: MapPin },
+  { href: ROUTES.ownerPitchNew, label: 'Thêm sân', icon: PlusCircle },
+  { href: ROUTES.ownerAnalytics, label: 'Thống kê',  icon: BarChart3 },
 ];
 
 interface OwnerMenuProps {
@@ -98,7 +98,7 @@ export default function OwnerMenu({
           onClick={handleLogout}
           className="rounded-md border border-emerald-600 px-4 py-2 text-sm font-medium text-emerald-600 hover:bg-emerald-50"
         >
-          Logout
+          Đăng xuất
         </button>
       </div>
     </div>

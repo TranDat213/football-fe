@@ -26,9 +26,15 @@ export interface ApiResponse<T> {
 }
 
 export interface FieldImage {
+  id: string;
+  footballFieldId?: string;
   url: string;
+  publicId?: string | null;
   isCover: boolean;
-  sortOrder?: number;
+  sortOrder: number;
+  createdAt?: string;
+  updatedAt?: string;
+  deletedAt?: string | null;
 }
 
 export interface FieldOperatingHour {

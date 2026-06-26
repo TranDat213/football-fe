@@ -20,7 +20,6 @@ export const ROUTES = {
     ownerReview:    "/owner/review",
     ownerDashboard: "/owner/dashboard",
     ownerPitches:   "/owner/pitches",
-    ownerCustomers: "/owner/customers",
     ownerAnalytics: "/owner/analytics",
     ownerPitchSuccess: "/owner/pitches/success",
     ownerPitchNew: "/owner/pitches/new",
@@ -30,6 +29,9 @@ export const ROUTES = {
     
     //admin
     adminDashboard: "/admin",
+    adminFields:    "/admin/fields",
+    adminOwners:    "/admin/owners",
+    adminUsers:     "/admin/users",
     
     //payment
     checkout:       "/checkout",
