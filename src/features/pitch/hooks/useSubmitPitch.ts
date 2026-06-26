@@ -1,95 +1,66 @@
 import { PitchFormData } from '../schema/pitch.schema';
-import { useCreateField } from './useCreateField';
-import { useCreateFieldImage } from './useCreateFieldImage';
-import { useCreateFieldYard } from './useCreateFieldYard';
-import { useCreateOperatingHour } from './useCreateOperatingHour';
-import { useCreatePriceRule } from './useCreatePriceRule';
+import { useUploadImageMutation, useCreateCompleteFieldMutation } from '../api/pitchAPI';
+import { CreateFootballFieldCompletePayload } from '../types/pich.types';
 
-/**
- * Orchestration hook — runs all creation steps in the correct order:
- * 1. Create field  → get fieldId
- * 2. Create yards  → get yardIds[]
- * 3. Upload images
- * 4. Create price rules (mapped by yardIndex → yardId)
- * 5. Create operating hours (mapped by yardIndex → yardId)
- *
- * Returns { submitPitch, isSubmitting }.
- * Throws on any step failure so the caller can catch and toast.
- */
 export function useSubmitPitch() {
-  const { createField } = useCreateField();
-  const { createYard } = useCreateFieldYard();
-  const { uploadImage } = useCreateFieldImage();
-  const { createPriceRule } = useCreatePriceRule();
-  const { createOperatingHour } = useCreateOperatingHour();
+  const [uploadImage] = useUploadImageMutation();
+  const [createComplete] = useCreateCompleteFieldMutation();
 
   const submitPitch = async (data: PitchFormData) => {
-    // 1. Field
-    const field = await createField({
-      category_id: data.category_id,
+    // 1. Upload images in parallel
+    const uploadedImages = await Promise.all(
+      data.images.map(async (img) => {
+        const formData = new FormData();
+        formData.append('image', img.file);
+        const response = await uploadImage(formData).unwrap();
+        return {
+          url: response.data.url,
+          sortOrder: img.sortOrder,
+          isCover: img.isCover,
+        };
+      }),
+    );
+
+    // 2. Build atomic payload
+    const payload: CreateFootballFieldCompletePayload = {
       name: data.name,
-      description: data.description,
+      description: data.description || undefined,
+      categoryId: data.category_id,
       address: data.address,
       province: data.province,
       district: data.district,
-      ward: data.ward,
-      latitude: data.latitude || undefined,
-      longitude: data.longitude || undefined,
-      open_time: data.open_time,
-      close_time: data.close_time,
-    });
-
-    const fieldId = field.id;
-
-    // 2. Yards — preserve order so yardIndex mapping stays correct
-    const yardIds: string[] = [];
-    for (const yard of data.yards) {
-      const created = await createYard({
+      ward: data.ward || undefined,
+      latitude: data.latitude ?? undefined,
+      longitude: data.longitude ?? undefined,
+      openTime: data.open_time,
+      closeTime: data.close_time,
+      images: uploadedImages,
+      yards: data.yards.map((yard, index) => ({
         name: yard.name,
-        field_id: fieldId,
         type: yard.type,
-        status: yard.status,
-      });
-      yardIds.push(created.id);
-    }
+        operatingHours: (data.operatingHours ?? [])
+          .filter((oh) => oh.yardIndex === index)
+          .map((oh) => ({
+            dayOfWeek: oh.dayOfWeek,
+            openTime: oh.openTime,
+            closeTime: oh.closeTime,
+          })),
+        priceRules: (data.priceRules ?? [])
+          .filter((pr) => pr.yardIndex === index)
+          .map((pr) => ({
+            dayOfWeek: pr.dayOfWeek ?? undefined,
+            specialDate: pr.specialDate || undefined,
+            startTime: pr.startTime,
+            endTime: pr.endTime,
+            price: pr.price,
+            label: pr.label || undefined,
+          })),
+      })),
+    };
 
-    // 3. Images
-    for (let i = 0; i < data.images.length; i++) {
-      const img = data.images[i];
-      await uploadImage({
-        file: img.file,
-        footballFieldId: fieldId,
-        sortOrder: img.sortOrder,
-        isCover: img.isCover,
-      });
-    }
-
-    // 4. Price rules
-    for (const rule of data.priceRules ?? []) {
-      const yardId = yardIds[rule.yardIndex];
-      if (!yardId) continue;
-      await createPriceRule(yardId, {
-        dayOfWeek: rule.dayOfWeek ?? null,
-        startTime: rule.startTime,
-        endTime: rule.endTime,
-        specialDate: rule.specialDate ?? null,
-        price: rule.price,
-        label: rule.label,
-      });
-    }
-
-    // 5. Operating hours
-    for (const hour of data.operatingHours ?? []) {
-      const yardId = yardIds[hour.yardIndex];
-      if (!yardId) continue;
-      await createOperatingHour(yardId, {
-        dayOfWeek: hour.dayOfWeek,
-        openTime: hour.openTime,
-        closeTime: hour.closeTime,
-      });
-    }
-
-    return fieldId;
+    // 3. Create everything atomically
+    const result = await createComplete(payload).unwrap();
+    return result.data;
   };
 
   return { submitPitch };

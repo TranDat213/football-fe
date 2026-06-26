@@ -17,11 +17,11 @@ export function useHeader() {
 
   const navLinks = useMemo(() => {
     const links: NavLink[] = [
-      { label: 'Find Pitches', href: ROUTES.pitch },
-      { label: 'Leagues', href: ROUTES.leagues },
-      { label: 'Book a Match', href: ROUTES.book },
-      { label: 'My Bookings', href: ROUTES.booking },
-      { label: 'Community', href: ROUTES.community },
+      { label: 'Tìm sân', href: ROUTES.pitch },
+      { label: 'Giải đấu', href: ROUTES.leagues },
+      { label: 'Đặt trận', href: ROUTES.book },
+      { label: 'Đặt chỗ của tôi', href: ROUTES.booking },
+      { label: 'Cộng đồng', href: ROUTES.community },
     ];
 
     if (isOwner) {

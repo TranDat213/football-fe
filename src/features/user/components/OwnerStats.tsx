@@ -20,7 +20,7 @@ export default function OwnerStats() {
       color: 'emerald',
     },
     {
-      label: 'Active Bookings',
+      label: 'Đơn đặt sân',
       value: isLoading 
         ? '...' 
         : totalBookingResponse?.data?.toString() ?? '0',

@@ -76,25 +76,27 @@ export default function FootballFieldStepper() {
   const { handleSubmit, trigger } = methods;
 
   const handleNext = async () => {
-    const fields = STEP_FIELDS[currentStep];
-    const isValid = await trigger(fields.length ? fields : undefined);
-    if (isValid) setCurrentStep((s) => Math.min(s + 1, STEPS.length - 1));
-  };
+  const fields = STEP_FIELDS[currentStep];
+  // Step cuối không cần trigger, handleSubmit tự validate
+  if (currentStep === STEPS.length - 1) return;
+  const isValid = await trigger(fields.length ? fields : undefined);
+  if (isValid) setCurrentStep((s) => Math.min(s + 1, STEPS.length - 1));
+};
 
   const handlePrev = () => setCurrentStep((s) => Math.max(s - 1, 0));
 
   const onSubmit = async (data: PitchFormData) => {
-    setIsSubmitting(true);
-    try {
-      await submitPitch(data);
-      toast.success('Field submitted! Awaiting admin approval.');
-      router.push(ROUTES.ownerPitchSuccess);
-    } catch (err: any) {
-      toast.error(err?.data?.message ?? 'Submission failed. Please try again.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  setIsSubmitting(true);
+  try {
+    await submitPitch(data);
+    toast.success('Field submitted! Awaiting admin approval.');
+    router.push(ROUTES.ownerPitchSuccess);
+  } catch (err: any) {
+    toast.error(err?.data?.message ?? 'Submission failed. Please try again.');
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   return (
     <FormProvider {...methods}>

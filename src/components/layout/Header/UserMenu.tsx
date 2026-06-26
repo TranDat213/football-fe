@@ -49,13 +49,13 @@ export default function UserMenu({
         href={ROUTES.ownerRegister} 
         className="text-sm font-medium text-emerald-700 hover:underline px-2"
       >
-        Become an Owner
+        Đăng ký chủ sân
       </Link>
       <button
         onClick={handleLogout}
         className="ml-2 rounded-md border border-emerald-600 px-4 py-2 text-sm font-medium text-emerald-600 hover:bg-emerald-50"
       >
-        Logout
+        Đăng Xuất
       </button>
     </div>
   );

@@ -74,9 +74,14 @@ export const PitchFormSchema = z
     province: z.string().min(1, 'Province is required'),
     district: z.string().min(1, 'District is required'),
     ward: z.string().min(1, 'Ward is required'),
-    latitude: z.number().nullable().optional(),
-
-    longitude: z.number().nullable().optional(),
+    latitude: z.preprocess(
+      (val) => (val === '' || val == null ? undefined : Number(val)),
+      z.number().optional(),
+    ),
+    longitude: z.preprocess(
+      (val) => (val === '' || val == null ? undefined : Number(val)),
+      z.number().optional(),
+    ),
     open_time: z
       .string()
       .regex(/^([01]\d|2[0-3]):([0-5]\d)$/, 'Must be HH:mm format'),

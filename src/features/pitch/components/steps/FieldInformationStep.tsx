@@ -152,7 +152,7 @@ export default function FieldInformationStep() {
           <input
             type="number"
             step="any"
-            {...register('latitude', { valueAsNumber: true })}
+            {...register('latitude')}
             className={inputClass}
             placeholder="10.7769"
           />
@@ -169,7 +169,7 @@ export default function FieldInformationStep() {
           <input
             type="number"
             step="any"
-            {...register('longitude', { valueAsNumber: true })}
+            {...register('longitude')}
             className={inputClass}
             placeholder="106.7009"
           />

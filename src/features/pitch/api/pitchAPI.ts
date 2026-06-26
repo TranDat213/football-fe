@@ -6,6 +6,7 @@ import {
   CreatePriceRulePayload,
   CreateOperatingHourPayload,
   PitchCategory,
+  CreateFootballFieldCompletePayload,
 } from '../types/pich.types';
 import { FieldYard, Pitch } from '@/types/field.types';
 
@@ -75,6 +76,31 @@ export const pitchApi = createApi({
         body,
       }),
     }),
+
+    // Atomic creation
+    uploadImage: builder.mutation<
+      ApiResponse<{ url: string; publicId: string }>,
+      FormData
+    >({
+      query: (formData) => ({
+        url: '/field/upload',
+        method: 'POST',
+        body: formData,
+        formData: true,
+      }),
+    }),
+
+    createCompleteField: builder.mutation<
+      ApiResponse<Pitch>,
+      CreateFootballFieldCompletePayload
+    >({
+      query: (body) => ({
+        url: '/field/create-complete',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['Pitch'],
+    }),
   }),
 });
 
@@ -88,4 +114,6 @@ export const {
   useCreateFieldImageMutation,
   useCreatePriceRuleMutation,
   useCreateOperatingHourMutation,
+  useUploadImageMutation,
+  useCreateCompleteFieldMutation,
 } = pitchApi;
