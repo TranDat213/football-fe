@@ -29,9 +29,10 @@ export const ROUTES = {
     
     //admin
     adminDashboard: "/admin",
-    adminFields:    "/admin/fields",
-    adminOwners:    "/admin/owners",
-    adminUsers:     "/admin/users",
+    adminFields:    "/admin/field_management",
+    adminOwners:    "/admin/owner_management",
+    adminUsers:     "/admin/user_management",
+    adminOwnerRegister: "/admin/owner_management/owner_register",
     
     //payment
     checkout:       "/checkout",

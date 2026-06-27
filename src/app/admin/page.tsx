@@ -3,32 +3,29 @@
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import {
-  ShieldCheck,
   Users,
   MapPin,
   AlertCircle,
-  CheckCircle2,
-  XCircle,
   ArrowRight,
   UserCheck,
   Activity,
+  ShieldCheck,
+  Tag,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { useAdminDashboard } from '@/features/admin/hook/useDashboardAdmin';
+import { UserIcon } from '@/features/auth/components/authFormFields';
 
 export default function AdminPage() {
   const {
     totalAccounts,
     totalUsers,
-    activeFieldCount,
+    totalOwners,
     pendingOwnerCount,
+    activeFieldCount,
     pendingFieldCount,
-    pendingFields,
     isLoading,
-    handleApprove,
-    handleReject,
-    isUpdating,
   } = useAdminDashboard();
 
   const stats = [
@@ -58,11 +55,49 @@ export default function AdminPage() {
     },
   ];
 
+  const quickLinks = [
+    {
+      label: 'Quản lý người dùng',
+      desc: `${isLoading ? '...' : totalUsers.toLocaleString()} người dùng`,
+      icon: Users,
+      color: 'indigo',
+      href: '/admin/user_management',
+      badge: null,
+    },
+    {
+      label: 'Quản lý chủ sân',
+      desc: `${isLoading ? '...' : totalOwners.toLocaleString()} chủ sân`,
+      icon: UserIcon,
+      color: 'emerald',
+      href: '/admin/owner_management',
+      badge: pendingOwnerCount > 0 ? pendingOwnerCount : null,
+      badgeColor: 'orange',
+    },
+    {
+      label: 'Quản lý sân bóng',
+      desc: `${isLoading ? '...' : activeFieldCount.toLocaleString()} sân hoạt động`,
+      icon: MapPin,
+      color: 'blue',
+      href: '/admin/field_management',
+      badge: pendingFieldCount > 0 ? pendingFieldCount : null,
+      badgeColor: 'blue',
+    },
+    {
+      label: 'Thông báo hệ thống',
+      desc: 'Gửi thông báo toàn nền tảng',
+      icon: AlertCircle,
+      color: 'purple',
+      href: '#',
+      badge: null,
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header />
 
       <main className="flex-1 mx-auto max-w-7xl w-full px-6 py-8">
+        {/* Page header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div>
             <h1 className="text-3xl font-black text-gray-900 border-b-4 border-indigo-600 inline-block pb-1">
@@ -72,18 +107,16 @@ export default function AdminPage() {
               Tổng quan về tình trạng hệ thống và quản trị nền tảng.
             </p>
           </div>
-          <div className="flex items-center gap-4">
-            <div className="px-4 py-2 rounded-xl bg-white border border-gray-100 flex items-center gap-2">
-              <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-xs font-bold text-gray-900 uppercase tracking-widest leading-none">
-                Hệ thống hoạt động
-              </span>
-            </div>
+          <div className="px-4 py-2 rounded-xl bg-white border border-gray-100 flex items-center gap-2">
+            <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="text-xs font-bold text-gray-900 uppercase tracking-widest leading-none">
+              Hệ thống hoạt động
+            </span>
           </div>
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
           {stats.map((stat) => (
             <div
               key={stat.label}
@@ -105,157 +138,130 @@ export default function AdminPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* Pending Approvals */}
-          <div className="lg:col-span-8 space-y-6">
-            <section className="rounded-3xl border border-gray-100 bg-white p-8 shadow-sm">
-              <div className="flex items-center justify-between mb-8">
-                <h2 className="flex items-center gap-3 text-lg font-bold text-gray-900">
-                  <ShieldCheck className="h-5 w-5 text-indigo-600" /> Yêu cầu
-                  phê duyệt sân
-                </h2>
-                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest bg-gray-50 px-2 py-1 rounded-lg italic">
-                  Cần kiểm tra nghiêm ngặt
-                </span>
-              </div>
-
-              <div className="space-y-4">
-                {isLoading ? (
-                  // Skeleton loading
-                  [1, 2].map((i) => (
-                    <div
-                      key={i}
-                      className="flex items-center justify-between p-4 rounded-2xl border border-gray-50 animate-pulse"
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className="h-12 w-12 rounded-xl bg-gray-100" />
-                        <div className="space-y-2">
-                          <div className="h-3 w-32 bg-gray-100 rounded" />
-                          <div className="h-2 w-48 bg-gray-100 rounded" />
-                        </div>
-                      </div>
-                      <div className="flex gap-2">
-                        <div className="h-9 w-9 rounded-xl bg-gray-100" />
-                        <div className="h-9 w-9 rounded-xl bg-gray-100" />
-                        <div className="h-9 w-9 rounded-xl bg-gray-100" />
-                      </div>
-                    </div>
-                  ))
-                ) : pendingFields.length === 0 ? (
-                  <div className="text-center py-8 text-sm text-gray-400 font-medium">
-                    Không có sân nào đang chờ duyệt
+          {/* Quick links */}
+          <div className="lg:col-span-5 space-y-3">
+            <h2 className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-4">
+              Thao tác nhanh
+            </h2>
+            {quickLinks.map((action) => (
+              <Link
+                key={action.label}
+                href={action.href}
+                className="flex items-center justify-between p-4 rounded-2xl border border-gray-100 bg-white hover:border-indigo-100 hover:shadow-sm transition-all group"
+              >
+                <div className="flex items-center gap-4">
+                  <div
+                    className={`h-10 w-10 rounded-xl bg-${action.color}-50 flex items-center justify-center shrink-0`}
+                  >
+                    <action.icon
+                      className={`h-4 w-4 text-${action.color}-600`}
+                    />
                   </div>
-                ) : (
-                  pendingFields.map((field) => (
-                    <div
-                      key={field.id}
-                      className="group flex items-center justify-between p-4 rounded-2xl border border-gray-50 hover:border-indigo-100 hover:bg-indigo-50/10 transition-all"
+                  <div>
+                    <p className="text-sm font-bold text-gray-900 group-hover:text-indigo-600 transition-colors">
+                      {action.label}
+                    </p>
+                    <p className="text-[11px] text-gray-400 font-medium">
+                      {action.desc}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  {action.badge && (
+                    <span
+                      className={`px-2 py-0.5 rounded-full bg-${action.badgeColor}-100 text-${action.badgeColor}-600 text-[10px] font-black`}
                     >
-                      <div className="flex items-center gap-4">
-                        <div className="h-12 w-12 rounded-xl bg-gray-100 overflow-hidden flex-shrink-0">
-                          {field.coverImage ? (
-                            <img
-                              src={field.coverImage}
-                              alt={field.name}
-                              className="h-full w-full object-cover"
-                            />
-                          ) : (
-                            <div className="h-full w-full bg-gray-200" />
-                          )}
-                        </div>
+                      {action.badge} chờ
+                    </span>
+                  )}
+                  <ArrowRight className="h-3.5 w-3.5 text-gray-300 group-hover:text-indigo-400 transition-colors" />
+                </div>
+              </Link>
+            ))}
+          </div>
+
+          {/* Right column */}
+          <div className="lg:col-span-7 space-y-6">
+            {/* Pending alerts */}
+            {(pendingFieldCount > 0 || pendingOwnerCount > 0) && (
+              <section className="rounded-3xl border border-orange-100 bg-orange-50/50 p-6">
+                <h2 className="flex items-center gap-2 text-sm font-bold text-orange-700 mb-4">
+                  <ShieldCheck className="h-4 w-4" />
+                  Cần xử lý
+                </h2>
+                <div className="space-y-3">
+                  {pendingFieldCount > 0 && (
+                    <Link
+                      href="/admin/field_management"
+                      className="flex items-center justify-between p-4 rounded-2xl bg-white border border-orange-100 hover:border-orange-300 transition-all group"
+                    >
+                      <div className="flex items-center gap-3">
+                        <MapPin className="h-4 w-4 text-orange-500" />
                         <div>
-                          <h4 className="text-sm font-bold text-gray-900 group-hover:text-indigo-600 transition-colors uppercase tracking-tight">
-                            {field.name}
-                          </h4>
-                          <p className="text-[11px] text-gray-500 font-medium">
-                            {field.address} •{' '}
-                            {new Date(field.createdAt).toLocaleDateString(
-                              'vi-VN',
-                            )}
+                          <p className="text-sm font-bold text-gray-900">
+                            Sân chờ phê duyệt
+                          </p>
+                          <p className="text-[11px] text-gray-400">
+                            Xem xét và duyệt các sân mới
                           </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => handleApprove(field.id)}
-                          disabled={isUpdating}
-                          className="h-9 w-9 flex items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white transition-all shadow-sm disabled:opacity-50"
-                        >
-                          <CheckCircle2 className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => handleReject(field.id)}
-                          disabled={isUpdating}
-                          className="h-9 w-9 flex items-center justify-center rounded-xl bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition-all shadow-sm disabled:opacity-50"
-                        >
-                          <XCircle className="h-4 w-4" />
-                        </button>
-                        <button className="h-9 w-9 flex items-center justify-center rounded-xl bg-gray-50 text-gray-400 hover:bg-gray-900 hover:text-white transition-all shadow-sm">
-                          <ArrowRight className="h-4 w-4" />
-                        </button>
+                        <span className="px-2.5 py-1 rounded-full bg-orange-100 text-orange-600 text-xs font-black">
+                          {pendingFieldCount}
+                        </span>
+                        <ArrowRight className="h-3.5 w-3.5 text-gray-300 group-hover:text-orange-400 transition-colors" />
                       </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            </section>
+                    </Link>
+                  )}
+                  {pendingOwnerCount > 0 && (
+                    <Link
+                      href="/admin/owner_management/owner_register"
+                      className="flex items-center justify-between p-4 rounded-2xl bg-white border border-orange-100 hover:border-orange-300 transition-all group"
+                    >
+                      <div className="flex items-center gap-3">
+                        <UserCheck className="h-4 w-4 text-orange-500" />
+                        <div>
+                          <p className="text-sm font-bold text-gray-900">
+                            Chủ sân chờ xác minh
+                          </p>
+                          <p className="text-[11px] text-gray-400">
+                            Xét duyệt đăng ký chủ sân mới
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="px-2.5 py-1 rounded-full bg-orange-100 text-orange-600 text-xs font-black">
+                          {pendingOwnerCount}
+                        </span>
+                        <ArrowRight className="h-3.5 w-3.5 text-gray-300 group-hover:text-orange-400 transition-colors" />
+                      </div>
+                    </Link>
+                  )}
+                </div>
+              </section>
+            )}
 
-            <div className="rounded-3xl bg-indigo-900 p-8 text-white flex items-center justify-between overflow-hidden relative">
+            <Link
+              href="/admin/category_management"
+              className="rounded-3xl bg-indigo-900 p-8 text-white flex items-center justify-between overflow-hidden relative group"
+            >
               <div className="absolute top-0 right-0 h-full w-1/3 bg-indigo-800 skew-x-12 -mr-12" />
               <div className="relative z-10">
                 <h3 className="text-xl font-black uppercase tracking-tight">
-                  Kiểm tra bảo mật
+                  Danh mục sân
                 </h3>
                 <p className="mt-2 text-sm text-indigo-100/70 max-w-md italic font-medium leading-relaxed">
-                  Không phát hiện lỗ hổng bảo mật nghiêm trọng. Quét lần cuối 15
-                  phút trước.
+                  Quản lý danh mục và phân loại sân bóng trên nền tảng.
                 </p>
               </div>
-              <Button className="relative z-10 rounded-xl bg-white text-indigo-900 hover:bg-indigo-50 h-11 px-8 text-xs font-bold uppercase tracking-widest shadow-xl shadow-indigo-900/50">
-                Xem nhật ký
-              </Button>
-            </div>
-          </div>
-
-          {/* Quick Admin Links */}
-          <div className="lg:col-span-4 space-y-8">
-            <section className="rounded-3xl border border-gray-100 bg-white p-8 shadow-sm">
-              <h3 className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-6">
-                Thao tác nhanh
-              </h3>
-              <div className="space-y-3">
-                {[
-                  {
-                    label: 'Quản lý quyền',
-                    icon: ShieldCheck,
-                    color: 'indigo',
-                  },
-                  {
-                    label: 'Thông báo toàn hệ thống',
-                    icon: AlertCircle,
-                    color: 'blue',
-                  },
-                  {
-                    label: 'Cài đặt nền tảng',
-                    icon: Activity,
-                    color: 'emerald',
-                  },
-                ].map((action) => (
-                  <button
-                    key={action.label}
-                    className="w-full flex items-center justify-between p-4 rounded-2xl border border-gray-50 hover:bg-gray-50 transition-all font-bold text-xs uppercase tracking-widest text-gray-700"
-                  >
-                    <div className="flex items-center gap-3">
-                      <action.icon
-                        className={`h-4 w-4 text-${action.color}-600`}
-                      />
-                      {action.label}
-                    </div>
-                    <ArrowRight className="h-3 w-3 text-gray-300" />
-                  </button>
-                ))}
+              <div className="relative z-10 flex items-center gap-2 rounded-xl bg-white text-indigo-900 hover:bg-indigo-50 h-11 px-8 text-xs font-bold uppercase tracking-widest shadow-xl shadow-indigo-900/50 transition-colors">
+                <Tag className="h-3.5 w-3.5" />
+                Quản lý
               </div>
-            </section>
+            </Link>
 
+            {/* Help card */}
             <div className="rounded-3xl border border-gray-100 bg-gray-50 p-8 text-center border-dashed">
               <div className="h-16 w-16 rounded-full bg-white flex items-center justify-center mx-auto mb-4 border border-gray-100 shadow-sm">
                 <AlertCircle className="h-8 w-8 text-indigo-400" />
@@ -264,8 +270,7 @@ export default function AdminPage() {
                 Cần trợ giúp?
               </h4>
               <p className="text-[11px] text-gray-400 font-medium leading-relaxed mb-6">
-                Hỗ trợ quản trị hệ thống luôn sẵn sàng 24/7 cho các vấn đề quan
-                trọng của nền tảng.
+                Hỗ trợ quản trị hệ thống luôn sẵn sàng 24/7.
               </p>
               <Link
                 href="#"
