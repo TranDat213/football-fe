@@ -1,0 +1,73 @@
+// components/Footer.tsx
+
+const FOOTER_COLUMNS = [
+  {
+    heading: "TÌM SÂN",
+    links: ["Sân Trong Nhà", "Sân Ngoài Trời", "Sân Futsal"],
+  },
+  {
+    heading: "DÀNH CHO CHỦ SÂN",
+    links: ["Đăng Ký Cho Thuê Sân", "Bảng Điều Khiển Cho Chủ Sân", "Hỗ Trợ Đối Tác"],
+  },
+  {
+    heading: "PHÁP LÝ & HỖ TRỢ",
+    links: ["Trung Tâm Trợ Giúp", "Điều Khoản Dịch Vụ", "Chính Sách Bảo Mật"],
+  },
+];
+
+function LogoMark({ className = "h-8 w-8" }: { className?: string }) {
+  return (
+    <div
+      className={`${className} flex items-center justify-center rounded-full bg-emerald-600 text-white`}
+    >
+      <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4">
+        <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5" />
+        <path
+          d="M12 7l3 2.2-1.1 3.5h-3.8L9 9.2 12 7z"
+          stroke="currentColor"
+          strokeWidth="1.2"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </div>
+  );
+}
+
+export default function Footer() {
+  return (
+    <footer className="bg-gray-900 py-12 text-gray-400">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div>
+          <div className="flex items-center gap-2">
+            <LogoMark />
+            <span className="text-lg font-bold text-white">
+              ChanDen<span className="text-emerald-500">Club</span>
+            </span>
+          </div>
+          <p className="mt-4 max-w-xs text-sm leading-relaxed">
+            Kết nối người chơi với các cơ sở thể thao chất lượng cao. Cách chuyên nghiệp để đặt trận đấu tiếp theo của bạn.
+          </p>
+        </div>
+
+        {FOOTER_COLUMNS.map((col) => (
+          <div key={col.heading}>
+            <h5 className="text-xs font-semibold tracking-wider text-gray-300">{col.heading}</h5>
+            <ul className="mt-4 space-y-2.5 text-sm">
+              {col.links.map((link) => (
+                <li key={link}>
+                  <a href="#" className="transition-colors hover:text-white">
+                    {link}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+
+      <div className="mx-auto mt-10 max-w-7xl border-t border-gray-800 px-6 pt-6 text-center text-xs text-gray-500">
+        © 2026 ChanDenClub. Bảo lưu mọi quyền.
+      </div>
+    </footer>
+  );
+}
