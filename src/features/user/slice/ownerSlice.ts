@@ -7,8 +7,8 @@ interface OwnerState {
 
 const initialState: OwnerState = {
     registrationData: {
-        firstName: '',
-        lastName: '',
+        first_name: '',
+        last_name: '',
         email: '',
         phone: '',
         stadium_name: '',

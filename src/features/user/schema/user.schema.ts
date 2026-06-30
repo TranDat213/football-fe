@@ -26,8 +26,8 @@ export type CreateOwnerFormData = z.infer<typeof CreateOwnerSchema>;
 
 export const OwnerRegisterSchema = z.object({
     user_id: z.string().optional(),
-    firstName: z.string().min(1, 'Họ không được để trống'),
-    lastName: z.string().min(1, 'Tên không được để trống'),
+    first_name: z.string().min(1, 'Họ không được để trống'),
+    last_name: z.string().min(1, 'Tên không được để trống'),
     email: z.string()
       .min(1, 'Email không được để trống')
       .max(255, 'Email không được vượt quá 255 ký tự')

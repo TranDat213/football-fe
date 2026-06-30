@@ -80,7 +80,7 @@ export default function OwnerRegisterReview() {
         </div>
         <h2 className="mt-5 text-xl font-bold text-gray-900">Application submitted</h2>
         <p className="mt-2 max-w-md text-sm text-gray-500">
-          Thanks, {data.firstName} {data.lastName}. Our team will verify your facility and get back to
+          Thanks, {data.first_name} {data.last_name}. Our team will verify your facility and get back to
           you within 2 business days at {data.email}.
         </p>
         <Link
@@ -112,7 +112,7 @@ export default function OwnerRegisterReview() {
       </div>
 
       <div className="mt-6 divide-y divide-gray-100">
-        <ReviewRow label="Full Name" value={`${data.firstName} ${data.lastName}`} />
+        <ReviewRow label="Full Name" value={`${data.first_name} ${data.last_name}`} />
         <ReviewRow label="Stadium Name" value={data.stadium_name} />
         <ReviewRow label="Stadium Address" value={data.address} />
         <ReviewRow label="Email Address" value={data.email} />
@@ -137,7 +137,7 @@ export default function OwnerRegisterReview() {
 
       <div className="mt-6 flex items-center justify-between border-t border-gray-100 pt-5">
         <Link
-          href={ROUTES.ownerRegister}
+          href={ROUTES.home}
           className="flex h-10 items-center gap-2 rounded-lg border border-gray-200 px-5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
         >
           <IconArrowLeft />

@@ -100,31 +100,31 @@ export default function OwnerRegisterForm() {
 
   return (
     <div className="rounded-2xl border border-gray-100 bg-white p-8 shadow-sm">
-      <h2 className="text-lg font-bold text-gray-900">Host & Facility Details</h2>
+      <h2 className="text-lg font-bold text-gray-900">Thông tin về đơn vị tổ chức và địa điểm</h2>
       <p className="mt-1 text-sm text-gray-500">
-        We need these details to verify your identity as a legal host.
+        Chúng tôi cần những thông tin này để xác minh danh tính của bạn với tư cách là chủ sở hữu hợp pháp.
       </p>
 
       <form onSubmit={handleSubmit} className="mt-6 space-y-5">
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           <TextField
-            label="First Name"
-            name="firstName"
-            placeholder="John"
-            value={form.firstName}
+            label="Tên"
+            name="first_name"
+            placeholder="Nhập tên của bạn"
+            value={form.first_name}
             onChange={handleChange}
           />
           <TextField
-            label="Last Name"
-            name="lastName"
-            placeholder="Doe"
-            value={form.lastName}
+            label="Họ"
+            name="last_name"
+            placeholder="Nhập họ của bạn"
+            value={form.last_name}
             onChange={handleChange}
           />
         </div>
 
         <TextField
-          label="Stadium Name"
+          label="Tên sân vận động"
           name="stadium_name"
           placeholder="Wembley Stadium"
           value={form.stadium_name}
@@ -132,15 +132,15 @@ export default function OwnerRegisterForm() {
         />
 
         <TextAreaField
-          label="Stadium Address"
+          label="Địa chỉ sân vận động"
           name="address"
-          placeholder="Enter the full physical address of the facility"
+          placeholder="Nhập địa chỉ đầy đủ của cơ sở"
           value={form.address}
           onChange={handleChange}
         />
 
         <TextField
-          label="Email Address"
+          label="Email"
           name="email"
           type="email"
           placeholder="john@example.com"
@@ -149,7 +149,7 @@ export default function OwnerRegisterForm() {
         />
 
         <TextField
-          label="Phone Number"
+          label="Số điện thoại"
           name="phone"
           type="tel"
           placeholder="0123456789"
@@ -163,7 +163,7 @@ export default function OwnerRegisterForm() {
             type="submit"
             className="flex h-10 items-center gap-2 rounded-lg bg-emerald-700 px-5 text-sm font-medium text-white transition-colors hover:bg-emerald-800"
           >
-            Continue
+            Tiếp tục
             <IconArrowRight />
           </button>
         </div>

@@ -47,7 +47,7 @@ export interface Booking {
   endTime: string;
   totalPrice: number;
   status: 'PENDING' | 'CONFIRMED' | 'CANCELLED';
-  paymentStatus: 'UNPAID' | 'PAID' | 'REFUNDED';
+  paymentStatus: 'UNPAID' | 'PAID' | 'REFUNDED' | 'REFUND_PENDING';
   note?: string;
   fieldYard: Pick<FieldYard, 'name' | 'type'> & {
     footballField: Pick<FootballFieldDetail, 'name' | 'address'>;

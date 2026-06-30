@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useLogoutMutation } from "../api/authAPI";
 import { useDispatch } from "react-redux";
 import { clearAuth } from "../slice/authSlice";
+import { userApi } from "@/features/user/api/userAPI";
 
 export const useLogout = () => {
   const router = useRouter();
@@ -15,6 +16,7 @@ export const useLogout = () => {
       await logout().unwrap();
 
       dispatch(clearAuth());
+      dispatch(userApi.util.resetApiState());
 
       router.push("/login");
     } catch (error) {

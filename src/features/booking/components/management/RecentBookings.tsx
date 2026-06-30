@@ -9,12 +9,14 @@ const PAYMENT_STYLE: Record<Booking['paymentStatus'], string> = {
   PAID:     'text-emerald-600',
   UNPAID:   'text-gray-400',
   REFUNDED: 'text-amber-600',
+  REFUND_PENDING: 'text-amber-500',
 };
 
 const PAYMENT_LABEL: Record<Booking['paymentStatus'], string> = {
   PAID:     'Đã thanh toán',
   UNPAID:   'Chưa thanh toán',
   REFUNDED: 'Đã hoàn tiền',
+  REFUND_PENDING: 'Chờ hoàn tiền',
 };
 
 function formatDate(dateStr: string) {

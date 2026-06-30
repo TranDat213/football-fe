@@ -7,18 +7,20 @@ interface PitchGalleryProps {
 }
 
 export default function PitchGallery({ images }: PitchGalleryProps) {
-  const [mainImage, setMainImage] = useState(images[0] || '');
+  const [mainImage, setMainImage] = useState<string | undefined>(images[0]);
 
   return (
     <div className="space-y-4">
       {/* Main Image */}
       <div className="relative aspect-video w-full overflow-hidden rounded-2xl bg-gray-100 shadow-sm transition-all hover:shadow-md">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={mainImage}
-          alt="Pitch View"
-          className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
-        />
+        {mainImage && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={mainImage}
+            alt="Pitch View"
+            className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
+          />
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
       </div>
 
