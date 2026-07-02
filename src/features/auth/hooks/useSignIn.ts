@@ -6,6 +6,7 @@ import { SignInFormData } from '../schema/auth.schema';
 import { toast } from 'sonner';
 import { useDispatch } from 'react-redux';
 import { setUser } from '../slice/authSlice';
+import { userApi } from '@/features/user/api/userAPI';
 
 export function useSignIn() {
   const dispatch = useDispatch();
@@ -21,6 +22,7 @@ export function useSignIn() {
       setFieldErrors({});
      const res= await login(data).unwrap();
 console.log(res);
+      dispatch(userApi.util.resetApiState());
       dispatch(setUser(res.data.user));
 
       toast.success('Đăng nhập thành công!');

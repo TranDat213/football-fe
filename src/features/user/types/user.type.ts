@@ -1,7 +1,7 @@
 export interface OwnerRegisterPayload {
     user_id?: string;
-    firstName: string;
-    lastName: string;
+    first_name: string;
+    last_name: string;
     email: string;
     phone: string;
     stadium_name: string;

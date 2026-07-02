@@ -63,5 +63,8 @@ export interface VerifyOtpPayload {
 export interface OAuthPayload {
   email:string;
   provider: string;
- providerId: string;
+  providerId: string;
+  firstName?: string;
+  lastName?: string;
+  avatarUrl?: string;
 }

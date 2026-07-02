@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { setUser } from '../slice/authSlice';
 import { toast } from 'sonner';
 import { ROUTES } from '@/lib/route.constants';
+import { userApi } from '@/features/user/api/userAPI';
 
 /** Minimal shape returned by Google Identity Services credential callback. */
 interface GoogleCredentialResponse {
@@ -42,14 +43,18 @@ export function useOAuth() {
   const handleGoogleCallback = useCallback(
     async (response: GoogleCredentialResponse) => {
       try {
-        const { email, sub: providerId } = decodeGoogleJwt(response.credential);
+        const { email, sub: providerId, firstName, lastName, avatarUrl } = decodeGoogleJwt(response.credential);
 
         const res = await oauthMutate({
           email,
           provider: 'GOOGLE',
           providerId,
+          firstName,
+          lastName,
+          avatarUrl,
         }).unwrap();
 
+        dispatch(userApi.util.resetApiState());
         dispatch(setUser(res.data.user));
         toast.success('Đăng nhập với Google thành công!');
         router.push(ROUTES.home);

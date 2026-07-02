@@ -9,6 +9,11 @@ import {
   PaymentResponse,
   UpdateBookingStatusPayload,
 } from '../types/booking.types';
+import type {
+  Payment,
+  Refund,
+  VNPayReturnResult,
+} from '../types/payment.types';
 
 export const bookingApi = createApi({
   reducerPath: 'bookingApi',
@@ -67,6 +72,29 @@ export const bookingApi = createApi({
       }),
     }),
 
+    verifyVNPayReturn: builder.query<ApiResponse<VNPayReturnResult>, string>({
+      query: (queryString) => `/payments/vnpay/return?${queryString}`,
+    }),
+
+    getPaymentByBookingId: builder.query<ApiResponse<Payment>, string>({
+      query: (bookingId) => `/payments/${bookingId}`,
+      providesTags: (result, error, bookingId) => [{ type: 'Booking', id: bookingId }],
+    }),
+
+    cancelBooking: builder.mutation<{ success: boolean; message: string }, { id: string; reason?: string }>({
+      query: ({ id, reason }) => ({
+        url: `/bookings/${id}/cancel`,
+        method: 'POST',
+        body: { reason },
+      }),
+      invalidatesTags: ['Booking'],
+    }),
+
+    getRefundByBookingId: builder.query<ApiResponse<Refund>, string>({
+      query: (bookingId) => `/refunds/${bookingId}`,
+      providesTags: (result, error, bookingId) => [{ type: 'Booking', id: bookingId }],
+    }),
+
     getTotalBookingByOwner: builder.query<ApiResponse<number>, void>({
       query: () => '/bookings/owner/total',
       providesTags: ['Booking'],
@@ -81,7 +109,10 @@ export const {
   useGetMyBookingsQuery,
   useGetOwnerBookingsQuery,
   useUpdateBookingStatusMutation,
-  
   useCreatePaymentMutation,
+  useVerifyVNPayReturnQuery,
+  useGetPaymentByBookingIdQuery,
+  useCancelBookingMutation,
+  useGetRefundByBookingIdQuery,
   useGetTotalBookingByOwnerQuery,
 } = bookingApi;
