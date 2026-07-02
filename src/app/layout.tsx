@@ -5,6 +5,7 @@ import { StoreProvider } from '@/store/StoreProvider';
 import { GoogleIdentityProvider } from '@/features/auth/components/googleIdentityProvider';
 import { Providers } from '@/components/providers';
 import AuthInitializer from '@/components/auth/AuthInitializer';
+import { FloatingChatWidget } from '@/features/chatbox/components/ai-chat/FloatingChatWidget';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -36,7 +37,10 @@ export default function RootLayout({
         <StoreProvider>
           <AuthInitializer>
             <Providers>
-              <GoogleIdentityProvider>{children}</GoogleIdentityProvider>
+              <GoogleIdentityProvider>
+                {children}
+                <FloatingChatWidget />
+              </GoogleIdentityProvider>
             </Providers>
           </AuthInitializer>
         </StoreProvider>
