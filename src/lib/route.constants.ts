@@ -13,7 +13,7 @@ export const ROUTES = {
 
     //booking
     book:           "/book",
-    booking:        "/booking",
+    myBooking:      "/my-booking",
     bookingSuccess: "/booking/success",
 
     //owner
