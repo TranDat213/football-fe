@@ -20,7 +20,7 @@ export function useHeader() {
       { label: 'Tìm sân', href: ROUTES.pitch },
       { label: 'Giải đấu', href: ROUTES.leagues },
       { label: 'Đặt trận', href: ROUTES.book },
-      { label: 'Đặt chỗ của tôi', href: ROUTES.booking },
+      { label: 'Lịch sử đặt sân', href: ROUTES.myBooking },
       { label: 'Cộng đồng', href: ROUTES.community },
     ];
 
