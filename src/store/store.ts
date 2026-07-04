@@ -8,6 +8,7 @@ import { bookingApi } from '../features/booking/api/bookingAPI';
 import { pitchApi } from '../features/pitch/api/pitchAPI';
 import { adminApi } from '@/features/admin/api/admin.api';
 import { adminPaymentApi } from '@/features/admin/api/adminPaymentAPI';
+import { casualMatchApi } from '@/features/casual-match/api/casualMatch.api';
 
 export const store = configureStore({
   reducer: {
@@ -21,6 +22,7 @@ export const store = configureStore({
     [pitchApi.reducerPath]: pitchApi.reducer,
     [adminApi.reducerPath]: adminApi.reducer,
     [adminPaymentApi.reducerPath]: adminPaymentApi.reducer,
+    [casualMatchApi.reducerPath]: casualMatchApi.reducer,
   },
 
   middleware: (getDefaultMiddleware) =>
@@ -31,6 +33,7 @@ export const store = configureStore({
       pitchApi.middleware,
       adminApi.middleware,
       adminPaymentApi.middleware,
+      casualMatchApi.middleware,
     ),
 });
 

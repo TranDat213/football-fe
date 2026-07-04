@@ -128,9 +128,9 @@ export default function Home() {
               <p className="mt-2 text-sm text-emerald-950/80">
                 Đặt một chỗ hoặc tham gia để chơi ngay lập tức. Không cần đăng ký cho các đặt chỗ ngẫu hứng.
               </p>
-              <button className="mt-5 rounded-lg bg-emerald-950 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-emerald-900">
-                Tìm chỗ trống
-              </button>
+              <Link href="/casual-matches/create" className="mt-5 inline-flex rounded-lg bg-emerald-950 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-emerald-900">
+                Tạo trận ngẫu hứng
+              </Link>
             </div>
           </div>
 
