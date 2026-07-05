@@ -29,8 +29,6 @@ export interface SignUpFormProps {
 const initialForm: SignUpPayload = {
   first_name: '',
   last_name: '',
-  username: '',
-  phone: '',
   email: '',
   password: '',
   confirmPassword: '',
