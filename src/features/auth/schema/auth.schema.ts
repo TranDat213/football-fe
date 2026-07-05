@@ -6,13 +6,6 @@ export const registerSchema = z
 
     last_name: z.string().min(1, 'Tên không được để trống'),
 
-    username: z
-      .string()
-      .min(3, 'Tên người dùng phải có ít nhất 3 ký tự')
-      .max(50, 'Tên người dùng không được quá 50 ký tự'),
-
-    phone: z.string().optional(),
-
     email: z
       .string()
       .min(1, 'Email không được để trống')
