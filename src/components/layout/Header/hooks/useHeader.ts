@@ -17,11 +17,9 @@ export function useHeader() {
 
   const navLinks = useMemo(() => {
     const links: NavLink[] = [
-      { label: 'Tìm sân', href: ROUTES.pitch },
-      { label: 'Giải đấu', href: ROUTES.leagues },
       { label: 'Đặt trận', href: ROUTES.book },
       { label: 'Lịch sử đặt sân', href: ROUTES.myBooking },
-      { label: 'Cộng đồng', href: ROUTES.community },
+      { label: 'Cộng đồng', href: ROUTES.casualMatch },
     ];
 
     if (isOwner) {

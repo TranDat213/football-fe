@@ -24,8 +24,11 @@ export const ROUTES = {
     ownerPitchSuccess: "/owner/pitches/success",
     ownerPitchNew: "/owner/pitches/new",
 
-    
-    community:      "/community",
+    //comunnity
+    casualMatch:      "/casual-matches",
+    myCasualMatches: "/casual-matches/my",
+    casualOwner:    "/casual-matches/owner",
+    createCasual:   "/casual-matches/create",
     
     //admin
     adminDashboard: "/admin",

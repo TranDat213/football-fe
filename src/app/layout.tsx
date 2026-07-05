@@ -6,6 +6,7 @@ import { GoogleIdentityProvider } from '@/features/auth/components/googleIdentit
 import { Providers } from '@/components/providers';
 import AuthInitializer from '@/components/auth/AuthInitializer';
 import { FloatingChatWidget } from '@/features/chatbox/components/ai-chat/FloatingChatWidget';
+import { Toaster } from 'sonner';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -40,6 +41,7 @@ export default function RootLayout({
               <GoogleIdentityProvider>
                 {children}
                 <FloatingChatWidget />
+                <Toaster richColors position="top-right" />
               </GoogleIdentityProvider>
             </Providers>
           </AuthInitializer>
