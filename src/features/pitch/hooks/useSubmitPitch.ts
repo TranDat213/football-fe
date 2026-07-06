@@ -15,6 +15,7 @@ export function useSubmitPitch() {
         const response = await uploadImage(formData).unwrap();
         return {
           url: response.data.url,
+          publicId: response.data.publicId,
           sortOrder: img.sortOrder,
           isCover: img.isCover,
         };
@@ -35,25 +36,18 @@ export function useSubmitPitch() {
       openTime: data.open_time,
       closeTime: data.close_time,
       images: uploadedImages,
-      yards: data.yards.map((yard, index) => ({
+      yards: data.yards.map((yard) => ({
         name: yard.name,
         type: yard.type,
-        operatingHours: (data.operatingHours ?? [])
-          .filter((oh) => oh.yardIndex === index)
-          .map((oh) => ({
-            dayOfWeek: oh.dayOfWeek,
-            openTime: oh.openTime,
-            closeTime: oh.closeTime,
-          })),
-        priceRules: (data.priceRules ?? [])
-          .filter((pr) => pr.yardIndex === index)
-          .map((pr) => ({
-            dayOfWeek: pr.dayOfWeek ?? undefined,
-            specialDate: pr.specialDate || undefined,
-            startTime: pr.startTime,
-            endTime: pr.endTime,
-            price: pr.price,
-            label: pr.label || undefined,
+
+        timeSlots: yard.timeSlots.map((slot) => ({
+          tempId: slot.tempId ?? undefined,
+          dayOfWeek: slot.dayOfWeek,
+          startTime: slot.startTime,
+          endTime: slot.endTime,
+          label: slot.label,
+          sortOrder: slot.sortOrder,
+          priceRule: slot.priceRule,
           })),
       })),
     };

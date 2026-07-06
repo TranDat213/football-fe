@@ -71,7 +71,7 @@ export default function FieldImagesStep() {
               {/* Cover badge */}
               {img?.isCover && (
                 <div className="absolute top-1.5 left-1.5 bg-emerald-600 text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider flex items-center gap-1">
-                  <Star className="w-2.5 h-2.5 fill-white" /> Cover
+                  <Star className="w-2.5 h-2.5 fill-white" /> Ảnh nền
                 </div>
               )}
 
@@ -83,7 +83,7 @@ export default function FieldImagesStep() {
                     onClick={() => toggleCover(index)}
                     className="text-[10px] font-bold bg-white/90 text-gray-800 px-3 py-1 rounded-full hover:bg-white transition"
                   >
-                    Set as Cover
+                    Đặt làm ảnh nền
                   </button>
                 )}
                 <button
@@ -106,17 +106,14 @@ export default function FieldImagesStep() {
         >
           <Camera className="h-6 w-6 text-gray-400" />
           <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
-            Upload
+            Tải ảnh lên
           </span>
         </button>
       </div>
 
       {/* Helper text */}
       <p className="text-xs text-gray-400">
-        Upload at least one image. Hover an image to set it as the cover photo.
-        Files are sent as{' '}
-        <code className="text-gray-500">multipart/form-data</code> via Express
-        Multer.
+        Tải lên ít nhất một hình ảnh. Di chuột qua hình ảnh để đặt nó làm ảnh bìa.
       </p>
 
       {/* Validation error */}

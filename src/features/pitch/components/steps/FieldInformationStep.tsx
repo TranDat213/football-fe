@@ -1,8 +1,9 @@
 'use client';
 
-import { useFormContext } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
 import { PitchFormData } from '../../schema/pitch.schema';
 import { useGetPitchCategoryQuery } from '../../api/pitchAPI';
+import LocationPicker from '../LocationPicker';
 
 // Placeholder — replace with real data from your category API
 const CATEGORIES = [
@@ -13,8 +14,19 @@ const CATEGORIES = [
 export default function FieldInformationStep() {
   const {
     register,
+    setValue,
+    control,
     formState: { errors },
   } = useFormContext<PitchFormData>();
+  const latitude = useWatch({
+    control,
+    name: 'latitude',
+  });
+
+  const longitude = useWatch({
+    control,
+    name: 'longitude',
+  });
 
   const inputClass =
     'w-full rounded-xl border border-gray-100 px-4 py-3 text-sm focus:border-emerald-600 focus:ring-4 focus:ring-emerald-600/5 transition-all outline-none';
@@ -56,7 +68,7 @@ export default function FieldInformationStep() {
 
         {/* Name */}
         <div className="space-y-2">
-          <label className={labelClass}>Pitch Name</label>
+          <label className={labelClass}>Tên sân</label>
           <input
             {...register('name')}
             className={inputClass}
@@ -67,37 +79,24 @@ export default function FieldInformationStep() {
 
         {/* Address */}
         <div className="space-y-2">
-          <label className={labelClass}>Address</label>
+          <label className={labelClass}>Địa chỉ</label>
           <input
             {...register('address')}
             className={inputClass}
-            placeholder="Street number and name"
+            placeholder="Tên đường và số nhà"
           />
           {errors.address && (
             <p className={errorClass}>{errors.address.message}</p>
           )}
         </div>
 
-        {/* Province */}
-        <div className="space-y-2">
-          <label className={labelClass}>Province / City</label>
-          <input
-            {...register('province')}
-            className={inputClass}
-            placeholder="e.g. Ho Chi Minh City"
-          />
-          {errors.province && (
-            <p className={errorClass}>{errors.province.message}</p>
-          )}
-        </div>
-
         {/* District */}
         <div className="space-y-2">
-          <label className={labelClass}>District</label>
+          <label className={labelClass}>Quận/Huyện</label>
           <input
             {...register('district')}
             className={inputClass}
-            placeholder="e.g. Quan 1"
+            placeholder="e.g. Quận 1"
           />
           {errors.district && (
             <p className={errorClass}>{errors.district.message}</p>
@@ -106,18 +105,31 @@ export default function FieldInformationStep() {
 
         {/* Ward */}
         <div className="space-y-2">
-          <label className={labelClass}>Ward</label>
+          <label className={labelClass}>Phường</label>
           <input
             {...register('ward')}
             className={inputClass}
-            placeholder="e.g. Phuong Ben Nghe"
+            placeholder="e.g. Phường Bến Nghé"
           />
           {errors.ward && <p className={errorClass}>{errors.ward.message}</p>}
         </div>
 
+        {/* Province */}
+        <div className="space-y-2">
+          <label className={labelClass}>Tỉnh/Thành phố</label>
+          <input
+            {...register('province')}
+            className={inputClass}
+            placeholder="e.g. Thành phố Hồ Chí Minh"
+          />
+          {errors.province && (
+            <p className={errorClass}>{errors.province.message}</p>
+          )}
+        </div>
+
         {/* Open time */}
         <div className="space-y-2">
-          <label className={labelClass}>Open Time</label>
+          <label className={labelClass}>Giờ mở cửa</label>
           <input
             type="time"
             {...register('open_time')}
@@ -130,7 +142,7 @@ export default function FieldInformationStep() {
 
         {/* Close time */}
         <div className="space-y-2">
-          <label className={labelClass}>Close Time</label>
+          <label className={labelClass}>Giờ đóng cửa</label>
           <input
             type="time"
             {...register('close_time')}
@@ -141,49 +153,39 @@ export default function FieldInformationStep() {
           )}
         </div>
 
-        {/* Latitude (optional) */}
-        <div className="space-y-2">
-          <label className={labelClass}>
-            Latitude{' '}
-            <span className="text-gray-300 font-normal normal-case">
-              (optional)
-            </span>
-          </label>
-          <input
-            type="number"
-            step="any"
-            {...register('latitude')}
-            className={inputClass}
-            placeholder="10.7769"
-          />
-        </div>
+        <div className="space-y-2 sm:col-span-2">
+          <label className={labelClass}>Vị trí</label>
 
-        {/* Longitude (optional) */}
-        <div className="space-y-2">
-          <label className={labelClass}>
-            Longitude{' '}
-            <span className="text-gray-300 font-normal normal-case">
-              (optional)
-            </span>
-          </label>
-          <input
-            type="number"
-            step="any"
-            {...register('longitude')}
-            className={inputClass}
-            placeholder="106.7009"
+          <LocationPicker
+            value={
+              latitude != null && longitude != null
+                ? {
+                    lat: latitude,
+                    lng: longitude,
+                  }
+                : undefined
+            }
+            onChange={(lat, lng) => {
+              setValue('latitude', lat, {
+                shouldValidate: true,
+              });
+
+              setValue('longitude', lng, {
+                shouldValidate: true,
+              });
+            }}
           />
         </div>
       </div>
 
       {/* Description */}
       <div className="space-y-2">
-        <label className={labelClass}>Description</label>
+        <label className={labelClass}>Mô tả</label>
         <textarea
           rows={4}
           {...register('description')}
           className={`${inputClass} resize-none`}
-          placeholder="Describe the field, facilities, parking, etc."
+          placeholder="Hãy mô tả về sân, cơ sở vật chất, bãi đỗ xe, v.v."
         />
         {errors.description && (
           <p className={errorClass}>{errors.description.message}</p>
