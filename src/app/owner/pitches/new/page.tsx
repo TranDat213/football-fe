@@ -18,7 +18,7 @@ export default function AddPitchPage() {
             className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-emerald-700 hover:text-emerald-800 transition-colors mb-6 group"
           >
             <ChevronLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
-            Back to My Pitches
+            Quay về trang quản lý sân
           </Link>
 
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">

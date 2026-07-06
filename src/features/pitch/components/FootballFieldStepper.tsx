@@ -13,20 +13,11 @@ import { useSubmitPitch } from '../hooks/useSubmitPitch';
 import FieldInformationStep from './steps/FieldInformationStep';
 import FieldYardsStep from './steps/FieldYardsStep';
 import FieldImagesStep from './steps/FieldImagesStep';
-import PriceRulesStep from './steps/PriceRulesStep';
-import OperatingHoursStep from './steps/OperatingHoursStep';
 import ReviewSubmitStep from './steps/ReviewSubmitStep';
 import { useRouter } from 'next/navigation';
 import { ROUTES } from '@/lib/route.constants';
 
-const STEPS = [
-  'Field Info',
-  'Yards',
-  'Images',
-  'Price Rules',
-  'Operating Hours',
-  'Review & Submit',
-];
+const STEPS = ['Thông tin sân', 'Sân con', 'Hình ảnh', 'Xem lại và gửi'];
 
 const STEP_FIELDS: (keyof PitchFormData)[][] = [
   [
@@ -40,10 +31,8 @@ const STEP_FIELDS: (keyof PitchFormData)[][] = [
     'open_time',
     'close_time',
   ],
-  ['yards'],
+  ['yards'], // now also covers nested timeSlots + priceRules
   ['images'],
-  ['priceRules'],
-  ['operatingHours'],
   [],
 ];
 
@@ -66,37 +55,66 @@ export default function FootballFieldStepper() {
       ward: '',
       open_time: '06:00',
       close_time: '22:00',
-      yards: [{ name: '', type: 'FIVE_A_SIDE', status: 'ACTIVE' }],
+      yards: [
+        {
+          name: '',
+          type: 'FIVE_A_SIDE',
+          timeSlots: [
+            {
+              dayOfWeek: 1,
+              startTime: '06:00',
+              endTime: '18:00',
+              label: 'REGULAR',
+              sortOrder: 0,
+              priceRule: { price: 100000 },
+            },
+          ],
+        },
+      ],
       images: [],
-      priceRules: [],
-      operatingHours: [],
     },
   });
 
   const { handleSubmit, trigger } = methods;
 
   const handleNext = async () => {
-  const fields = STEP_FIELDS[currentStep];
-  // Step cuối không cần trigger, handleSubmit tự validate
-  if (currentStep === STEPS.length - 1) return;
-  const isValid = await trigger(fields.length ? fields : undefined);
-  if (isValid) setCurrentStep((s) => Math.min(s + 1, STEPS.length - 1));
-};
+    const fields = STEP_FIELDS[currentStep];
+    // Step cuối không cần trigger, handleSubmit tự validate
+    if (currentStep === STEPS.length - 1) return;
+    const isValid = await trigger(fields.length ? fields : undefined);
+    if (isValid) setCurrentStep((s) => Math.min(s + 1, STEPS.length - 1));
+  };
 
   const handlePrev = () => setCurrentStep((s) => Math.max(s - 1, 0));
 
+  // Chặn Enter tự động submit khi chưa ở bước Review cuối cùng
+  const handleFormKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
+    const isTextarea = (e.target as HTMLElement).tagName === 'TEXTAREA';
+    if (e.key === 'Enter' && !isTextarea) {
+      if (currentStep < STEPS.length - 1) {
+        // Chưa tới step cuối: Enter chỉ next step, không submit
+        e.preventDefault();
+        handleNext();
+      }
+      // Ở step cuối: cho phép Enter submit như bình thường (người dùng đã review xong)
+    }
+  };
+
   const onSubmit = async (data: PitchFormData) => {
-  setIsSubmitting(true);
-  try {
-    await submitPitch(data);
-    toast.success('Field submitted! Awaiting admin approval.');
-    router.push(ROUTES.ownerPitchSuccess);
-  } catch (err: any) {
-    toast.error(err?.data?.message ?? 'Submission failed. Please try again.');
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+    setIsSubmitting(true);
+    try {
+      await submitPitch(data);
+      toast.success('Tạo sân thành công, Đang chờ Admin duyệt');
+      router.push(ROUTES.ownerPitchSuccess);
+    } catch (err: any) {
+      toast.error(
+        err?.data?.message ?? 'Tạo sân không thành công vui lòng thử lại.',
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+  const submit = handleSubmit(onSubmit);
 
   return (
     <FormProvider {...methods}>
@@ -135,22 +153,17 @@ export default function FootballFieldStepper() {
         </div>
 
         {/* Step content */}
-        {/* <form onSubmit={handleSubmit(onSubmit)} className="space-y-8"> */}
         <form
-          onSubmit={handleSubmit(
-            onSubmit,
-            (errors) => {
-              console.log("❌ VALIDATION ERRORS:", errors);
-            }
-          )}
+          onSubmit={(e) => e.preventDefault()}
+          onKeyDown={handleFormKeyDown}
           className="space-y-8"
         >
           {currentStep === 0 && <FieldInformationStep />}
           {currentStep === 1 && <FieldYardsStep />}
           {currentStep === 2 && <FieldImagesStep />}
-          {currentStep === 3 && <PriceRulesStep />}
-          {currentStep === 4 && <OperatingHoursStep />}
-          {currentStep === 5 && <ReviewSubmitStep />}
+          {currentStep === 3 && (
+            <ReviewSubmitStep onSubmit={submit} isSubmitting={isSubmitting} />
+          )}
 
           {/* Navigation */}
           <div className="pt-6 border-t border-gray-100 flex items-center justify-between">
@@ -164,32 +177,13 @@ export default function FootballFieldStepper() {
               <ArrowLeft className="w-4 h-4 mr-2" /> Quay lại
             </Button>
 
-            {currentStep < STEPS.length - 1 ? (
-              <Button
-                type="button"
-                onClick={handleNext}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl px-8 h-12 text-sm font-bold"
-              >
-                Tiếp theo <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
-            ) : (
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-                className="bg-emerald-800 hover:bg-emerald-900 text-white rounded-xl px-8 h-12 text-sm font-bold disabled:opacity-60"
-              >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />{' '}
-                    Đang gửi...
-                  </>
-                ) : (
-                  <>
-                    <Check className="w-4 h-4 mr-2" /> Gửi sân
-                  </>
-                )}
-              </Button>
-            )}
+            <Button
+              type="button"
+              onClick={handleNext}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl px-8 h-12 text-sm font-bold"
+            >
+              Tiếp theo <ArrowRight className="w-4 h-4 ml-2" />
+            </Button>
           </div>
         </form>
       </div>

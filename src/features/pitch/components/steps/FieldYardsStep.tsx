@@ -4,17 +4,12 @@ import { useFormContext, useFieldArray } from 'react-hook-form';
 import { PitchFormData } from '../../schema/pitch.schema';
 import { Button } from '@/components/ui/button';
 import { Plus, Trash2 } from 'lucide-react';
+import TimeSlotFields from './TimeSlotsStep';
 
 const YARD_TYPES = [
   { value: 'FIVE_A_SIDE', label: '5 vs 5' },
   { value: 'SEVEN_A_SIDE', label: '7 vs 7' },
   { value: 'ELEVEN_A_SIDE', label: '11 vs 11' },
-];
-
-const YARD_STATUSES = [
-  { value: 'ACTIVE', label: 'Active' },
-  { value: 'INACTIVE', label: 'Inactive' },
-  { value: 'MAINTENANCE', label: 'Maintenance' },
 ];
 
 export default function FieldYardsStep() {
@@ -38,10 +33,10 @@ export default function FieldYardsStep() {
       {fields.map((field, index) => (
         <div
           key={field.id}
-          className="relative p-5 border border-gray-100 rounded-2xl bg-gray-50/50 grid grid-cols-1 sm:grid-cols-3 gap-4"
+          className="relative p-5 border border-gray-100 rounded-2xl bg-gray-50/50 space-y-4"
         >
           {/* Yard label */}
-          <div className="sm:col-span-3 flex items-center justify-between">
+          <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-emerald-700 uppercase tracking-widest">
               Yard {index + 1}
             </span>
@@ -56,56 +51,45 @@ export default function FieldYardsStep() {
             )}
           </div>
 
-          {/* Name */}
-          <div className="space-y-1.5">
-            <label className={labelClass}>Yard Name</label>
-            <input
-              {...register(`yards.${index}.name`)}
-              className={inputClass}
-              placeholder="e.g. Yard A"
-            />
-            {errors?.yards?.[index]?.name && (
-              <p className={errorClass}>{errors.yards[index]?.name?.message}</p>
-            )}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Name */}
+            <div className="space-y-1.5">
+              <label className={labelClass}>Yard Name</label>
+              <input
+                {...register(`yards.${index}.name`)}
+                className={inputClass}
+                placeholder="e.g. Yard A"
+              />
+              {errors?.yards?.[index]?.name && (
+                <p className={errorClass}>
+                  {errors.yards[index]?.name?.message}
+                </p>
+              )}
+            </div>
+
+            {/* Type */}
+            <div className="space-y-1.5">
+              <label className={labelClass}>Loại sân</label>
+              <select
+                {...register(`yards.${index}.type`)}
+                className={selectClass}
+              >
+                {YARD_TYPES.map((t) => (
+                  <option key={t.value} value={t.value}>
+                    {t.label}
+                  </option>
+                ))}
+              </select>
+              {errors?.yards?.[index]?.type && (
+                <p className={errorClass}>
+                  {errors.yards[index]?.type?.message}
+                </p>
+              )}
+            </div>
           </div>
 
-          {/* Type */}
-          <div className="space-y-1.5">
-            <label className={labelClass}>Type</label>
-            <select
-              {...register(`yards.${index}.type`)}
-              className={selectClass}
-            >
-              {YARD_TYPES.map((t) => (
-                <option key={t.value} value={t.value}>
-                  {t.label}
-                </option>
-              ))}
-            </select>
-            {errors?.yards?.[index]?.type && (
-              <p className={errorClass}>{errors.yards[index]?.type?.message}</p>
-            )}
-          </div>
-
-          {/* Status */}
-          <div className="space-y-1.5">
-            <label className={labelClass}>Status</label>
-            <select
-              {...register(`yards.${index}.status`)}
-              className={selectClass}
-            >
-              {YARD_STATUSES.map((s) => (
-                <option key={s.value} value={s.value}>
-                  {s.label}
-                </option>
-              ))}
-            </select>
-            {errors?.yards?.[index]?.status && (
-              <p className={errorClass}>
-                {errors.yards[index]?.status?.message}
-              </p>
-            )}
-          </div>
+          {/* Nested: time slots + price rules for this yard */}
+          <TimeSlotFields control={control} yardIndex={index} />
         </div>
       ))}
 
@@ -113,11 +97,24 @@ export default function FieldYardsStep() {
         type="button"
         variant="outline"
         onClick={() =>
-          append({ name: '', type: 'FIVE_A_SIDE', status: 'ACTIVE' })
+          append({
+            name: '',
+            type: 'FIVE_A_SIDE',
+            timeSlots: [
+              {
+                dayOfWeek: 1,
+                startTime: '06:00',
+                endTime: '18:00',
+                label: 'REGULAR',
+                sortOrder: 0,
+                priceRule: { price: 100000 },
+              },
+            ],
+          })
         }
         className="w-full border-dashed border-emerald-200 text-emerald-700 hover:bg-emerald-50"
       >
-        <Plus className="w-4 h-4 mr-2" /> Add Another Yard
+        <Plus className="w-4 h-4 mr-2" /> Thêm sân con
       </Button>
 
       {errors.yards?.root && (
