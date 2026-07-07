@@ -1,3 +1,4 @@
+export type OtpPurpose = 'SIGN_UP' | 'RESET_PASSWORD';
 export interface SignUpPayload {
   first_name: string;
   last_name: string;
@@ -9,7 +10,7 @@ export type SignInResponse = ApiResponse<{
   user: UserProfile;
 }>;
 export type SignUpResponse = ApiResponse<{
-  message: string;
+  user: UserProfile;
 }>;
 
 export interface UserProfile {
@@ -24,7 +25,6 @@ export interface UserProfile {
   createdAt: Date;
   updatedAt: Date;
 }
-
 
 export interface ApiError {
   message: string;
@@ -43,23 +43,38 @@ export interface RefreshResponse {
 }
 
 export interface ForgotPasswordPayload {
-  username?: string;
-  email?: string;
+  email: string;
   password: string;
   confirmPassword: string;
 }
 
 export interface RequestOtpPayload {
   email: string;
+  purpose: OtpPurpose;
+  // Chỉ cần khi purpose === 'SIGN_UP'
+  first_name?: string;
+  last_name?: string;
+  user_name?: string;
+  password?: string;
+  confirmPassword?: string;
 }
 
 export interface VerifyOtpPayload {
   email: string;
   otp: string;
+  purpose: OtpPurpose;
+}
+
+export interface VerifyOtpResponse {
+  message: string;
+  data: {
+    user?: SignUpResponse['data']['user']; // khi purpose = SIGN_UP
+    resetToken?: string; // khi purpose = RESET_PASSWORD
+  };
 }
 
 export interface OAuthPayload {
-  email:string;
+  email: string;
   provider: string;
   providerId: string;
   firstName?: string;

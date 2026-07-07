@@ -49,7 +49,7 @@ export function useForgotPassword(onDone?: () => void) {
   const handleRequestOtp = async (emailValue: string) => {
     try {
       setError(null);
-      await requestOtp({ email: emailValue }).unwrap();
+      await requestOtp({ email: emailValue, purpose: 'RESET_PASSWORD' }).unwrap();
       setEmail(emailValue);
       setStep('otp');
       startCountdown();
@@ -72,7 +72,7 @@ export function useForgotPassword(onDone?: () => void) {
   const handleVerifyOtp = async (otp: string) => {
     try {
       setError(null);
-      await verifyOtp({ email, otp }).unwrap();
+      await verifyOtp({ email, otp, purpose: 'RESET_PASSWORD' }).unwrap();
       toast.success('Xác thực OTP thành công!');
       setStep('reset');
     } catch (err: unknown) {

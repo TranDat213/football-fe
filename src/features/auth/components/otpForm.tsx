@@ -14,13 +14,18 @@ import { requestOtpSchema, verifyOtpSchema } from '../schema/auth.schema';
 /* ─── Props ────────────────────────────────────────────────────── */
 
 export interface OtpFormProps extends UseOtpOptions {
-  /** Pre-fill the email field. */
   defaultEmail?: string;
 }
 
-/* ─── Main Component ────────────────────────────────────────────── */
-
-export default function OtpForm({ onVerified, defaultEmail = '', resendCooldownSeconds }: OtpFormProps) {
+export default function OtpForm({
+  purpose,
+  extraRequestData,
+  onVerified,
+  defaultEmail = '',
+  resendCooldownSeconds,
+  initialStep,
+  initialEmail,
+}: OtpFormProps) {
   const {
     step,
     email,
@@ -32,7 +37,7 @@ export default function OtpForm({ onVerified, defaultEmail = '', resendCooldownS
     handleResendOtp,
     handleVerifyOtp,
     goBack,
-  } = useOtp({ onVerified, resendCooldownSeconds });
+  } = useOtp({ purpose, extraRequestData, onVerified, resendCooldownSeconds, initialStep, initialEmail });
 
   return (
     <div className="w-full max-w-[440px]">

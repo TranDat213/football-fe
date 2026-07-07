@@ -1,24 +1,37 @@
+// hooks/useOtp.ts
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { useRequestOtpMutation, useVerifyOtpMutation } from '../api/authAPI';
+import { OtpPurpose, RequestOtpPayload } from '../types/auth.types';
 
 export type OtpStep = 'request' | 'verify';
 
 export interface UseOtpOptions {
-  /** Called when OTP is verified successfully. Receives verified email. */
-  onVerified?: (email: string) => void;
+  purpose: OtpPurpose;
+  /** Data bổ sung cần gửi kèm khi request OTP (vd: first_name, password... cho SIGN_UP) */
+  extraRequestData?: Omit<RequestOtpPayload, 'email' | 'purpose'>;
+  /** Nhận resetToken hoặc user tuỳ purpose, sau khi verify OTP thành công */
+  onVerified?: (result: { email: string; resetToken?: string; user?: unknown }) => void;
   resendCooldownSeconds?: number;
+  /** Khởi đầu thẻ nào. Mặc định là 'request'. Dùng 'verify' khi OTP đã được gửi bởi bước trước (vd RegisterFlow). */
+  initialStep?: OtpStep;
+  /** Email được pre-fill và dùng ngay khi initialStep='verify'. */
+  initialEmail?: string;
 }
 
 export function useOtp({
+  purpose,
+  extraRequestData,
   onVerified,
   resendCooldownSeconds = 60,
-}: UseOtpOptions = {}) {
+  initialStep = 'request',
+  initialEmail = '',
+}: UseOtpOptions) {
   const [requestOtp, { isLoading: isRequesting }] = useRequestOtpMutation();
   const [verifyOtp, { isLoading: isVerifying }] = useVerifyOtpMutation();
 
-  const [step, setStep] = useState<OtpStep>('request');
-  const [email, setEmail] = useState('');
+  const [step, setStep] = useState<OtpStep>(initialStep);
+  const [email, setEmail] = useState(initialEmail);
   const [error, setError] = useState<string | null>(null);
   const [countdown, setCountdown] = useState(0);
 
@@ -38,15 +51,21 @@ export function useOtp({
   }, [resendCooldownSeconds]);
 
   useEffect(() => {
+    // Nếu bắt đầu thẳng tại bước verify (OTP đã gửi từ bước trước),
+    // khởi động countdown để user biết khi nào có thể gửi lại.
+    if (initialStep === 'verify') {
+      startCountdown();
+    }
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleRequestOtp = async (emailValue: string) => {
     try {
       setError(null);
-      await requestOtp({ email: emailValue }).unwrap();
+      await requestOtp({ email: emailValue, purpose, ...extraRequestData }).unwrap();
       setEmail(emailValue);
       setStep('verify');
       startCountdown();
@@ -67,9 +86,13 @@ export function useOtp({
   const handleVerifyOtp = async (otpValue: string) => {
     try {
       setError(null);
-      await verifyOtp({ email, otp: otpValue }).unwrap();
+      const res = await verifyOtp({ email, otp: otpValue, purpose }).unwrap();
       toast.success('Xác thực OTP thành công!');
-      onVerified?.(email);
+      onVerified?.({
+        email,
+        resetToken: res.data.resetToken,
+        user: res.data.user,
+      });
     } catch (err: unknown) {
       const anyErr = err as { data?: { message?: string } };
       const msg = anyErr?.data?.message ?? 'Mã OTP không hợp lệ hoặc đã hết hạn.';

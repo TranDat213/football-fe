@@ -6,6 +6,9 @@ import {
   RefreshResponse,
   ForgotPasswordPayload,
   OAuthPayload,
+  RequestOtpPayload,
+  VerifyOtpPayload,
+  VerifyOtpResponse,
 } from '@/features/auth/types/auth.types';
 import { customBaseQueryWithReauth } from '@/lib/api/baseQuery';
 import { createApi } from '@reduxjs/toolkit/query/react';
@@ -68,9 +71,7 @@ export const authApi = createApi({
     //request-otp
     requestOtp: builder.mutation<{
       message: string;
-    }, {
-      email: string;
-    }>({
+    }, RequestOtpPayload>({
       query: (data) => ({
         url: '/auth/request-otp',
         method: 'POST',
@@ -79,12 +80,7 @@ export const authApi = createApi({
     }),
 
    //verify-otp
-   verifyOtp: builder.mutation<{
-    message: string;
-   }, {
-    email: string;
-    otp: string;
-   }>({ 
+   verifyOtp: builder.mutation<VerifyOtpResponse,VerifyOtpPayload>({ 
     query: (data) => ({
       url: '/auth/verify-otp',
       method: 'POST',
