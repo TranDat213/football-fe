@@ -95,8 +95,9 @@ export default function ForgotPasswordFlow() {
   };
 
   /* ── Step indicator ───────────────────────────────────────── */
-  const steps = ['Email', 'OTP', 'Mật khẩu'];
-  const stepIndex = step === 'email' ? 0 : step === 'otp' ? 1 : 2;
+  // ponytail: Hide OTP step
+  const steps = ['Email', 'Mật khẩu'];
+  const stepIndex = step === 'email' ? 0 : 1;
 
   return (
     <div className="min-h-screen bg-[#F6F9F7] flex flex-col">
@@ -113,7 +114,7 @@ export default function ForgotPasswordFlow() {
             </h1>
 
             <p className="mt-3 text-[14px] text-[#6B8C7A] leading-relaxed">
-              Đừng lo lắng nếu bạn quên mật khẩu. Xác thực email và tạo mật
+              Đừng lo lắng nếu bạn quên mật khẩu. Điền email và tạo mật
               khẩu mới chỉ trong vài bước đơn giản.
             </p>
 
@@ -173,7 +174,7 @@ export default function ForgotPasswordFlow() {
                   </Link>
                 </div>
                 <p className="text-[12px] text-[#6B8C7A] mt-0.5">
-                  {step === 'email' && 'Nhập email để nhận mã xác thực.'}
+                  {step === 'email' && 'Nhập email để đặt lại mật khẩu mới.'}
                   {step === 'otp'   && `Nhập mã OTP đã gửi đến ${email}`}
                   {step === 'reset' && 'Tạo mật khẩu mới cho tài khoản của bạn.'}
                 </p>
@@ -236,7 +237,7 @@ export default function ForgotPasswordFlow() {
                       flex items-center justify-center gap-2
                     "
                   >
-                    {isRequesting ? <><Spinner />Đang gửi…</> : <><span>Gửi mã OTP</span><ArrowIcon /></>}
+                    {isRequesting ? <><Spinner />Đang xử lý…</> : <><span>Tiếp tục</span><ArrowIcon /></>}
                   </button>
                 </form>
               )}

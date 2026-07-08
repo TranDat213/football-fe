@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
 
-import { useRequestOtpMutation } from '../api/authAPI';
+import { useRequestOtpMutation, useRegisterMutation } from '../api/authAPI';
 import { RegisterFormData } from '../schema/auth.schema';
 
 function mapErrorMessageToField(message: string): { field: string | null; message: string } {
@@ -25,7 +25,9 @@ function mapErrorMessageToField(message: string): { field: string | null; messag
 }
 
 export function useSignUp() {
-  const [requestOtp, { isLoading }] = useRequestOtpMutation();
+  const [requestOtp, { isLoading: isOtpLoading }] = useRequestOtpMutation();
+  const [register, { isLoading: isRegisterLoading }] = useRegisterMutation();
+  const isLoading = isRegisterLoading;
 
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -35,16 +37,16 @@ export function useSignUp() {
       setError(null);
       setFieldErrors({});
 
-      await requestOtp({
+      // ponytail: register directly without OTP
+      await register({
         email: data.email,
-        purpose: 'SIGN_UP',
         first_name: data.first_name,
         last_name: data.last_name,
         password: data.password,
         confirmPassword: data.confirmPassword,
       }).unwrap();
 
-      toast.success('Mã OTP đã được gửi đến email của bạn!');
+      toast.success('Đăng ký thành công!');
       return data.email;
     } catch (err: unknown) {
       const anyErr = err as {

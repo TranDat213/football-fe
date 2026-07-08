@@ -31,8 +31,9 @@ export default function RegisterFlow() {
    * lưu tạm trong OTP store của backend kèm pendingSignUp.
    */
   const handleRegistered = (email: string) => {
-    setRegisteredEmail(email);
-    setStep('otp');
+    // ponytail: redirect directly to login
+    toast.success('Đăng ký thành công! Vui lòng đăng nhập.');
+    router.push(ROUTES.login);
   };
 
   /**

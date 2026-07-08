@@ -177,10 +177,10 @@ export default function SignUpForm({ onSuccess }: SignUpFormProps) {
           {isLoading ? (
             <>
               <Spinner />
-              Đang gửi mã OTP…
+              Đang xử lý…
             </>
           ) : (
-            'Tiếp tục'
+            'Đăng ký'
           )}
         </button>
       </form>
