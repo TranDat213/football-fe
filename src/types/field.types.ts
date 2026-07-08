@@ -92,6 +92,7 @@ export interface Pitch extends FootballFieldDetail {
   latitude?: number;
   longitude?: number;
   reviews?: any[];
+  category?: { id: string; name: string };
   createdAt: string;
   updatedAt: string;
 }

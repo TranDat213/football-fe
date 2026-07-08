@@ -24,6 +24,7 @@ export const ROUTES = {
     ownerAnalytics: "/owner/analytics",
     ownerPitchSuccess: "/owner/pitches/success",
     ownerPitchNew: "/owner/pitches/new",
+    ownerEditPitch: "/owner/pitches/[id]/edit",
 
     //comunnity
     casualMatch:      "/casual-matches",

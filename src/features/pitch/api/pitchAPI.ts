@@ -3,13 +3,16 @@ import { customBaseQueryWithReauth } from '@/lib/api/baseQuery';
 import {
   PitchCategory,
   CreateFootballFieldCompletePayload,
+  UpdateFootballFieldCompletePayload,
+  FootballFieldUpdateRequest,
+  CreateFootballFieldUpdateRequestPayload,
 } from '../types/pich.types';
 import { Pitch } from '@/types/field.types';
 
 export const pitchApi = createApi({
   reducerPath: 'pitchApi',
   baseQuery: customBaseQueryWithReauth,
-  tagTypes: ['Pitch'],
+  tagTypes: ['Pitch', 'PitchUpdateRequest'],
   endpoints: (builder) => ({
     // ─── Queries ───────────────────────────────────────────────
     getPitches: builder.query<
@@ -36,42 +39,6 @@ export const pitchApi = createApi({
         method: 'GET',
       }),
     }),
-    // ─── Mutations ────────────────────────────────────────────
-    // createField: builder.mutation<ApiResponse<Pitch>, CreateFieldPayload>({
-    //   query: (body) => ({ url: '/field/create', method: 'POST', body }),
-    //   invalidatesTags: ['Pitch'],
-    // }),
-    // createYard: builder.mutation<ApiResponse<FieldYard>, CreateYardPayload>({
-    //   query: (body) => ({ url: '/subfield/', method: 'POST', body }),
-    // }),
-    // createFieldImage: builder.mutation<ApiResponse<{ url: string }>, FormData>({
-    //   query: (formData) => ({
-    //     url: '/field/image',
-    //     method: 'POST',
-    //     body: formData,
-    //     formData: true,
-    //   }),
-    // }),
-    // createPriceRule: builder.mutation<
-    //   ApiResponse<any>,
-    //   { yardId: string; body: CreatePriceRulePayload }
-    // >({
-    //   query: ({ yardId, body }) => ({
-    //     url: `/price-rule/${yardId}`,
-    //     method: 'POST',
-    //     body,
-    //   }),
-    // }),
-    // createOperatingHour: builder.mutation<
-    //   ApiResponse<any>,
-    //   { yardId: string; body: CreateOperatingHourPayload }
-    // >({
-    //   query: ({ yardId, body }) => ({
-    //     url: `/operating-hours/${yardId}`,
-    //     method: 'POST',
-    //     body,
-    //   }),
-    // }),
 
     // Atomic creation
     uploadImage: builder.mutation<
@@ -98,6 +65,25 @@ export const pitchApi = createApi({
       invalidatesTags: ['Pitch'],
     }),
 
+    createFieldUpdateRequest: builder.mutation<
+      ApiResponse<FootballFieldUpdateRequest>,
+      { id: string; body: CreateFootballFieldUpdateRequestPayload }
+    >({
+      query: ({ id, body }) => ({
+        url: `/football-fields/${id}/update-request`,
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['Pitch', 'PitchUpdateRequest'],
+    }),
+
+    getFieldUpdateRequestStatus: builder.query<
+      ApiResponse<FootballFieldUpdateRequest | null>,
+      string // fieldId
+    >({
+      query: (fieldId) => `/football-fields/${fieldId}/update-request`,
+      providesTags: ['PitchUpdateRequest'],
+    }),
   }),
 });
 
@@ -106,11 +92,8 @@ export const {
   useGetPitchByIdQuery,
   useGetPitchByOwnerIdQuery,
   useGetPitchCategoryQuery,
-  // useCreateFieldMutation,
-  // useCreateYardMutation,
-  // useCreateFieldImageMutation,
-  // useCreatePriceRuleMutation,
-  // useCreateOperatingHourMutation,
   useUploadImageMutation,
   useCreateCompleteFieldMutation,
+  useCreateFieldUpdateRequestMutation,
+  useGetFieldUpdateRequestStatusQuery,
 } = pitchApi;
