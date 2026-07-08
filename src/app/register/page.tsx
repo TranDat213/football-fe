@@ -1,17 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 
-import SignUpForm from '@/features/auth/components/signUpForm';
-import OtpForm from '@/features/auth/components/otpForm';
-import { ROUTES } from '@/lib/route.constants';
+import RegisterFlow from '@/features/auth/components/RegisterFlow';
 
 export default function SignUpPage() {
-  const router = useRouter();
-  // null = show signup form; email string = show OTP form
-  const [registeredEmail, setRegisteredEmail] = useState<string | null>(null);
 
   return (
     <div className="min-h-screen bg-[#F6F9F7] flex flex-col">
@@ -78,14 +71,7 @@ export default function SignUpPage() {
 
             {/* Card — switches between signup and OTP */}
             <div className="bg-white rounded-2xl border border-[#E2EDE8] px-8 py-9 shadow-[0_1px_6px_rgba(0,0,0,0.05)]">
-              {registeredEmail === null ? (
-                <SignUpForm onSuccess={(email) => setRegisteredEmail(email)} />
-              ) : (
-                <OtpForm
-                  defaultEmail={registeredEmail}
-                  onVerified={() => router.push(ROUTES.login)}
-                />
-              )}
+              <RegisterFlow />
             </div>
           </div>
         </div>

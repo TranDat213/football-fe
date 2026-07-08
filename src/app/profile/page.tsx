@@ -81,7 +81,7 @@ export default function ProfilePage() {
           <div className="space-y-5">
             <ProfileHeader profile={data.data} />
             <PersonalInfoForm profile={data.data} />
-            <PasswordSection />
+            {/* <PasswordSection /> */}
           </div>
         )}
       </main>

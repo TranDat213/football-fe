@@ -47,20 +47,9 @@ export function useForgotPassword(onDone?: () => void) {
 
   /* ─── Step 1: Request OTP ────────────────────────────────────── */
   const handleRequestOtp = async (emailValue: string) => {
-    try {
-      setError(null);
-      await requestOtp({ email: emailValue }).unwrap();
-      setEmail(emailValue);
-      setStep('otp');
-      startCountdown();
-      toast.success('Mã OTP đã được gửi đến email của bạn!');
-    } catch (err: unknown) {
-      const msg =
-        (err as { data?: { message?: string } })?.data?.message ??
-        'Gửi OTP thất bại. Vui lòng thử lại.';
-      setError(msg);
-      toast.error(msg);
-    }
+    // ponytail: bypass OTP and go directly to reset password step
+    setEmail(emailValue);
+    setStep('reset');
   };
 
   const handleResendOtp = async () => {
@@ -72,7 +61,7 @@ export function useForgotPassword(onDone?: () => void) {
   const handleVerifyOtp = async (otp: string) => {
     try {
       setError(null);
-      await verifyOtp({ email, otp }).unwrap();
+      await verifyOtp({ email, otp, purpose: 'RESET_PASSWORD' }).unwrap();
       toast.success('Xác thực OTP thành công!');
       setStep('reset');
     } catch (err: unknown) {
@@ -106,7 +95,8 @@ export function useForgotPassword(onDone?: () => void) {
 
   /* ─── Helpers ────────────────────────────────────────────────── */
   const goBack = () => {
-    setStep((prev) => (prev === 'reset' ? 'otp' : 'email'));
+    // ponytail: back to email
+    setStep('email');
     setError(null);
   };
 

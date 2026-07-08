@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { UserProfile } from '@/features/user/types/user.type';
 import { useUpdateProfile, UpdateProfileValues } from '@/features/user/hooks/useUpdateProfile';
+import { ROUTES } from '@/lib/route.constants';
+import { useRouter } from 'next/navigation';
 
 interface PersonalInfoFormProps {
   profile: UserProfile;
@@ -76,6 +78,8 @@ export default function PersonalInfoForm({ profile }: PersonalInfoFormProps) {
     e.preventDefault();
     submit(form);
   };
+
+  const router = useRouter();
 
   return (
     <form onSubmit={handleSubmit} className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
@@ -177,6 +181,12 @@ export default function PersonalInfoForm({ profile }: PersonalInfoFormProps) {
           ) : (
             'Lưu thay đổi'
           )}
+        </button>
+        <button
+          onClick={() => router.push(ROUTES.forgotPassword)}
+          className="flex items-center gap-2 rounded-lg bg-gray-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-gray-700 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          Thay đổi mật khẩu
         </button>
       </div>
     </form>

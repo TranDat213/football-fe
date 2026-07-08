@@ -87,13 +87,12 @@ export default function SignInForm({ onForgot }: SignInFormProps = {}) {
           autoComplete="current-password"
           icon={<LockIcon />}
           rightLabel={
-            <button
-              type="button"
-              onClick={onForgot}
+            <Link
+              href={ROUTES.forgotPassword}
               className="text-[12px] font-medium text-[#40916C] hover:underline"
             >
               Quên mật khẩu?
-            </button>
+            </Link>
           }
         />
 

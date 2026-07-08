@@ -177,10 +177,10 @@ export default function SignUpForm({ onSuccess }: SignUpFormProps) {
           {isLoading ? (
             <>
               <Spinner />
-              Đang tạo tài khoản…
+              Đang xử lý…
             </>
           ) : (
-            'Tạo tài khoản'
+            'Đăng ký'
           )}
         </button>
       </form>

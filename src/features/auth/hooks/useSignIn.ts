@@ -8,6 +8,28 @@ import { useDispatch } from 'react-redux';
 import { setUser } from '../slice/authSlice';
 import { userApi } from '@/features/user/api/userAPI';
 
+function mapSignInError(message: string): { field: string | null; message: string } {
+  const lower = message.toLowerCase();
+
+  if (lower.includes('user not found')) {
+    return { field: 'user_name', message: 'Email hoặc tên đăng nhập không tồn tại' };
+  }
+  if (lower.includes('invalid password')) {
+    return { field: 'password', message: 'Mật khẩu không chính xác' };
+  }
+  if (lower.includes('has no password')) {
+    return {
+      field: null,
+      message: 'Tài khoản này đăng nhập qua Google/Facebook, vui lòng dùng nút đăng nhập tương ứng',
+    };
+  }
+  if (lower.includes('email or username is required')) {
+    return { field: 'user_name', message: 'Vui lòng nhập email hoặc tên đăng nhập' };
+  }
+
+  return { field: null, message };
+}
+
 export function useSignIn() {
   const dispatch = useDispatch();
   const router = useRouter();
@@ -20,13 +42,14 @@ export function useSignIn() {
     try {
       setError(null);
       setFieldErrors({});
-     const res= await login(data).unwrap();
-console.log(res);
+
+      const res = await login(data).unwrap();
+
       dispatch(userApi.util.resetApiState());
       dispatch(setUser(res.data.user));
 
       toast.success('Đăng nhập thành công!');
-      
+
       const role = res.data.user.role;
       if (role === 'OWNER') {
         router.push(ROUTES.ownerDashboard);
@@ -36,15 +59,27 @@ console.log(res);
         router.push(ROUTES.home);
       }
     } catch (err: any) {
-      // Nếu backend trả về validation errors
+      // Trường hợp backend trả sẵn errors theo field (nếu có sau này)
       if (err?.data?.errors) {
         setFieldErrors(err.data.errors);
+        const firstMsg = Object.values(err.data.errors)[0] as string;
+        setError(firstMsg ?? 'Đăng nhập thất bại. Vui lòng thử lại.');
+        toast.error(firstMsg ?? 'Đăng nhập thất bại. Vui lòng thử lại.');
+        return;
       }
 
-      const message =
-        err?.data?.message ?? 'Đăng nhập thất bại. Vui lòng thử lại.';
+      const rawMessage: string = err?.data?.message ?? 'Đăng nhập thất bại. Vui lòng thử lại.';
 
-      setError(message);
+      // Nếu backend đang bị bug nuốt exception, rawMessage lúc này luôn là
+      // 'Failed to login' (500) — mapSignInError sẽ không nhận diện được gì
+      // và trả về đúng message chung này.
+      const { field, message } = mapSignInError(rawMessage);
+
+      if (field) {
+        setFieldErrors({ [field]: message });
+      } else {
+        setError(message);
+      }
       toast.error(message);
     }
   };

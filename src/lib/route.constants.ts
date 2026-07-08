@@ -6,6 +6,7 @@ export const ROUTES = {
     //auth
     login:          "/login",
     register:       "/register",
+    forgotPassword: "/forgot-password",
     ownerRegister:  "/owner",
     //pitch
     pitch:          "/pitch",

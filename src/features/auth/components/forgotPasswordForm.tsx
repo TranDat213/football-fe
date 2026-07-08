@@ -82,8 +82,9 @@ export default function ForgotPasswordForm({ onClose }: ForgotPasswordFormProps)
   };
 
   /* ── Step indicator ───────────────────────────────────────── */
-  const steps = ['Email', 'OTP', 'Mật khẩu'];
-  const stepIndex = step === 'email' ? 0 : step === 'otp' ? 1 : 2;
+  // ponytail: Hide OTP step
+  const steps = ['Email', 'Mật khẩu'];
+  const stepIndex = step === 'email' ? 0 : 1;
 
   return (
     <>
@@ -92,7 +93,7 @@ export default function ForgotPasswordForm({ onClose }: ForgotPasswordFormProps)
         <div>
           <h2 className="text-[20px] font-semibold text-[#1B3A2D]">Quên mật khẩu</h2>
           <p className="text-[12px] text-[#6B8C7A] mt-0.5">
-            {step === 'email' && 'Nhập email để nhận mã xác thực.'}
+            {step === 'email' && 'Nhập email để đặt lại mật khẩu mới.'}
             {step === 'otp'   && `Nhập mã OTP đã gửi đến ${email}`}
             {step === 'reset' && 'Tạo mật khẩu mới cho tài khoản của bạn.'}
           </p>
@@ -149,7 +150,7 @@ export default function ForgotPasswordForm({ onClose }: ForgotPasswordFormProps)
             autoComplete="email"
             icon={<MailIcon />}
           />
-          <SubmitButton loading={isRequesting} label="Gửi mã OTP" />
+          <SubmitButton loading={isRequesting} label="Tiếp tục" />
         </form>
       )}
 
