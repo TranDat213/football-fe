@@ -1,11 +1,26 @@
 import { z } from 'zod';
 
 // Matches FieldImageCompletePayload (pre-upload shape, still has `file`)
-export const imageSchema = z.object({
+export const newImageSchema = z.object({
+  kind: z.literal('new'),
   file: z.instanceof(File, { message: 'Image file is required' }),
   sortOrder: z.number().int().min(0),
   isCover: z.boolean(),
 });
+
+// Ảnh cũ đã tồn tại trên server (Cloudinary)
+export const existingImageSchema = z.object({
+  kind: z.literal('existing'),
+  url: z.string(),
+  publicId: z.string(),
+  sortOrder: z.number().int().min(0),
+  isCover: z.boolean(),
+});
+
+export const imageSchema = z.discriminatedUnion('kind', [
+  newImageSchema,
+  existingImageSchema,
+]);
 
 // Matches priceRules entry inside YardCompletePayload.timeSlots[].priceRules
 export const priceRuleSchema = z.object({
@@ -115,8 +130,15 @@ export const PitchFormSchema = z
     });
   });
 
+  export const UpdateFootballFieldRequestStatusSchema =z.object({
+    status: z.enum(['PENDING' , 'CONFIRMED' , 'REJECTED'] as const),
+    reason: z.string().optional(),
+  })
+
 export type PitchFormData = z.infer<typeof PitchFormSchema>;
 export type YardFormData = z.infer<typeof yardSchema>;
-export type ImageFormData = z.infer<typeof imageSchema>;
+export type NewImageFormData = z.infer<typeof newImageSchema>;
+export type ExistingImageFormData = z.infer<typeof existingImageSchema>;
 export type PriceRuleFormData = z.infer<typeof priceRuleSchema>;
 export type TimeSlotFormData = z.infer<typeof timeSlotSchema>;
+export type UpdateFieldRequestData = z.infer<typeof UpdateFootballFieldRequestStatusSchema>;

@@ -37,36 +37,21 @@ export interface FieldImage {
   deletedAt?: string | null;
 }
 
-export interface FieldOperatingHour {
+interface FieldPriceRule { price: number; }
+interface FieldTimeSlot {
   id: string;
-  fieldYardId: string;
-  dayOfWeek: number;
-  openingTime: string;
-  closingTime: string;
-}
-
-export interface FieldPriceRule {
-  id: string;
-  fieldYardId: string;
   dayOfWeek: number;
   startTime: string;
   endTime: string;
-  price: number;
+  label: string;
+  sortOrder: number;
+  priceRule: FieldPriceRule;
 }
-
-// ─── FieldYard — single source of truth ──────────────────────────────────────
-
-export interface FieldYard {
+interface FieldYard {
   id: string;
   name: string;
-  code: string;
   type: YardType;
-  status: YardStatus;
-  description?: string;
-  field_id?: string;
-  operatingHours: FieldOperatingHour[];
-  priceRules: FieldPriceRule[];
-  images: FieldImage[];
+  timeSlots: FieldTimeSlot[];
 }
 
 // ─── Pitch / FootballField ────────────────────────────────────────────────────
@@ -83,12 +68,13 @@ export interface FootballFieldDetail {
 }
 
 export interface Pitch extends FootballFieldDetail {
+  categoryId: string; // thêm dòng này
   province: string;
   district: string;
   ward: string;
   status: YardStatus;
-  open_time: string;
-  close_time: string;
+  openTime: string; // response thực tế là openTime, không phải open_time — xem mục 3
+  closeTime: string;
   latitude?: number;
   longitude?: number;
   reviews?: any[];

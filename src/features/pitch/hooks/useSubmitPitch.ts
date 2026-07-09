@@ -10,6 +10,9 @@ export function useSubmitPitch() {
     // 1. Upload images in parallel
     const uploadedImages = await Promise.all(
       data.images.map(async (img) => {
+         if (img.kind !== 'new') {
+          throw new Error('Unexpected existing image in create flow');
+        }
         const formData = new FormData();
         formData.append('image', img.file);
         const response = await uploadImage(formData).unwrap();

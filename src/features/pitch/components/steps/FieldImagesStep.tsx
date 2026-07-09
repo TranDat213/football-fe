@@ -21,6 +21,7 @@ export default function FieldImagesStep() {
     const files = Array.from(e.target.files ?? []);
     files.forEach((file, i) => {
       append({
+        kind: 'new',
         file,
         sortOrder: images.length + i,
         isCover: images.length === 0 && i === 0, // first image is cover by default
@@ -51,9 +52,14 @@ export default function FieldImagesStep() {
       {/* Upload trigger */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {/* Existing image previews */}
-        {fields.map((field, index) => {
+         {fields.map((field, index) => {
           const img = images[index];
-          const previewUrl = img?.file ? URL.createObjectURL(img.file) : null;
+          // Ảnh mới: tạo object URL từ File. Ảnh cũ: dùng url có sẵn.
+          const previewUrl = img?.kind === 'new' && img.file
+            ? URL.createObjectURL(img.file)
+            : img?.kind === 'existing'
+              ? img.url
+              : null;
 
           return (
             <div

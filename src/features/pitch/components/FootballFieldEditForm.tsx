@@ -17,11 +17,22 @@ import FieldYardsStep from './steps/FieldYardsStep';
 import FieldImagesStep from './steps/FieldImagesStep';
 import ReviewSubmitStep from './steps/ReviewSubmitStep';
 import { useSubmitPitchUpdateRequest } from '../hooks/useUpdatePitch';
+import { toHHmm } from '@/lib/time.contants';
 
 const STEPS = ['Thông tin sân', 'Sân con', 'Hình ảnh', 'Xem lại và gửi'];
 
 const STEP_FIELDS: (keyof PitchFormData)[][] = [
-  ['category_id', 'name', 'description', 'address', 'province', 'district', 'ward', 'open_time', 'close_time'],
+  [
+    'category_id',
+    'name',
+    'description',
+    'address',
+    'province',
+    'district',
+    'ward',
+    'open_time',
+    'close_time',
+  ],
   ['yards'],
   ['images'],
   [],
@@ -31,12 +42,15 @@ interface FootballFieldEditFormProps {
   fieldId: string;
 }
 
-export default function FootballFieldEditForm({ fieldId }: FootballFieldEditFormProps) {
+export default function FootballFieldEditForm({
+  fieldId,
+}: FootballFieldEditFormProps) {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { submitPitchUpdateRequest } = useSubmitPitchUpdateRequest();
-  const { data: pitchRes, isLoading: isLoadingPitch } = useGetPitchByIdQuery(fieldId);
+  const { data: pitchRes, isLoading: isLoadingPitch } =
+    useGetPitchByIdQuery(fieldId);
 
   const methods = useForm<PitchFormData>({
     resolver: zodResolver(PitchFormSchema),
@@ -63,30 +77,42 @@ export default function FootballFieldEditForm({ fieldId }: FootballFieldEditForm
     const pitch = pitchRes?.data;
     if (!pitch) return;
 
+    console.log('categoryId from API:', pitch.categoryId);
+
     reset({
-      category_id: pitch.category?.id ?? '',
+      category_id: pitch.categoryId ?? '',
       name: pitch.name,
       description: pitch.description ?? '',
       address: pitch.address,
       province: pitch.province,
       district: pitch.district,
       ward: pitch.ward ?? '',
-      open_time: pitch.open_time,
-      close_time: pitch.close_time,
-      yards: pitch.yards?.map((yard) => ({
+      latitude: pitch.latitude != null ? Number(pitch.latitude) : undefined,
+      longitude: pitch.longitude != null ? Number(pitch.longitude) : undefined,
+      open_time: toHHmm(pitch.openTime),
+      close_time: toHHmm(pitch.closeTime),
+      yards: pitch.yards.map((yard) => ({
         name: yard.name,
         type: yard.type,
-        timeSlots: yard.priceRules?.map((rule, index) => ({
-          tempId: rule.id,
-          dayOfWeek: rule.dayOfWeek,
-          startTime: rule.startTime,
-          endTime: rule.endTime,
-          label: 'REGULAR', // Default fallback as label is required by schema
-          sortOrder: index,
-          priceRule: { price: rule.price },
-        })) ?? [],
-      })) ?? [],
-      images: [], // ảnh cũ không tự map vào vì schema yêu cầu File — owner chọn lại
+        timeSlots: yard.timeSlots.map((slot) => ({
+          tempId: slot.id,
+          dayOfWeek: slot.dayOfWeek,
+          startTime: toHHmm(slot.startTime),
+          endTime: toHHmm(slot.endTime),
+          label: slot.label as 'REGULAR' | 'PEAK' | 'LATE_NIGHT',
+          sortOrder: slot.sortOrder,
+          priceRule: {
+            price: slot.priceRule ? Number(slot.priceRule.price) : 0,
+          },
+        })),
+      })),
+      images: pitch.images.map((img) => ({
+        kind: 'existing' as const,
+        url: img.url,
+        publicId: img.publicId ?? '',
+        sortOrder: img.sortOrder,
+        isCover: img.isCover,
+      })),
     });
   }, [pitchRes, reset]);
 
@@ -116,7 +142,10 @@ export default function FootballFieldEditForm({ fieldId }: FootballFieldEditForm
       toast.success('Đã gửi yêu cầu chỉnh sửa, đang chờ Admin duyệt');
       router.push(ROUTES.ownerDashboard); // TODO: thêm route này vào route.constants.ts
     } catch (err: any) {
-      toast.error(err?.data?.message ?? 'Gửi yêu cầu chỉnh sửa thất bại, vui lòng thử lại.');
+      toast.error(
+        err?.data?.message ??
+          'Gửi yêu cầu chỉnh sửa thất bại, vui lòng thử lại.',
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -146,7 +175,11 @@ export default function FootballFieldEditForm({ fieldId }: FootballFieldEditForm
                       : 'bg-gray-100 text-gray-400'
                 }`}
               >
-                {currentStep > index ? <Check className="w-4 h-4" /> : index + 1}
+                {currentStep > index ? (
+                  <Check className="w-4 h-4" />
+                ) : (
+                  index + 1
+                )}
               </div>
               <span
                 className={`text-[10px] font-bold uppercase tracking-wider hidden sm:block ${currentStep >= index ? 'text-gray-900' : 'text-gray-400'}`}
@@ -154,17 +187,25 @@ export default function FootballFieldEditForm({ fieldId }: FootballFieldEditForm
                 {step}
               </span>
               {index < STEPS.length - 1 && (
-                <div className={`w-6 h-px mx-1 ${currentStep > index ? 'bg-emerald-500' : 'bg-gray-200'}`} />
+                <div
+                  className={`w-6 h-px mx-1 ${currentStep > index ? 'bg-emerald-500' : 'bg-gray-200'}`}
+                />
               )}
             </div>
           ))}
         </div>
 
-        <form onSubmit={(e) => e.preventDefault()} onKeyDown={handleFormKeyDown} className="space-y-8">
+        <form
+          onSubmit={(e) => e.preventDefault()}
+          onKeyDown={handleFormKeyDown}
+          className="space-y-8"
+        >
           {currentStep === 0 && <FieldInformationStep />}
           {currentStep === 1 && <FieldYardsStep />}
           {currentStep === 2 && <FieldImagesStep />}
-          {currentStep === 3 && <ReviewSubmitStep onSubmit={submit} isSubmitting={isSubmitting} />}
+          {currentStep === 3 && (
+            <ReviewSubmitStep onSubmit={submit} isSubmitting={isSubmitting} />
+          )}
 
           <div className="pt-6 border-t border-gray-100 flex items-center justify-between">
             <Button

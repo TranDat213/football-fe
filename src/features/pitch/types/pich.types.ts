@@ -73,6 +73,20 @@ export interface UpdateFootballFieldCompletePayload {
 // ─── Update Request ───────────────────────────────────────────────────────
 export type FootballFieldUpdateRequestStatus = 'PENDING' | 'CONFIRMED' | 'REJECTED';
 
+export interface FootballFieldUpdateRequestOwner {
+  id: string;
+  firstName: string;
+  lastName: string;
+  username: string;
+  email: string;
+}
+
+export interface FootballFieldUpdateRequestField {
+  id: string;
+  name: string;
+  address: string;
+  owner: FootballFieldUpdateRequestOwner;
+}
 export interface FootballFieldUpdateRequest {
   id: string;
   footballFieldId: string;
@@ -84,7 +98,15 @@ export interface FootballFieldUpdateRequest {
   reviewedAt?: string | null;
   createdAt: string;
   updatedAt: string;
+  footballField: FootballFieldUpdateRequestField;
 }
 
 // Payload gửi lên khi tạo update request — tái sử dụng type update đã có
 export type CreateFootballFieldUpdateRequestPayload = UpdateFootballFieldCompletePayload;
+
+export interface UpdateFootballFieldUpdateRequestPayload{
+  status: FootballFieldUpdateRequestStatus;
+  reason?: string;
+  reviewedBy: string;
+  reviewedAt: Date;
+}

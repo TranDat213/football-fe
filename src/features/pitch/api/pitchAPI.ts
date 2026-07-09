@@ -6,6 +6,8 @@ import {
   UpdateFootballFieldCompletePayload,
   FootballFieldUpdateRequest,
   CreateFootballFieldUpdateRequestPayload,
+  UpdateFootballFieldUpdateRequestPayload,
+  FootballFieldUpdateRequestStatus,
 } from '../types/pich.types';
 import { Pitch } from '@/types/field.types';
 
@@ -25,7 +27,10 @@ export const pitchApi = createApi({
       query: (id) => `/field/find/${id}`,
       providesTags: (_, __, id) => [{ type: 'Pitch', id }],
     }),
-    getPitchByOwnerId: builder.query<ApiResponse<Pitch[]>, void>({
+    getPitchByOwnerId: builder.query<
+      ApiResponse<Pitch[]>,
+      { page?: number; limit?: number }
+    >({
       query: () => ({
         url: '/field/owner',
         method: 'GET',
@@ -70,7 +75,7 @@ export const pitchApi = createApi({
       { id: string; body: CreateFootballFieldUpdateRequestPayload }
     >({
       query: ({ id, body }) => ({
-        url: `/football-fields/${id}/update-request`,
+        url: `/field-update/${id}/update-request`,
         method: 'POST',
         body,
       }),
@@ -78,11 +83,44 @@ export const pitchApi = createApi({
     }),
 
     getFieldUpdateRequestStatus: builder.query<
-      ApiResponse<FootballFieldUpdateRequest | null>,
-      string // fieldId
+      ApiResponse<FootballFieldUpdateRequest[]>,
+      { status?: FootballFieldUpdateRequestStatus; page: number; limit: number }
     >({
-      query: (fieldId) => `/football-fields/${fieldId}/update-request`,
+      query: ({ status, page, limit }) => ({
+        url: `/field-update/admin/football-field-update-request`,
+        params: { status, page, limit },
+      }),
       providesTags: ['PitchUpdateRequest'],
+    }),
+
+    aproveFieldUpdateRequest: builder.mutation<
+      ApiResponse<FootballFieldUpdateRequest>,
+      {id: string}
+    >({
+      query: ({ id }) => ({
+        url: `/field-update/admin/football-field-update-request/${id}/approve`,
+        method: `PATCH`,
+      }),
+      invalidatesTags: ['Pitch', 'PitchUpdateRequest'],
+    }),
+
+    rejectFieldUpdateRequest: builder.mutation<
+      ApiResponse<FootballFieldUpdateRequest>,
+      { id: string; body: { reason: string } }
+    >({
+      query: ({ id, body }) => ({
+        url: `/field-update/admin/football-field-update-request/${id}/reject`,
+        method: `PATCH`,
+        body,
+      }),
+      invalidatesTags: ['Pitch', 'PitchUpdateRequest'],
+    }),
+
+    softDeleteFieldUpdateRequest: builder.mutation<{message:string},{id: string}>({
+      query: ({id}) => ({
+        url: `/field-update/delete/${id}`,
+        method: `PATCH`,
+      }),
     }),
   }),
 });
@@ -94,6 +132,10 @@ export const {
   useGetPitchCategoryQuery,
   useUploadImageMutation,
   useCreateCompleteFieldMutation,
+  //update field
   useCreateFieldUpdateRequestMutation,
   useGetFieldUpdateRequestStatusQuery,
+  useAproveFieldUpdateRequestMutation,
+  useRejectFieldUpdateRequestMutation,
+  useSoftDeleteFieldUpdateRequestMutation,
 } = pitchApi;

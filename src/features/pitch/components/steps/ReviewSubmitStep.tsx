@@ -92,7 +92,7 @@ export default function ReviewSubmitStep({
         </div>
         <div className="flex flex-wrap gap-2">
           {d.images?.map((img, i) => {
-            const url = img.file ? URL.createObjectURL(img.file) : null;
+             const url = img.kind === 'new' ? URL.createObjectURL(img.file) : img.url;
             return url ? (
               <div
                 key={i}

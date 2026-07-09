@@ -5,12 +5,6 @@ import { PitchFormData } from '../../schema/pitch.schema';
 import { useGetPitchCategoryQuery } from '../../api/pitchAPI';
 import LocationPicker from '../LocationPicker';
 
-// Placeholder — replace with real data from your category API
-const CATEGORIES = [
-  { id: 'cat_001', label: 'Football Field' },
-  { id: 'cat_002', label: 'Futsal Field' },
-];
-
 export default function FieldInformationStep() {
   const {
     register,

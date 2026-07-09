@@ -2,11 +2,12 @@
 
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
-import { MapPin, ArrowLeft, Activity, Clock } from 'lucide-react';
+import { MapPin, ArrowLeft, Activity, Clock, Mail } from 'lucide-react';
 import Link from 'next/link';
 import { useFieldManagement } from '@/features/admin/hook/useFieldManagement';
 import { FieldTable } from '@/features/admin/component/FieldTable';
 import { Pagination } from '@/features/admin/component/Pagination';
+import { ROUTES } from '@/lib/route.constants';
 
 export default function FieldManagementPage() {
   const {
@@ -27,12 +28,14 @@ export default function FieldManagementPage() {
       <Header />
 
       <main className="flex-1 mx-auto max-w-7xl w-full px-6 py-8">
-
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <Link href="/admin" className="text-gray-400 hover:text-emerald-600 transition-colors">
+              <Link
+                href="/admin"
+                className="text-gray-400 hover:text-emerald-600 transition-colors"
+              >
                 <ArrowLeft className="h-4 w-4" />
               </Link>
               <nav className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-gray-400">
@@ -45,6 +48,15 @@ export default function FieldManagementPage() {
               Sân bóng
             </h1>
           </div>
+          <div className="flex items-center gap-3">
+              <Link
+                href={ROUTES.adminUpdateField}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-gray-200 text-xs font-bold uppercase tracking-widest text-gray-600 hover:border-indigo-600 hover:text-indigo-600 transition-all shadow-sm"
+              >
+                <Mail className="h-3.5 w-3.5" />
+                Sân cập nhật
+              </Link>
+            </div>
         </div>
 
         {/* Stats */}
@@ -55,7 +67,9 @@ export default function FieldManagementPage() {
                 <Activity className="h-5 w-5 text-emerald-600" />
               </div>
               <div>
-                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Đang hoạt động</p>
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">
+                  Đang hoạt động
+                </p>
                 <p className="text-2xl font-black text-gray-900">
                   {isLoading ? '...' : stats.activeFieldCount.toLocaleString()}
                 </p>
@@ -69,7 +83,9 @@ export default function FieldManagementPage() {
                 <Clock className="h-5 w-5 text-orange-500" />
               </div>
               <div>
-                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Chờ duyệt</p>
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">
+                  Chờ duyệt
+                </p>
                 <p className="text-2xl font-black text-gray-900">
                   {isLoading ? '...' : stats.pendingFieldCount.toLocaleString()}
                 </p>
@@ -83,11 +99,17 @@ export default function FieldManagementPage() {
                 <MapPin className="h-5 w-5 text-indigo-600" />
               </div>
               <div>
-                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Tổng sân</p>
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">
+                  Tổng sân
+                </p>
                 <p className="text-2xl font-black text-gray-900">
                   {isLoading
                     ? '...'
-                    : (stats.activeFieldCount + stats.pendingFieldCount + stats.inactiveFieldCount).toLocaleString()}
+                    : (
+                        stats.activeFieldCount +
+                        stats.pendingFieldCount +
+                        stats.inactiveFieldCount
+                      ).toLocaleString()}
                 </p>
               </div>
             </div>
@@ -107,7 +129,9 @@ export default function FieldManagementPage() {
         </div>
 
         {/* Table + Pagination */}
-        <div className={`space-y-4 transition-opacity duration-200 ${isFetching ? 'opacity-60' : 'opacity-100'}`}>
+        <div
+          className={`space-y-4 transition-opacity duration-200 ${isFetching ? 'opacity-60' : 'opacity-100'}`}
+        >
           <FieldTable
             fields={list}
             isLoading={isLoading}
@@ -125,7 +149,6 @@ export default function FieldManagementPage() {
             />
           )}
         </div>
-
       </main>
 
       <Footer />

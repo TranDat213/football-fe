@@ -1,15 +1,24 @@
 import { PitchFormData } from '../schema/pitch.schema';
 import { useUploadImageMutation, useCreateFieldUpdateRequestMutation } from '../api/pitchAPI';
-import { CreateFootballFieldUpdateRequestPayload } from '../types/pich.types';
+import { CreateFootballFieldUpdateRequestPayload, FieldImageUploadedPayload } from '../types/pich.types';
 
 export function useSubmitPitchUpdateRequest() {
   const [uploadImage] = useUploadImageMutation();
   const [createFieldUpdateRequest] = useCreateFieldUpdateRequestMutation();
 
   const submitPitchUpdateRequest = async (fieldId: string, data: PitchFormData) => {
-    // 1. Upload ảnh mới song song
-    const uploadedImages = await Promise.all(
+    // Ảnh cũ giữ nguyên, chỉ upload ảnh mới
+    const finalImages: FieldImageUploadedPayload[] = await Promise.all(
       data.images.map(async (img) => {
+        if (img.kind === 'existing') {
+          return {
+            url: img.url,
+            publicId: img.publicId,
+            sortOrder: img.sortOrder,
+            isCover: img.isCover,
+          };
+        }
+
         const formData = new FormData();
         formData.append('image', img.file);
         const response = await uploadImage(formData).unwrap();
@@ -22,7 +31,6 @@ export function useSubmitPitchUpdateRequest() {
       }),
     );
 
-    // 2. Build payload update request
     const payload: CreateFootballFieldUpdateRequestPayload = {
       name: data.name,
       description: data.description || undefined,
@@ -35,7 +43,7 @@ export function useSubmitPitchUpdateRequest() {
       longitude: data.longitude ?? undefined,
       openTime: data.open_time,
       closeTime: data.close_time,
-      images: uploadedImages,
+      images: finalImages,
       yards: data.yards.map((yard) => ({
         name: yard.name,
         type: yard.type,
@@ -51,10 +59,9 @@ export function useSubmitPitchUpdateRequest() {
       })),
     };
 
-    // 3. Gửi yêu cầu chỉnh sửa (chờ admin duyệt, không update trực tiếp)
     const result = await createFieldUpdateRequest({ id: fieldId, body: payload }).unwrap();
     return result.data;
   };
 
   return { submitPitchUpdateRequest };
-} 
+}
