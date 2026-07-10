@@ -3,10 +3,8 @@ import { customBaseQueryWithReauth } from '@/lib/api/baseQuery';
 import {
   PitchCategory,
   CreateFootballFieldCompletePayload,
-  UpdateFootballFieldCompletePayload,
   FootballFieldUpdateRequest,
   CreateFootballFieldUpdateRequestPayload,
-  UpdateFootballFieldUpdateRequestPayload,
   FootballFieldUpdateRequestStatus,
 } from '../types/pich.types';
 import { Pitch } from '@/types/field.types';
@@ -29,7 +27,7 @@ export const pitchApi = createApi({
     }),
     getPitchByOwnerId: builder.query<
       ApiResponse<Pitch[]>,
-      { page?: number; limit?: number }
+      { page?: number; limit?: number } | void
     >({
       query: () => ({
         url: '/field/owner',
@@ -70,6 +68,15 @@ export const pitchApi = createApi({
       invalidatesTags: ['Pitch'],
     }),
 
+    softDeleteField: builder.mutation<{message:string},{id: string | null}>({
+      query: ({id}) => ({
+        url: `/field/delete-complete/${id}`,
+        method: `PATCH`,
+      }),
+      invalidatesTags: ['Pitch'],
+    }),
+
+    //fieldUpdateRequest
     createFieldUpdateRequest: builder.mutation<
       ApiResponse<FootballFieldUpdateRequest>,
       { id: string; body: CreateFootballFieldUpdateRequestPayload }
@@ -121,6 +128,18 @@ export const pitchApi = createApi({
         url: `/field-update/delete/${id}`,
         method: `PATCH`,
       }),
+      invalidatesTags: ['PitchUpdateRequest'],
+    }),
+
+    getOwnerFieldUpdateRequestStatus: builder.query<
+      ApiResponse<FootballFieldUpdateRequest[]>,
+      { ownerId: string; status?: FootballFieldUpdateRequestStatus; page: number; limit: number }
+    >({
+      query: ({ ownerId, status, page, limit }) => ({
+        url: `/field-update/${ownerId}/football-field-update-request`,
+        params: { status, page, limit },
+      }),
+      providesTags: ['PitchUpdateRequest'],
     }),
   }),
 });
@@ -132,10 +151,12 @@ export const {
   useGetPitchCategoryQuery,
   useUploadImageMutation,
   useCreateCompleteFieldMutation,
+  useSoftDeleteFieldMutation,
   //update field
   useCreateFieldUpdateRequestMutation,
   useGetFieldUpdateRequestStatusQuery,
   useAproveFieldUpdateRequestMutation,
   useRejectFieldUpdateRequestMutation,
   useSoftDeleteFieldUpdateRequestMutation,
+  useGetOwnerFieldUpdateRequestStatusQuery,
 } = pitchApi;

@@ -1,16 +1,24 @@
 'use client';
 
-import {
-  Edit2,
-  Trash2,
-  Eye,
-  MapPin,
-} from 'lucide-react';
+import { Edit2, Trash2, Eye, MapPin, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { useGetPitchByOwnerIdQuery } from '../api/pitchAPI';
-
-
+import {
+  useGetPitchByOwnerIdQuery,
+  useSoftDeleteFieldMutation,
+} from '../api/pitchAPI';
+import { useState } from 'react';
+import { toast } from 'sonner';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 const STATUS_STYLE: Record<string, string> = {
   ACTIVE: 'bg-emerald-50 text-emerald-700 ring-emerald-600/10',
   APPROVED: 'bg-emerald-50 text-emerald-700 ring-emerald-600/10',
@@ -28,14 +36,29 @@ const STATUS_LABEL: Record<string, string> = {
 };
 
 export default function PitchManagementList() {
-  const {
-    data,
-    isLoading,
-    error,
-  } = useGetPitchByOwnerIdQuery();
+  const { data, isLoading, error } = useGetPitchByOwnerIdQuery();
+
+  const [softDeleteField, { isLoading: isDeleting }] =
+    useSoftDeleteFieldMutation();
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
 
   const pitches = data?.data ?? [];
 
+  const handleConfirmDelete = async () => {
+    if (!pendingDeleteId) return;
+
+    try {
+      const result = await softDeleteField({ id: pendingDeleteId }).unwrap();
+      toast.success(result?.message ?? ' Xóa sân thành công');
+    } catch (err: any) {
+      toast.error(
+        err?.data?.message ??
+          'Gửi yêu cầu chỉnh sửa thất bại, vui lòng thử lại.',
+      );
+    } finally {
+      setPendingDeleteId(null);
+    }
+  };
   if (isLoading) {
     return (
       <div className="rounded-xl bg-white p-6 text-center">
@@ -55,9 +78,7 @@ export default function PitchManagementList() {
   if (!pitches.length) {
     return (
       <div className="rounded-xl bg-white p-10 text-center">
-        <h3 className="font-semibold text-gray-900">
-          Chưa có sân bóng nào
-        </h3>
+        <h3 className="font-semibold text-gray-900">Chưa có sân bóng nào</h3>
 
         <p className="mt-2 text-sm text-gray-500">
           Hãy tạo sân bóng đầu tiên của bạn.
@@ -74,6 +95,7 @@ export default function PitchManagementList() {
           pitch.images?.[0]?.url ||
           '/images/field-placeholder.jpg';
 
+        const isDeletingThisRow = isDeleting && pendingDeleteId === pitch.id;
         return (
           <div
             key={pitch.id}
@@ -101,12 +123,10 @@ export default function PitchManagementList() {
 
                       <span
                         className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ring-1 ring-inset ${
-                          STATUS_STYLE[pitch.status] ??
-                          STATUS_STYLE.INACTIVE
+                          STATUS_STYLE[pitch.status] ?? STATUS_STYLE.INACTIVE
                         }`}
                       >
-                        {STATUS_LABEL[pitch.status] ??
-                          pitch.status}
+                        {STATUS_LABEL[pitch.status] ?? pitch.status}
                       </span>
                     </div>
 
@@ -137,9 +157,7 @@ export default function PitchManagementList() {
                       </Button>
                     </Link>
 
-                    <Link
-                      href={`/owner/pitches/${pitch.id}/edit`}
-                    >
+                    <Link href={`/owner/pitches/${pitch.id}/edit`}>
                       <Button
                         variant="outline"
                         size="sm"
@@ -153,8 +171,14 @@ export default function PitchManagementList() {
                       variant="outline"
                       size="sm"
                       className="h-9 w-9 p-0 rounded-xl"
+                      disabled={isDeletingThisRow}
+                      onClick={() => setPendingDeleteId(pitch.id)}
                     >
-                      <Trash2 className="h-4 w-4" />
+                      {isDeletingThisRow ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Trash2 className="h-4 w-4" />
+                      )}
                     </Button>
                   </div>
                 </div>
@@ -163,9 +187,7 @@ export default function PitchManagementList() {
                   <p className="text-xs text-gray-500">
                     Ngày tạo:{' '}
                     {pitch.createdAt
-                      ? new Date(
-                          pitch.createdAt
-                        ).toLocaleDateString('vi-VN')
+                      ? new Date(pitch.createdAt).toLocaleDateString('vi-VN')
                       : '--'}
                   </p>
                 </div>
@@ -174,6 +196,27 @@ export default function PitchManagementList() {
           </div>
         );
       })}
+
+      <AlertDialog open={!!pendingDeleteId} onOpenChange={(open) => !open && setPendingDeleteId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Xác nhận xóa sân bóng</AlertDialogTitle>
+            <AlertDialogDescription>
+              Hành động này sẽ ẩn sân bóng khỏi hệ thống. Bạn có chắc chắn muốn tiếp tục?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Hủy</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmDelete}
+              disabled={isDeleting}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              {isDeleting ? 'Đang xóa...' : 'Xóa sân'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

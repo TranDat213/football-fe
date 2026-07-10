@@ -18,6 +18,7 @@ import FieldImagesStep from './steps/FieldImagesStep';
 import ReviewSubmitStep from './steps/ReviewSubmitStep';
 import { useSubmitPitchUpdateRequest } from '../hooks/useUpdatePitch';
 import { toHHmm } from '@/lib/time.contants';
+import { useGetAllCategoriesQuery } from '@/features/admin/api/admin.api';
 
 const STEPS = ['Thông tin sân', 'Sân con', 'Hình ảnh', 'Xem lại và gửi'];
 
@@ -51,6 +52,8 @@ export default function FootballFieldEditForm({
   const { submitPitchUpdateRequest } = useSubmitPitchUpdateRequest();
   const { data: pitchRes, isLoading: isLoadingPitch } =
     useGetPitchByIdQuery(fieldId);
+  const { data: categories, isLoading: isLoadingCategories } =
+    useGetAllCategoriesQuery();
 
   const methods = useForm<PitchFormData>({
     resolver: zodResolver(PitchFormSchema),
@@ -75,7 +78,7 @@ export default function FootballFieldEditForm({
   // Prefill form khi đã fetch xong dữ liệu sân hiện tại
   useEffect(() => {
     const pitch = pitchRes?.data;
-    if (!pitch) return;
+    if (!pitch || isLoadingCategories) return;
 
     console.log('categoryId from API:', pitch.categoryId);
 
@@ -114,7 +117,7 @@ export default function FootballFieldEditForm({
         isCover: img.isCover,
       })),
     });
-  }, [pitchRes, reset]);
+  }, [pitchRes, isLoadingCategories, reset]);
 
   const handleNext = async () => {
     const fields = STEP_FIELDS[currentStep];
@@ -152,7 +155,7 @@ export default function FootballFieldEditForm({
   };
   const submit = handleSubmit(onSubmit);
 
-  if (isLoadingPitch) {
+  if (isLoadingPitch || isLoadingCategories) {
     return (
       <div className="flex items-center justify-center py-20">
         <Loader2 className="w-6 h-6 animate-spin text-emerald-600" />
