@@ -1,18 +1,24 @@
 import { PitchFormData } from '../schema/pitch.schema';
-import { useUploadImageMutation, useCreateCompleteFieldMutation } from '../api/pitchAPI';
-import { CreateFootballFieldCompletePayload } from '../types/pich.types';
+import { useUploadImageMutation, useCreateFieldUpdateRequestMutation } from '../api/pitchAPI';
+import { CreateFootballFieldUpdateRequestPayload, FieldImageUploadedPayload } from '../types/pich.types';
 
-export function useSubmitPitch() {
+export function useSubmitPitchUpdateRequest() {
   const [uploadImage] = useUploadImageMutation();
-  const [createComplete] = useCreateCompleteFieldMutation();
+  const [createFieldUpdateRequest] = useCreateFieldUpdateRequestMutation();
 
-  const submitPitch = async (data: PitchFormData) => {
-    // 1. Upload images in parallel
-    const uploadedImages = await Promise.all(
+  const submitPitchUpdateRequest = async (fieldId: string, data: PitchFormData) => {
+    // Ảnh cũ giữ nguyên, chỉ upload ảnh mới
+    const finalImages: FieldImageUploadedPayload[] = await Promise.all(
       data.images.map(async (img) => {
-         if (img.kind !== 'new') {
-          throw new Error('Unexpected existing image in create flow');
+        if (img.kind === 'existing') {
+          return {
+            url: img.url,
+            publicId: img.publicId,
+            sortOrder: img.sortOrder,
+            isCover: img.isCover,
+          };
         }
+
         const formData = new FormData();
         formData.append('image', img.file);
         const response = await uploadImage(formData).unwrap();
@@ -25,8 +31,7 @@ export function useSubmitPitch() {
       }),
     );
 
-    // 2. Build atomic payload
-    const payload: CreateFootballFieldCompletePayload = {
+    const payload: CreateFootballFieldUpdateRequestPayload = {
       name: data.name,
       description: data.description || undefined,
       categoryId: data.category_id,
@@ -38,11 +43,10 @@ export function useSubmitPitch() {
       longitude: data.longitude ?? undefined,
       openTime: data.open_time,
       closeTime: data.close_time,
-      images: uploadedImages,
+      images: finalImages,
       yards: data.yards.map((yard) => ({
         name: yard.name,
         type: yard.type,
-
         timeSlots: yard.timeSlots.map((slot) => ({
           tempId: slot.tempId ?? undefined,
           dayOfWeek: slot.dayOfWeek,
@@ -51,14 +55,13 @@ export function useSubmitPitch() {
           label: slot.label,
           sortOrder: slot.sortOrder,
           priceRule: slot.priceRule,
-          })),
+        })),
       })),
     };
 
-    // 3. Create everything atomically
-    const result = await createComplete(payload).unwrap();
+    const result = await createFieldUpdateRequest({ id: fieldId, body: payload }).unwrap();
     return result.data;
   };
 
-  return { submitPitch };
+  return { submitPitchUpdateRequest };
 }

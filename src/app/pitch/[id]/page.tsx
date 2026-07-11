@@ -16,13 +16,13 @@ export default function PitchDetailPage() {
   if (isLoading)
     return (
       <div className="flex min-h-screen items-center justify-center">
-        Loading...
+        Đamg tải...
       </div>
     );
   if (error || !response)
     return (
       <div className="flex min-h-screen items-center justify-center text-red-500">
-        Error loading pitch details
+        Lỗi tải mô tả sân
       </div>
     );
 
@@ -53,8 +53,7 @@ export default function PitchDetailPage() {
                 Thông tin sân
               </h2>
               <p className="text-gray-600 leading-relaxed">
-                {pitch.description ||
-                  'Không có mô tả cho sân này.'}
+                {pitch.description || 'Không có mô tả cho sân này.'}
               </p>
             </section>
           </div>
@@ -71,10 +70,7 @@ export default function PitchDetailPage() {
               />
             </div>
 
-            <BookingScheduler
- pitchId={id}
- yards={pitch.yards}
-/>
+            <BookingScheduler pitchId={id} yards={pitch.yards} />
 
             <div className="rounded-2xl border border-gray-100 bg-white p-5">
               <h4 className="text-sm font-bold text-gray-900">

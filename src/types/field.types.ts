@@ -17,6 +17,13 @@ export const YARD_STATUS = {
 } as const;
 export type YardStatus = (typeof YARD_STATUS)[keyof typeof YARD_STATUS];
 
+export const TIME_SLOT_LABEL = {
+  REGULAR: 'REGULAR',
+  PEAK: 'PEAK',
+  LATE_NIGHT: 'LATE_NIGHT',
+} as const;
+export type TimeSlotLabel = (typeof TIME_SLOT_LABEL)[keyof typeof TIME_SLOT_LABEL];
+
 // ─── Sub-types ────────────────────────────────────────────────────────────────
 
 export interface ApiResponse<T> {
@@ -37,36 +44,21 @@ export interface FieldImage {
   deletedAt?: string | null;
 }
 
-export interface FieldOperatingHour {
+export interface FieldPriceRule { price: number; }
+export interface FieldTimeSlot {
   id: string;
-  fieldYardId: string;
-  dayOfWeek: number;
-  openingTime: string;
-  closingTime: string;
-}
-
-export interface FieldPriceRule {
-  id: string;
-  fieldYardId: string;
   dayOfWeek: number;
   startTime: string;
   endTime: string;
-  price: number;
+  label: string;
+  sortOrder: number;
+  priceRule: FieldPriceRule;
 }
-
-// ─── FieldYard — single source of truth ──────────────────────────────────────
-
 export interface FieldYard {
   id: string;
   name: string;
-  code: string;
   type: YardType;
-  status: YardStatus;
-  description?: string;
-  field_id?: string;
-  operatingHours: FieldOperatingHour[];
-  priceRules: FieldPriceRule[];
-  images: FieldImage[];
+  timeSlots: FieldTimeSlot[];
 }
 
 // ─── Pitch / FootballField ────────────────────────────────────────────────────
@@ -83,15 +75,17 @@ export interface FootballFieldDetail {
 }
 
 export interface Pitch extends FootballFieldDetail {
+  categoryId: string; // thêm dòng này
   province: string;
   district: string;
   ward: string;
   status: YardStatus;
-  open_time: string;
-  close_time: string;
+  openTime: string; // response thực tế là openTime, không phải open_time — xem mục 3
+  closeTime: string;
   latitude?: number;
   longitude?: number;
   reviews?: any[];
+  category?: { id: string; name: string };
   createdAt: string;
   updatedAt: string;
 }

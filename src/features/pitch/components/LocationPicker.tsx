@@ -1,5 +1,6 @@
 'use client';
 
+import 'leaflet/dist/leaflet.css';
 import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from 'react-leaflet';
 import { useEffect, useState } from 'react';
 import L, { LatLngExpression } from 'leaflet';
@@ -30,7 +31,7 @@ function ResizeMap() {
   useEffect(() => {
     setTimeout(() => {
       map.invalidateSize();
-    }, 100);
+    }, 250);
   }, [map]);
 
   return null;

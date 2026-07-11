@@ -1,32 +1,57 @@
 // src/features/booking/types/booking.types.ts
 // ─── Chỉ chứa types liên quan đến feature Booking ────────────────────────────
 
-import type { FieldYard, FootballFieldDetail, ApiResponse } from '@/types/field.types';
+import type {
+  FieldYard,
+  FootballFieldDetail,
+  ApiResponse,
+  YardType,
+} from '@/types/field.types';
 
 export type { ApiResponse, FieldYard, FootballFieldDetail };
 
 // ─── Availability ─────────────────────────────────────────────────────────────
 
-export interface TimeSlot {
+export type SlotStatus = 'AVAILABLE' | 'BOOKED';
+const PRICE_LABEL: Record<string, string> = {
+  REGULAR: 'Giá thường',
+  PEAK: 'Giá cao điểm',
+  LATE_NIGHT: 'Giá đêm khuya',
+};
+
+export type PriceLabel = keyof typeof PRICE_LABEL;
+
+export interface AvailabilitySlot {
   startTime: string;
   endTime: string;
-  status: 'AVAILABLE' | 'BOOKED' | 'DISABLED';
+  status: SlotStatus;
   price: number;
-  priceLabel: string | null;
+  priceLabel?: PriceLabel | null;
 }
 
 export interface YardAvailability {
   yardId: string;
   yardName: string;
   yardCode: string;
-  type: string;
-  slots: TimeSlot[];
+  type: YardType;
+  slots: AvailabilitySlot[];
 }
 
 export interface AvailabilityResponse {
   date: string;
   yards: YardAvailability[];
 }
+
+// ─── Booking Status / Source / Payment ───────────────────────────────────────
+
+export type BookingStatus =
+  | 'PENDING'
+  | 'AWAITING_PAYMENT'
+  | 'CONFIRMED'
+  | 'CANCELLED';
+export type BookingSource = 'ONLINE' | 'OFFLINE';
+export type PaymentStatus = 'UNPAID' | 'PAID' | 'REFUNDED' | 'REFUND_PENDING';
+export type PaymentMethod = 'CASH' | 'MOMO' | 'VNPAY' | 'BANK_TRANSFER';
 
 // ─── Booking ──────────────────────────────────────────────────────────────────
 
@@ -35,9 +60,17 @@ export interface CreateBookingPayload {
   bookingDate: string;
   startTime: string;
   endTime: string;
+  paymentMethod: PaymentMethod;
   note?: string;
 }
 
+export interface CreateOfflineBookingPayload {
+  bookingDate: string;
+  startTime: string;
+  endTime: string;
+  customerName?: string;
+  customerPhone?: string;
+}
 export interface Booking {
   id: string;
   userId: string;
@@ -46,12 +79,18 @@ export interface Booking {
   startTime: string;
   endTime: string;
   totalPrice: number;
-  status: 'PENDING' | 'CONFIRMED' | 'CANCELLED';
-  paymentStatus: 'UNPAID' | 'PAID' | 'REFUNDED' | 'REFUND_PENDING';
+  status: BookingStatus;
+  paymentStatus: PaymentStatus;
+  source: BookingSource;
   note?: string;
-  fieldYard: Pick<FieldYard, 'name' | 'type'> & {
-    footballField: Pick<FootballFieldDetail, 'name' | 'address'>;
+  expiredAt?: string;
+  cancelledAt?: string;
+  cancelReason?: string;
+  fieldYard: FieldYard & {
+    footballField: FootballFieldDetail;
   };
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface UpdateBookingStatusPayload {

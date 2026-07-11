@@ -3,13 +3,14 @@
 import { useFormContext, useWatch } from 'react-hook-form';
 import { PitchFormData } from '../../schema/pitch.schema';
 import { useGetPitchCategoryQuery } from '../../api/pitchAPI';
-import LocationPicker from '../LocationPicker';
+import dynamic from 'next/dynamic';
 
-// Placeholder — replace with real data from your category API
-const CATEGORIES = [
-  { id: 'cat_001', label: 'Football Field' },
-  { id: 'cat_002', label: 'Futsal Field' },
-];
+const LocationPicker = dynamic(() => import('../LocationPicker'), {
+  ssr: false,
+  loading: () => (
+    <div className="h-[420px] w-full rounded-2xl bg-gray-100 animate-pulse" />
+  ),
+});
 
 export default function FieldInformationStep() {
   const {
@@ -48,10 +49,10 @@ export default function FieldInformationStep() {
             {...register('category_id')}
             className={`${inputClass} bg-white`}
           >
-            <option value="">Select category…</option>
+            <option value="">Chọn danh mục...</option>
 
             {isLoading ? (
-              <option disabled>Loading...</option>
+              <option disabled>Đang tải...</option>
             ) : (
               categories.map((category) => (
                 <option key={category.id} value={category.id}>

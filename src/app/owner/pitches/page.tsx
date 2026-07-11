@@ -2,7 +2,7 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import PitchManagementList from '@/features/pitch/components/PitchManagementList';
 import { Button } from '@/components/ui/button';
-import { Plus, Search, Filter } from 'lucide-react';
+import { Plus, Search, Filter, Balloon } from 'lucide-react';
 import Link from 'next/link';
 import { ROUTES } from '@/lib/route.constants';
 
@@ -27,6 +27,16 @@ export default function OwnerPitchesPage() {
                 Thêm sân mới
               </Button>
             </Link>
+
+            <div className="flex items-center gap-3">
+              <Link
+                href="/owner/pitches/update-request-management"
+                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-gray-200 text-xs font-bold uppercase tracking-widest text-gray-600 hover:border-indigo-600 hover:text-indigo-600 transition-all shadow-sm"
+              >
+                <Balloon className="h-3.5 w-3.5" />
+                Yêu cầu sân chờ cập nhật
+              </Link>
+            </div>
           </div>
 
           <div className="mt-8 flex flex-col sm:flex-row items-center gap-4">

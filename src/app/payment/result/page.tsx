@@ -110,7 +110,7 @@ export default function PaymentResultPage() {
             <div className="flex gap-3">
               {result.success && result.bookingId && (
                 <button
-                  onClick={() => router.push(`/booking/${result.bookingId}`)}
+                  onClick={() => router.push(`/my-booking`)}
                   className="flex-1 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-green-600 text-white font-semibold hover:opacity-90 active:scale-95 transition-all duration-150"
                 >
                   Xem đặt sân

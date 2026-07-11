@@ -13,8 +13,14 @@ import { Button } from '@/components/ui/button';
 import {
   useGetAvailabilityQuery,
   useCreateBookingMutation,
+  useCreatePaymentMutation,
 } from '@/features/booking/api/bookingAPI';
-import { FieldYard, YardAvailability, TimeSlot } from '@/features/booking/types/booking.types';
+import {
+  FieldYard,
+  YardAvailability,
+  AvailabilitySlot,
+  PaymentMethod,
+} from '@/features/booking/types/booking.types';
 import { format, addDays, startOfDay } from 'date-fns';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
@@ -30,27 +36,56 @@ const YARD_TYPE_LABEL: Record<string, string> = {
   ELEVEN_A_SIDE: '11v11',
 };
 
-export default function BookingScheduler({ pitchId, yards }: BookingSchedulerProps) {
+const PAYMENT_OPTIONS: { value: PaymentMethod; label: string; desc: string }[] = [
+  { value: 'VNPAY', label: 'VNPay', desc: 'Thanh toán online an toàn' },
+  { value: 'CASH', label: 'Tiền mặt tại sân', desc: 'Thanh toán sau khi đến sân' },
+];
+
+const PRICE_LABEL: Record<string, string> = {
+  REGULAR: 'Giá thường',
+  PEAK: 'Giá cao điểm',
+  LATE_NIGHT: 'Giá đêm khuya',
+};
+
+
+
+export default function BookingScheduler({
+  pitchId,
+  yards,
+}: BookingSchedulerProps) {
   const router = useRouter();
 
   const [selectedYardId, setSelectedYardId] = useState<string | null>(
     yards.length > 0 ? yards[0].id : null,
   );
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null);
+  const [selectedSlot, setSelectedSlot] = useState<AvailabilitySlot | null>(
+    null,
+  );
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('VNPAY');
 
   const dateStr = format(selectedDate, 'yyyy-MM-dd');
 
-  const { data: availabilityResponse, isLoading, isFetching } = useGetAvailabilityQuery({
+  const {
+    data: availabilityResponse,
+    isLoading,
+    isFetching,
+  } = useGetAvailabilityQuery({
     fieldId: pitchId,
     date: dateStr,
   });
 
   const [createBooking, { isLoading: isBooking }] = useCreateBookingMutation();
+  const [createPayment, { isLoading: isPaying }] = useCreatePaymentMutation();
 
-  const availabilityYards: YardAvailability[] = availabilityResponse?.data?.yards ?? [];
-  const selectedYardAvailability = availabilityYards.find((y) => y.yardId === selectedYardId);
-  const slots: TimeSlot[] = selectedYardAvailability?.slots ?? [];
+  const isSubmitting = isBooking || isPaying;
+
+  const availabilityYards: YardAvailability[] =
+    availabilityResponse?.data?.yards ?? [];
+  const selectedYardAvailability = availabilityYards.find(
+    (y) => y.yardId === selectedYardId,
+  );
+  const slots: AvailabilitySlot[] = selectedYardAvailability?.slots ?? [];
 
   const handleDateChange = (days: number) => {
     setSelectedDate((prev) => addDays(prev, days));
@@ -71,10 +106,34 @@ export default function BookingScheduler({ pitchId, yards }: BookingSchedulerPro
         bookingDate: dateStr,
         startTime: selectedSlot.startTime,
         endTime: selectedSlot.endTime,
+        paymentMethod,
       }).unwrap();
 
-      toast.success('Đặt sân thành công!');
-      router.push(`/booking/${result.data.id}`);
+      const bookingId = result.data.id;
+
+      if (paymentMethod === 'CASH') {
+        toast.success('Đặt sân thành công!');
+        router.push('/booking/success');
+      } else {
+        // VNPAY: gọi createPayment để lấy paymentUrl
+        try {
+          const paymentResult = await createPayment({
+            bookingId,
+            paymentMethod,
+          }).unwrap();
+
+          if (paymentResult.paymentUrl) {
+            window.location.href = paymentResult.paymentUrl;
+          } else {
+            toast.success('Đặt sân thành công!');
+            router.push(`/booking/${bookingId}`);
+          }
+        } catch {
+          // Nếu tạo payment thất bại, vẫn redirect sang trang booking để user có thể thử lại
+          toast.error('Không thể tạo link thanh toán, vui lòng thử lại trong trang đặt chỗ');
+          router.push(`/booking/${bookingId}`);
+        }
+      }
     } catch (err: any) {
       toast.error(err?.data?.message || 'Có lỗi xảy ra khi đặt sân');
     }
@@ -118,12 +177,16 @@ export default function BookingScheduler({ pitchId, yards }: BookingSchedulerPro
             1. Chọn sân con
           </p>
           {yards.length === 0 ? (
-            <p className="text-sm text-gray-400 italic">Không có sân con nào khả dụng.</p>
+            <p className="text-sm text-gray-400 italic">
+              Không có sân con nào khả dụng.
+            </p>
           ) : (
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
               {yards.map((yard) => {
                 const isActive = selectedYardId === yard.id;
-                const yardAvail = availabilityYards.find((y) => y.yardId === yard.id);
+                const yardAvail = availabilityYards.find(
+                  (y) => y.yardId === yard.id,
+                );
                 const hasAvailable = yardAvail
                   ? yardAvail.slots.some((s) => s.status === 'AVAILABLE')
                   : true;
@@ -142,10 +205,14 @@ export default function BookingScheduler({ pitchId, yards }: BookingSchedulerPro
                       <MapPin
                         className={`h-3.5 w-3.5 shrink-0 ${isActive ? 'text-emerald-600' : 'text-gray-400'}`}
                       />
-                      <span className="truncate text-sm font-semibold">{yard.name}</span>
+                      <span className="truncate text-sm font-semibold">
+                        {yard.name}
+                      </span>
                     </div>
                     <div className="ml-5 flex items-center gap-1.5">
-                      <span className={`text-[11px] font-medium ${isActive ? 'text-emerald-600' : 'text-gray-400'}`}>
+                      <span
+                        className={`text-[11px] font-medium ${isActive ? 'text-emerald-600' : 'text-gray-400'}`}
+                      >
                         {YARD_TYPE_LABEL[yard.type] ?? yard.type}
                       </span>
                       {!isLoadingSlots && yardAvail && !hasAvailable && (
@@ -180,8 +247,7 @@ export default function BookingScheduler({ pitchId, yards }: BookingSchedulerPro
               {slots.map((slot) => {
                 const isSelected = selectedSlot?.startTime === slot.startTime;
                 const isBooked = slot.status === 'BOOKED';
-                const isDisabled = slot.status === 'DISABLED';
-                const unavailable = isBooked || isDisabled;
+                const unavailable = isBooked;
 
                 return (
                   <button
@@ -196,26 +262,58 @@ export default function BookingScheduler({ pitchId, yards }: BookingSchedulerPro
                           : 'bg-gray-50 text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 hover:ring-1 hover:ring-emerald-200'
                     }`}
                   >
-                    <span className={`text-[13px] ${isSelected ? 'font-bold' : 'font-medium'}`}>
+                    <span
+                      className={`text-[13px] ${isSelected ? 'font-bold' : 'font-medium'}`}
+                    >
                       {slot.startTime}
                     </span>
                     {!unavailable && slot.price > 0 && (
-                      <span className={`text-[10px] mt-0.5 ${isSelected ? 'text-emerald-100' : 'text-gray-400'}`}>
+                      <span
+                        className={`text-[10px] mt-0.5 ${isSelected ? 'text-emerald-100' : 'text-gray-400'}`}
+                      >
                         {(slot.price / 1000).toFixed(0)}k
                       </span>
                     )}
                     {isSelected && <Check className="mt-1 h-3 w-3" />}
                     {isBooked && (
-                      <span className="mt-1 text-[10px] font-bold uppercase tracking-tight">Full</span>
-                    )}
-                    {isDisabled && (
-                      <span className="mt-1 text-[10px] font-bold uppercase tracking-tight">Đóng</span>
+                      <span className="mt-1 text-[10px] font-bold uppercase tracking-tight">
+                        Full
+                      </span>
                     )}
                   </button>
                 );
               })}
             </div>
           )}
+        </div>
+
+        {/* Step 3 — Payment method */}
+        <div>
+          <p className="mb-2.5 text-xs font-semibold uppercase tracking-widest text-gray-400">
+            3. Phương thức thanh toán
+          </p>
+          <div className="grid grid-cols-2 gap-2">
+            {PAYMENT_OPTIONS.map((opt) => {
+              const isActive = paymentMethod === opt.value;
+              return (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => setPaymentMethod(opt.value)}
+                  className={`flex flex-col gap-0.5 rounded-xl border px-3 py-2.5 text-left transition-all ${
+                    isActive
+                      ? 'border-emerald-600 bg-emerald-50 text-emerald-800 shadow-sm ring-1 ring-emerald-600/30'
+                      : 'border-gray-200 bg-gray-50 text-gray-700 hover:border-emerald-300 hover:bg-emerald-50/50'
+                  }`}
+                >
+                  <span className="text-sm font-semibold">{opt.label}</span>
+                  <span className={`text-[11px] ${isActive ? 'text-emerald-600' : 'text-gray-400'}`}>
+                    {opt.desc}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {/* Summary & CTA */}
@@ -226,10 +324,19 @@ export default function BookingScheduler({ pitchId, yards }: BookingSchedulerPro
                 label="Sân"
                 value={`${selectedYardMeta.name} (${YARD_TYPE_LABEL[selectedYardMeta.type] ?? selectedYardMeta.type})`}
               />
-              <SummaryRow label="Ngày" value={format(selectedDate, 'dd/MM/yyyy')} />
-              <SummaryRow label="Giờ" value={`${selectedSlot.startTime} – ${selectedSlot.endTime}`} />
+              <SummaryRow
+                label="Ngày"
+                value={format(selectedDate, 'dd/MM/yyyy')}
+              />
+              <SummaryRow
+                label="Giờ"
+                value={`${selectedSlot.startTime} – ${selectedSlot.endTime}`}
+              />
               {selectedSlot.priceLabel && (
-                <SummaryRow label="Khung giá" value={selectedSlot.priceLabel} />
+                <SummaryRow
+                  label="Khung giá"
+                  value={PRICE_LABEL[selectedSlot.priceLabel]}
+                />
               )}
             </div>
           )}
@@ -237,7 +344,9 @@ export default function BookingScheduler({ pitchId, yards }: BookingSchedulerPro
           <div className="flex items-center justify-between text-sm">
             <span className="text-gray-500">Giá / giờ</span>
             <span className="font-semibold text-gray-900">
-              {selectedSlot ? selectedSlot.price.toLocaleString('vi-VN') + '₫' : '—'}
+              {selectedSlot
+                ? selectedSlot.price.toLocaleString('vi-VN') + '₫'
+                : '—'}
             </span>
           </div>
 
@@ -245,18 +354,20 @@ export default function BookingScheduler({ pitchId, yards }: BookingSchedulerPro
             <div className="flex items-center justify-between">
               <span className="font-bold text-gray-900">Tổng tiền</span>
               <span className="text-xl font-bold text-emerald-700">
-                {selectedSlot ? selectedSlot.price.toLocaleString('vi-VN') + '₫' : '—'}
+                {selectedSlot
+                  ? selectedSlot.price.toLocaleString('vi-VN') + '₫'
+                  : '—'}
               </span>
             </div>
           </div>
 
           <Button
             className="w-full bg-emerald-700 hover:bg-emerald-800 rounded-xl h-12 text-sm font-bold shadow-lg shadow-emerald-700/10 active:scale-[0.98] transition-transform"
-            disabled={!selectedSlot || !selectedYardId || isBooking}
+            disabled={!selectedSlot || !selectedYardId || isSubmitting}
             onClick={handleBooking}
           >
-            {isBooking && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
-            Đặt sân ngay
+            {isSubmitting && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+            {paymentMethod === 'VNPAY' ? 'Đặt sân & Thanh toán VNPay' : 'Đặt sân (Tiền mặt tại sân)'}
           </Button>
 
           <p className="text-center text-[11px] text-gray-400">

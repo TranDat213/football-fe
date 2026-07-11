@@ -55,7 +55,10 @@ export const bookingApi = createApi({
       providesTags: ['Booking'],
     }),
 
-    updateBookingStatus: builder.mutation<ApiResponse<Booking>, UpdateBookingStatusPayload>({
+    updateBookingStatus: builder.mutation<
+      ApiResponse<Booking>,
+      UpdateBookingStatusPayload
+    >({
       query: ({ id, status }) => ({
         url: `/bookings/${id}/status`,
         method: 'PATCH',
@@ -78,10 +81,15 @@ export const bookingApi = createApi({
 
     getPaymentByBookingId: builder.query<ApiResponse<Payment>, string>({
       query: (bookingId) => `/payments/${bookingId}`,
-      providesTags: (result, error, bookingId) => [{ type: 'Booking', id: bookingId }],
+      providesTags: (result, error, bookingId) => [
+        { type: 'Booking', id: bookingId },
+      ],
     }),
 
-    cancelBooking: builder.mutation<{ success: boolean; message: string }, { id: string; reason?: string }>({
+    cancelBooking: builder.mutation<
+      { success: boolean; message: string },
+      { id: string; reason?: string }
+    >({
       query: ({ id, reason }) => ({
         url: `/bookings/${id}/cancel`,
         method: 'POST',
@@ -92,12 +100,48 @@ export const bookingApi = createApi({
 
     getRefundByBookingId: builder.query<ApiResponse<Refund>, string>({
       query: (bookingId) => `/refunds/${bookingId}`,
-      providesTags: (result, error, bookingId) => [{ type: 'Booking', id: bookingId }],
+      providesTags: (result, error, bookingId) => [
+        { type: 'Booking', id: bookingId },
+      ],
     }),
 
     getTotalBookingByOwner: builder.query<ApiResponse<number>, void>({
       query: () => '/bookings/owner/total',
       providesTags: ['Booking'],
+    }),
+
+    getBookingByDate: builder.query<
+      ApiResponse<Booking[]>,
+      { date: Date; page: number; limit: number }
+    >({
+      query: ({ date, page, limit }) => ({
+        url: `/bookings/booking-date`,
+        params: { date: date.toISOString(), page, limit },
+      }),
+      providesTags: ['Booking'],
+    }),
+
+    countBookingByDate: builder.query<
+      ApiResponse<Booking[]>,
+      { date: Date; page: number; limit: number }
+    >({
+      query: ({ date, page, limit }) => ({
+        url: `/bookings/booking-date-count`,
+        params: { date: date.toISOString(), page, limit },
+      }),
+      providesTags: ['Booking'],
+    }),
+
+    createOfflineBooking: builder.mutation<
+      ApiResponse<Booking>,
+      CreateBookingPayload
+    >({
+      query: ({ fieldYardId, ...data }) => ({
+        url: `/bookings/yards/${fieldYardId}/offline`,
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: ['Booking'],
     }),
   }),
 });
@@ -115,4 +159,7 @@ export const {
   useCancelBookingMutation,
   useGetRefundByBookingIdQuery,
   useGetTotalBookingByOwnerQuery,
+  useGetBookingByDateQuery,
+  useCountBookingByDateQuery,
+  useCreateOfflineBookingMutation,
 } = bookingApi;
