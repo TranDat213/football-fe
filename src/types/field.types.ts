@@ -17,6 +17,13 @@ export const YARD_STATUS = {
 } as const;
 export type YardStatus = (typeof YARD_STATUS)[keyof typeof YARD_STATUS];
 
+export const TIME_SLOT_LABEL = {
+  REGULAR: 'REGULAR',
+  PEAK: 'PEAK',
+  LATE_NIGHT: 'LATE_NIGHT',
+} as const;
+export type TimeSlotLabel = (typeof TIME_SLOT_LABEL)[keyof typeof TIME_SLOT_LABEL];
+
 // ─── Sub-types ────────────────────────────────────────────────────────────────
 
 export interface ApiResponse<T> {
@@ -37,8 +44,8 @@ export interface FieldImage {
   deletedAt?: string | null;
 }
 
-interface FieldPriceRule { price: number; }
-interface FieldTimeSlot {
+export interface FieldPriceRule { price: number; }
+export interface FieldTimeSlot {
   id: string;
   dayOfWeek: number;
   startTime: string;
@@ -47,7 +54,7 @@ interface FieldTimeSlot {
   sortOrder: number;
   priceRule: FieldPriceRule;
 }
-interface FieldYard {
+export interface FieldYard {
   id: string;
   name: string;
   type: YardType;
