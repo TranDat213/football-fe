@@ -4,8 +4,10 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { useGetPitchesQuery } from '@/features/pitch/api/pitchAPI';
 import Link from 'next/link';
-import { Loader2, MapPin, Star, ArrowRight, Users, Calendar, Check } from 'lucide-react';
-// ... icons simplified/standardized ...
+import { Loader2, MapPin, Star, ArrowRight, Users, Calendar} from 'lucide-react';
+import { useState } from 'react';
+import { Pagination } from '@/features/admin/component/Pagination';
+
 
 function VenueCard({ venue }: { venue: any }) {
   return (
@@ -44,7 +46,10 @@ function VenueCard({ venue }: { venue: any }) {
 }
 
 export default function Home() {
-  const { data: response, isLoading } = useGetPitchesQuery({ limit: 10 });
+    const limit = 10;
+  const [page, setPage] = useState(1);
+
+  const { data: response, isLoading } = useGetPitchesQuery({page, limit});
   const pitches = response?.data || [];
 
   return (
@@ -115,6 +120,12 @@ export default function Home() {
               {pitches.map((venue: any) => (
                 <VenueCard key={venue.id} venue={venue} />
               ))}
+               <Pagination
+                  currentPage={page}
+                  itemsCount={pitches?.length || 0}
+                  limit={limit}
+                  onPageChange={setPage}
+                />
             </div>
           )}
         </section>

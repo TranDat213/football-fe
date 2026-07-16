@@ -17,7 +17,6 @@ export function useHeader() {
 
   const navLinks = useMemo(() => {
     const links: NavLink[] = [
-      { label: 'Đặt trận', href: ROUTES.book },
       { label: 'Lịch sử đặt sân', href: ROUTES.myBooking },
       { label: 'Cộng đồng', href: ROUTES.casualMatch },
     ];

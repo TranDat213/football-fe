@@ -7,6 +7,7 @@ import { format } from 'date-fns';
 import { Pagination } from '@/features/admin/component/Pagination';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
+import { YARD_TYPE } from '@/types/field.types';
 
 export default function MyBookingPage() {
   const { data: response, isLoading, error } = useGetMyBookingsQuery();
@@ -97,7 +98,7 @@ export default function MyBookingPage() {
                   <div>
                     <p className="text-gray-500 mb-1">Sân</p>
                     <p className="font-medium text-gray-900">
-                      {booking.fieldYard.name} ({booking.fieldYard.type})
+                      {booking.fieldYard.name} ({YARD_TYPE[booking.fieldYard.type]})
                     </p>
                   </div>
                   <div>

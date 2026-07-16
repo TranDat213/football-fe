@@ -43,7 +43,8 @@ export const useChat = () => {
       const newAssistantMsg: ChatMessage = {
         id: crypto.randomUUID(),
         role: "assistant",
-        content: result.message.content ,
+        content: result.content,
+        metadata: result.metadata,
         timestamp: new Date(),
       };
       console.log("assistant", newAssistantMsg);

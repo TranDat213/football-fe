@@ -5,11 +5,17 @@ export interface ChatMessage {
   role: MessageRole;
   content: string;
   timestamp: Date;
+  metadata?: {
+    type: string;
+    items: any[];
+  } | null;
 }
 
 export interface ChatResponse {
-  message: {
-    role: "assistant";
-    content: string;
-  };
+  role: "assistant";
+  content: string;
+  metadata?: {
+    type: string;
+    items: any[];
+  } | null;
 }
