@@ -4,25 +4,25 @@
 // ─── Enums ───────────────────────────────────────────────────────────────────
 
 export const YARD_TYPE = {
-  FIVE_A_SIDE: 'FIVE_A_SIDE',
-  SEVEN_A_SIDE: 'SEVEN_A_SIDE',
-  ELEVEN_A_SIDE: 'ELEVEN_A_SIDE',
+  FIVE_A_SIDE: 'Sân 5 người',
+  SEVEN_A_SIDE: 'Sân 7 người',
+  ELEVEN_A_SIDE: 'Sân 11 người',
 } as const;
-export type YardType = (typeof YARD_TYPE)[keyof typeof YARD_TYPE];
+export type YardType = keyof typeof YARD_TYPE;
 
 export const YARD_STATUS = {
-  ACTIVE: 'ACTIVE',
-  INACTIVE: 'INACTIVE',
-  MAINTENANCE: 'MAINTENANCE',
+  ACTIVE: 'Đang hoạt động',
+  INACTIVE: 'Ngừng hoạt động',
+  MAINTENANCE: 'Bảo trì',
 } as const;
-export type YardStatus = (typeof YARD_STATUS)[keyof typeof YARD_STATUS];
+export type YardStatus = keyof typeof YARD_STATUS;
 
 export const TIME_SLOT_LABEL = {
-  REGULAR: 'REGULAR',
-  PEAK: 'PEAK',
-  LATE_NIGHT: 'LATE_NIGHT',
+  REGULAR: 'Giờ thường',
+  PEAK: 'Giờ cao điểm',
+  LATE_NIGHT: 'Giờ đêm muộn',
 } as const;
-export type TimeSlotLabel = (typeof TIME_SLOT_LABEL)[keyof typeof TIME_SLOT_LABEL];
+export type TimeSlotLabel = keyof typeof TIME_SLOT_LABEL;
 
 // ─── Sub-types ────────────────────────────────────────────────────────────────
 
@@ -44,7 +44,9 @@ export interface FieldImage {
   deletedAt?: string | null;
 }
 
-export interface FieldPriceRule { price: number; }
+export interface FieldPriceRule {
+  price: number;
+}
 export interface FieldTimeSlot {
   id: string;
   dayOfWeek: number;

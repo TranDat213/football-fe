@@ -15,6 +15,7 @@ export const chatApi = {
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/chat`, {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -54,10 +55,8 @@ export const chatApi = {
 
   // Isolate parsing logic for easy updates
   parseResponse(data: any): ChatResponse {
-    if (data?.message && typeof data.message.content === 'string') {
-      return {
-        message: data.message,
-      };
+    if (data && typeof data.content === 'string') {
+      return data;
     }
     // Fallback if the data shape changes, attempt to parse or return a generic error
     console.error('Invalid chat response format:', data);

@@ -8,6 +8,7 @@ import { ChatMessage as IChatMessage } from "../../types/chat.type";
 import { ChatAvatar } from "./ChatAvatar";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { StructuredRenderer } from "./StructuredRenderer";
 
 interface ChatMessageProps {
   message: IChatMessage;
@@ -71,6 +72,10 @@ export const ChatMessage = React.memo(({ message, onRegenerate, isLast }: ChatMe
             </div>
           )}
         </div>
+
+        {!isUser && message.metadata && (
+          <StructuredRenderer metadata={message.metadata} />
+        )}
         
         {!isUser && (
           <div className="flex items-center gap-0.5 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
