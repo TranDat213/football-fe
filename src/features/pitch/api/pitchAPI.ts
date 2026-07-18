@@ -6,8 +6,12 @@ import {
   FootballFieldUpdateRequest,
   CreateFootballFieldUpdateRequestPayload,
   FootballFieldUpdateRequestStatus,
+  GetPitchesParams,
+  GetPitchByOwnerParams,
+  GetFieldPendingParams,
 } from '../types/pich.types';
 import { Pitch } from '@/types/field.types';
+import { PaginatedApiResponse } from '@/types/pagination.type';
 
 export const pitchApi = createApi({
   reducerPath: 'pitchApi',
@@ -15,23 +19,34 @@ export const pitchApi = createApi({
   tagTypes: ['Pitch', 'PitchUpdateRequest'],
   endpoints: (builder) => ({
     // ─── Queries ───────────────────────────────────────────────
-    getPitches: builder.query<
-      ApiResponse<Pitch[]>,
-      { page?: number; limit?: number }
-    >({
+    getPitches: builder.query<PaginatedApiResponse<Pitch>, GetPitchesParams>({
       query: (params) => ({ url: '/field/active', params }),
+      providesTags: ['Pitch'],
     }),
     getPitchById: builder.query<ApiResponse<Pitch>, string>({
       query: (id) => `/field/find/${id}`,
       providesTags: (_, __, id) => [{ type: 'Pitch', id }],
     }),
     getPitchByOwnerId: builder.query<
-      ApiResponse<Pitch[]>,
-      { page?: number; limit?: number } | void
+      PaginatedApiResponse<Pitch>,
+      GetPitchByOwnerParams | void
     >({
-      query: () => ({
+      query: (params) => ({
         url: '/field/owner',
         method: 'GET',
+        params: params ?? undefined,
+      }),
+      providesTags: ['Pitch'],
+    }),
+
+    getFieldPending: builder.query<
+      PaginatedApiResponse<Pitch>,
+      GetFieldPendingParams | void
+    >({
+      query: (params) => ({
+        url: '/field/pending',
+        method: 'GET',
+        params: params ?? undefined,
       }),
       providesTags: ['Pitch'],
     }),
@@ -148,6 +163,7 @@ export const {
   useGetPitchesQuery,
   useGetPitchByIdQuery,
   useGetPitchByOwnerIdQuery,
+  useGetFieldPendingQuery,
   useGetPitchCategoryQuery,
   useUploadImageMutation,
   useCreateCompleteFieldMutation,

@@ -5,6 +5,7 @@ import {
   AvailabilityResponse,
   Booking,
   CreateBookingPayload,
+  GetBookingsParams,
   PaymentPayload,
   PaymentResponse,
   UpdateBookingStatusPayload,
@@ -14,6 +15,7 @@ import type {
   Refund,
   VNPayReturnResult,
 } from '../types/payment.types';
+import { PaginatedApiResponse } from '@/types/pagination.type';
 
 export const bookingApi = createApi({
   reducerPath: 'bookingApi',
@@ -45,13 +47,25 @@ export const bookingApi = createApi({
       providesTags: (result, error, id) => [{ type: 'Booking', id }],
     }),
 
-    getMyBookings: builder.query<ApiResponse<Booking[]>, void>({
-      query: () => '/bookings/my-bookings',
+    getMyBookings: builder.query<
+      PaginatedApiResponse<Booking>,
+      GetBookingsParams | void
+    >({
+      query: (params) => ({
+        url: '/bookings/my-bookings',
+        params: params ?? undefined,
+      }),
       providesTags: ['Booking'],
     }),
 
-    getOwnerBookings: builder.query<ApiResponse<Booking[]>, void>({
-      query: () => '/bookings/owner/bookings',
+    getOwnerBookings: builder.query<
+      PaginatedApiResponse<Booking>,
+      GetBookingsParams | void
+    >({
+      query: (params) => ({
+        url: '/bookings/owner/bookings',
+        params: params ?? undefined,
+      }),
       providesTags: ['Booking'],
     }),
 

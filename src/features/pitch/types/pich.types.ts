@@ -1,5 +1,6 @@
 // src/features/pitch/types/pitch.types.ts
 import type { YardType, YardStatus } from '@/types/field.types';
+import { PaginatedQuery } from '@/types/pagination.type';
 export type { YardType, YardStatus };
 export { YARD_TYPE, YARD_STATUS } from '@/types/field.types';
 
@@ -109,4 +110,23 @@ export interface UpdateFootballFieldUpdateRequestPayload{
   reason?: string;
   reviewedBy: string;
   reviewedAt: Date;
+}
+
+export interface GetPitchesParams extends PaginatedQuery {
+  category?: string;
+  yardType?: string;
+  province?: string;
+  district?: string;
+  ward?: string;
+  minPrice?: number;
+  maxPrice?: number;
+}
+
+export interface GetPitchByOwnerParams extends PaginatedQuery {
+  district?: string;
+  status?: string;
+}
+export interface GetFieldPendingParams extends PaginatedQuery {
+  province?: string;
+  district?: string;
 }

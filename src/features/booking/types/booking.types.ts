@@ -7,6 +7,7 @@ import type {
   ApiResponse,
   YardType,
 } from '@/types/field.types';
+import { PaginatedQuery } from '@/types/pagination.type';
 
 export type { ApiResponse, FieldYard, FootballFieldDetail };
 
@@ -109,4 +110,12 @@ export interface PaymentResponse {
   success: boolean;
   paymentUrl?: string;
   message?: string;
+}
+export interface GetBookingsParams extends PaginatedQuery {
+  status?: string;
+  bookingDate?: string;
+  startTime?: string;
+  category?: string;
+  yardType?: string;
+  footballFieldId?: string;
 }
