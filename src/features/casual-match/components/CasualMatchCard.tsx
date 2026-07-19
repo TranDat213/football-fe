@@ -4,9 +4,9 @@ import Link from 'next/link';
 import { Calendar, MapPin, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { CasualMatch } from '../types/casual-match.types';
-import { skillLevelLabels, statusLabels, teamModeLabels, yardLabel } from '../utils/labels';
+import { skillLevelLabels, statusLabels, teamModeLabels, yardLabel, formatMatchTime } from '../utils/labels';
 
-export function CasualMatchCard({ match }: { match: CasualMatch }) {
+export function CasualMatchCard({ match, detailHref }: { match: CasualMatch; detailHref?: string }) {
   const booking = match.booking;
   const field = booking?.fieldYard?.footballField;
   const dateText = booking ? new Date(booking.bookingDate).toLocaleDateString('vi-VN') : 'Chưa có ngày';
@@ -29,7 +29,7 @@ export function CasualMatchCard({ match }: { match: CasualMatch }) {
       {match.description && <p className="mt-3 line-clamp-2 text-sm text-gray-500">{match.description}</p>}
 
       <div className="mt-4 grid grid-cols-2 gap-3 text-xs text-gray-500">
-        <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5 text-emerald-600" />{dateText} {booking?.startTime}</span>
+        <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5 text-emerald-600" />{dateText} · {formatMatchTime(booking?.startTime)} - {formatMatchTime(booking?.endTime)}</span>
         <span className="flex items-center gap-1.5"><Users className="h-3.5 w-3.5 text-emerald-600" />Còn {match.availableSlots}/{match.totalSlots} slot</span>
         <span>{skillLevelLabels[match.skillLevel]}</span>
         <span>{teamModeLabels[match.teamMode]}</span>
@@ -37,8 +37,8 @@ export function CasualMatchCard({ match }: { match: CasualMatch }) {
 
       <div className="mt-5 flex items-center justify-between border-t border-gray-100 pt-4">
         <span className="font-bold text-emerald-700">{Number(match.slotPrice).toLocaleString('vi-VN')}đ/slot</span>
-        <Button asChild className="rounded-xl bg-emerald-700 hover:bg-emerald-800">
-          <Link href={`/casual-matches/${match.id}`}>Xem chi tiết</Link>
+        <Button asChild className="rounded-xl bg-emerald-700 text-white hover:bg-emerald-800">
+          <Link href={detailHref ?? `/casual-matches/${match.id}`}>Xem chi tiết</Link>
         </Button>
       </div>
     </article>

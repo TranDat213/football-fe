@@ -27,10 +27,11 @@ export const ROUTES = {
     ownerEditPitch: "/owner/pitches/[id]/edit",
 
     //comunnity
-    casualMatch:      "/casual-matches",
-    myCasualMatches: "/casual-matches/my",
-    casualOwner:    "/casual-matches/owner",
-    createCasual:   "/casual-matches/create",
+    casualMatch:       "/casual-matches",
+    myCasualMatches:   "/casual-matches/my",
+    casualOwner:       "/casual-matches/owner",
+    createCasual:      "/casual-matches/create",
+    casualParticipated:"/casual-matches/participated",
     
     //admin
     adminDashboard: "/admin",

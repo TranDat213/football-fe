@@ -84,13 +84,7 @@ function NearbyVenues() {
           <h2 className="text-xl font-bold text-gray-900">Sân bóng gần đây</h2>
           <p className="mt-1 text-sm text-gray-500">Các khu đất có đánh giá cao hiện có sẵn tại khu vực của bạn</p>
         </div>
-        <a
-          href="#"
-          className="flex items-center gap-1 text-sm font-medium text-emerald-700 hover:text-emerald-800"
-        >
-          Xem tất cả sân bóng
-          <ArrowRight className="h-3.5 w-3.5" />
-        </a>
+       
       </div>
 
       <FieldFilterBar

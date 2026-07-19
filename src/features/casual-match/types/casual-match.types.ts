@@ -112,3 +112,83 @@ export interface CasualMatchPaymentResponse {
     amount: number | string;
   };
 }
+
+export interface JoinCasualMatchResult {
+  participant: CasualMatchParticipant;
+  paymentUrl: string;
+  paymentInfo: {
+    participantId: string;
+    totalAmount: number;
+    slotCount: number;
+    unitPrice: number;
+    message: string;
+  };
+}
+
+export interface ParticipationItem {
+  id: string;
+  casualMatchId: string;
+  userId: string;
+  slotCount: number;
+  unitPrice: number | string;
+  totalAmount: number | string;
+  paymentStatus: 'UNPAID' | 'PAID' | 'REFUNDED' | 'REFUND_PENDING';
+  joinStatus: 'PENDING' | 'APPROVED' | 'REJECTED' | 'CANCELLED' | 'WAITLISTED';
+  selectedTeam?: CasualMatchTeamSide | null;
+  joinedAt?: string | null;
+  cancelledAt?: string | null;
+  paidAt?: string | null;
+  transactionCode?: string | null;
+  createdAt?: string;
+  casualMatch?: CasualMatch;
+}
+
+export interface ParticipationListResponse {
+  message: string;
+  data: ParticipationItem[];
+  meta?: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
+export interface ParticipationListParams {
+  joinStatus?: 'PENDING' | 'APPROVED' | 'REJECTED' | 'CANCELLED';
+  paymentStatus?: 'UNPAID' | 'PAID' | 'REFUNDED' | 'REFUND_PENDING';
+  date?: string;
+  page?: number;
+  limit?: number;
+}
+
+export interface ParticipantDetail {
+  id: string;
+  userId: string;
+  slotCount: number;
+  unitPrice: number | string;
+  totalAmount: number | string;
+  paymentStatus: 'UNPAID' | 'PAID' | 'REFUNDED' | 'REFUND_PENDING';
+  joinStatus: 'PENDING' | 'APPROVED' | 'REJECTED' | 'CANCELLED' | 'WAITLISTED';
+  selectedTeam?: CasualMatchTeamSide | null;
+  joinedAt?: string | null;
+  paidAt?: string | null;
+  transactionCode?: string | null;
+  createdAt?: string;
+  user?: {
+    id: string;
+    firstName?: string;
+    lastName?: string;
+    email?: string | null;
+    phone?: string | null;
+    avatarUrl?: string | null;
+  };
+}
+
+export interface MatchParticipantsResponse {
+  message: string;
+  data: {
+    match: CasualMatch;
+    participants: ParticipantDetail[];
+  };
+}

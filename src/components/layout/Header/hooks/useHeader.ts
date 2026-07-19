@@ -17,8 +17,11 @@ export function useHeader() {
 
   const navLinks = useMemo(() => {
     const links: NavLink[] = [
+      { label: 'Trang chủ', href: ROUTES.home },
       { label: 'Lịch sử đặt sân', href: ROUTES.myBooking },
       { label: 'Cộng đồng', href: ROUTES.casualMatch },
+      { label: 'Tham gia vãng lai', href: ROUTES.casualParticipated },
+
     ];
 
     if (isOwner) {

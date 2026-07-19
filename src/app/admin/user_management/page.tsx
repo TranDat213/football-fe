@@ -51,7 +51,7 @@ export default function UserManagementPage() {
                 <span className="text-indigo-600">Quản lý người dùng</span>
               </nav>
             </div>
-            <h1 className="text-3xl font-black text-gray-900 border-b-4 border-indigo-600 inline-block pb-1">
+            <h1 className="text-3xl font-bold text-gray-900 border-b-4 border-indigo-600 inline-block pb-1">
               Người dùng
             </h1>
           </div>
@@ -78,7 +78,7 @@ export default function UserManagementPage() {
                 <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">
                   Tổng người dùng
                 </p>
-                <p className="text-2xl font-black text-gray-900">
+                <p className="text-2xl font-bold text-gray-900">
                   {isLoading ? '...' : stats?.totalUsers?.toLocaleString() || 0}
                 </p>
               </div>

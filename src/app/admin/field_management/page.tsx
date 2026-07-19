@@ -44,7 +44,7 @@ export default function FieldManagementPage() {
                 <span className="text-emerald-600">Quản lý sân</span>
               </nav>
             </div>
-            <h1 className="text-3xl font-black text-gray-900 border-b-4 border-emerald-500 inline-block pb-1">
+            <h1 className="text-3xl font-bold text-gray-900 border-b-4 border-emerald-500 inline-block pb-1">
               Sân bóng
             </h1>
           </div>
@@ -70,7 +70,7 @@ export default function FieldManagementPage() {
                 <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">
                   Đang hoạt động
                 </p>
-                <p className="text-2xl font-black text-gray-900">
+                <p className="text-2xl font-bold text-gray-900">
                   {isLoading ? '...' : stats.activeFieldCount.toLocaleString()}
                 </p>
               </div>
@@ -86,7 +86,7 @@ export default function FieldManagementPage() {
                 <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">
                   Chờ duyệt
                 </p>
-                <p className="text-2xl font-black text-gray-900">
+                <p className="text-2xl font-bold text-gray-900">
                   {isLoading ? '...' : stats.pendingFieldCount.toLocaleString()}
                 </p>
               </div>
@@ -102,7 +102,7 @@ export default function FieldManagementPage() {
                 <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">
                   Tổng sân
                 </p>
-                <p className="text-2xl font-black text-gray-900">
+                <p className="text-2xl font-bold text-gray-900">
                   {isLoading
                     ? '...'
                     : (
@@ -122,7 +122,7 @@ export default function FieldManagementPage() {
             Danh sách sân chờ duyệt
           </h2>
           {stats.pendingFieldCount > 0 && (
-            <span className="px-2.5 py-1 rounded-full bg-orange-100 text-orange-600 text-[11px] font-black">
+            <span className="px-2.5 py-1 rounded-full bg-orange-100 text-orange-600 text-[11px] font-bold">
               {stats.pendingFieldCount} sân cần xử lý
             </span>
           )}

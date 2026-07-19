@@ -8,13 +8,17 @@ import type {
   CasualMatchPaymentResponse,
   CreateCasualMatchPayload,
   JoinCasualMatchPayload,
+  JoinCasualMatchResult,
+  MatchParticipantsResponse,
+  ParticipationListParams,
+  ParticipationListResponse,
   UpdateCasualMatchPayload,
 } from '../types/casual-match.types';
 
 export const casualMatchApi = createApi({
   reducerPath: 'casualMatchApi',
   baseQuery: customBaseQueryWithReauth,
-  tagTypes: ['CasualMatch'],
+  tagTypes: ['CasualMatch', 'Participation'],
   endpoints: (builder) => ({
     getCasualMatches: builder.query<CasualMatchListResponse, CasualMatchListParams | void>({
       query: (params) => ({ url: '/casual-matches', method: 'GET', params: params??undefined }),
@@ -37,6 +41,11 @@ export const casualMatchApi = createApi({
     getHostCasualMatches: builder.query<CasualMatchListResponse,CasualMatchListParams | void>({
       query: (params) => ({ url: '/casual-matches/host', method: 'GET', params:params??undefined }),
       providesTags: [{ type: 'CasualMatch', id: 'USER' }],
+    }),
+    // Participation history for the current user
+    getMyParticipations: builder.query<ParticipationListResponse, ParticipationListParams | void>({
+      query: (params) => ({ url: '/casual-matches/participations', method: 'GET', params: params ?? undefined }),
+      providesTags: [{ type: 'Participation', id: 'LIST' }],
     }),
 
     createCasualMatch: builder.mutation<CasualMatchDetailResponse, CreateCasualMatchPayload>({
@@ -61,16 +70,24 @@ export const casualMatchApi = createApi({
         { type: 'CasualMatch', id: 'USER' },
       ],
     }),
-    joinCasualMatch: builder.mutation<{ message: string; data: unknown }, JoinCasualMatchPayload>({
+    // Join now returns paymentUrl directly — single call, no separate createPayment needed
+    joinCasualMatch: builder.mutation<{ message: string; data: JoinCasualMatchResult }, JoinCasualMatchPayload>({
       query: ({ id, ...body }) => ({ url: `/casual-matches/${id}/join`, method: 'POST', body }),
-      invalidatesTags: (_result, _error, { id }) => [{ type: 'CasualMatch', id }],
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: 'CasualMatch', id },
+        { type: 'Participation', id: 'LIST' },
+      ],
     }),
+    // Kept for backward compat (e.g. retry payment for UNPAID participant)
     createCasualMatchPayment: builder.mutation<CasualMatchPaymentResponse, string>({
       query: (id) => ({ url: `/casual-matches/${id}/payment`, method: 'POST', body: { paymentMethod: 'VNPAY' } }),
     }),
     cancelParticipation: builder.mutation<{ message: string; data?: unknown }, { id: string; reason?: string }>({
       query: ({ id, reason }) => ({ url: `/casual-matches/${id}/cancel`, method: 'POST', body: { reason } }),
-      invalidatesTags: (_result, _error, { id }) => [{ type: 'CasualMatch', id }],
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: 'CasualMatch', id },
+        { type: 'Participation', id: 'LIST' },
+      ],
     }),
     updateCasualMatchStatus: builder.mutation<CasualMatchDetailResponse, Pick<CasualMatch, 'id' | 'status'>>({
       query: ({ id, status }) => ({ url: `/casual-matches/${id}/status`, method: 'PATCH', body: { status } }),
@@ -80,6 +97,10 @@ export const casualMatchApi = createApi({
         { type: 'CasualMatch', id: 'OWNER' },
       ],
     }),
+    getMatchParticipants: builder.query<MatchParticipantsResponse, string>({
+      query: (id) => ({ url: `/casual-matches/${id}/participants`, method: 'GET' }),
+      providesTags: (_result, _error, id) => [{ type: 'CasualMatch', id: `${id}-participants` }],
+    }),
   }),
 });
 
@@ -88,6 +109,7 @@ export const {
   useGetCasualMatchByIdQuery,
   useGetOwnerCasualMatchesQuery,
   useGetHostCasualMatchesQuery,
+  useGetMyParticipationsQuery,
   useCreateCasualMatchMutation,
   useUpdateCasualMatchMutation,
   useDeleteCasualMatchMutation,
@@ -95,4 +117,5 @@ export const {
   useCreateCasualMatchPaymentMutation,
   useCancelParticipationMutation,
   useUpdateCasualMatchStatusMutation,
+  useGetMatchParticipantsQuery,
 } = casualMatchApi;

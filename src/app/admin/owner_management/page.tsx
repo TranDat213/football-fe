@@ -52,7 +52,7 @@ export default function OwnerManagementPage() {
                 <span className="text-emerald-600">Quản lý chủ sân</span>
               </nav>
             </div>
-            <h1 className="text-3xl font-black text-gray-900 border-b-4 border-emerald-500 inline-block pb-1">
+            <h1 className="text-3xl font-bold text-gray-900 border-b-4 border-emerald-500 inline-block pb-1">
               Chủ sân
             </h1>
           </div>
@@ -88,7 +88,7 @@ export default function OwnerManagementPage() {
                 <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">
                   Tổng chủ sân
                 </p>
-                <p className="text-2xl font-black text-gray-900">
+                <p className="text-2xl font-bold text-gray-900">
                   {isLoading
                     ? '...'
                     : stats?.totalOwners?.toLocaleString() || 0}

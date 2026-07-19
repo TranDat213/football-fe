@@ -33,13 +33,28 @@ export const skillLevelLabels: Record<CasualMatchSkillLevel, string> = {
 };
 
 export const yardSlots: Record<string, number> = {
-  FIVE_A_SIDE: 10,
-  SEVEN_A_SIDE: 14,
-  ELEVEN_A_SIDE: 22,
+  FIVE_A_SIDE: 9,
+  SEVEN_A_SIDE: 13,
+  ELEVEN_A_SIDE: 21,
 };
 
 export const yardLabel: Record<string, string> = {
   FIVE_A_SIDE: '5v5',
   SEVEN_A_SIDE: '7v7',
   ELEVEN_A_SIDE: '11v11',
+};
+
+export const formatMatchTime = (timeStr?: string) => {
+  if (!timeStr) return '';
+  if (timeStr.includes('T')) {
+    try {
+      const date = new Date(timeStr);
+      const hours = String(date.getUTCHours()).padStart(2, '0');
+      const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+      return `${hours}:${minutes}`;
+    } catch {
+      return timeStr;
+    }
+  }
+  return timeStr;
 };

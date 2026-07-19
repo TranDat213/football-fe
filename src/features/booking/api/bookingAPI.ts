@@ -157,6 +157,11 @@ export const bookingApi = createApi({
       }),
       invalidatesTags: ['Booking'],
     }),
+
+    getBookingsForCreateCasual: builder.query<ApiResponse<any[]>, void>({
+      query: () => '/bookings/for-create-casual',
+      providesTags: ['Booking'],
+    }),
   }),
 });
 
@@ -176,4 +181,5 @@ export const {
   useGetBookingByDateQuery,
   useCountBookingByDateQuery,
   useCreateOfflineBookingMutation,
+  useGetBookingsForCreateCasualQuery,
 } = bookingApi;

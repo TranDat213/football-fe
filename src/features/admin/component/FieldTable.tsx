@@ -119,7 +119,7 @@ export function FieldTable({
                           className="h-full w-full object-cover"
                         />
                       ) : (
-                        <div className="h-full w-full bg-emerald-50 flex items-center justify-center text-emerald-400 text-xs font-black">
+                        <div className="h-full w-full bg-emerald-50 flex items-center justify-center text-emerald-400 text-xs font-bold">
                           SB
                         </div>
                       )}

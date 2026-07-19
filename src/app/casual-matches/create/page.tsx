@@ -3,7 +3,7 @@
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { Button } from '@/components/ui/button';
-import { useGetMyBookingsQuery } from '@/features/booking/api/bookingAPI';
+import { useGetBookingsForCreateCasualQuery } from '@/features/booking/api/bookingAPI';
 import type { Booking } from '@/features/booking/types/booking.types';
 import { CasualMatchForm } from '@/features/casual-match/components/CasualMatchForm';
 import { useCreateCasualMatchMutation } from '@/features/casual-match/api/casualMatch.api';
@@ -20,17 +20,12 @@ export default function CreateCasualMatchPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const bookingIdFromUrl = searchParams.get('bookingId');
-  const { data, isLoading } = useGetMyBookingsQuery();
+  const { data, isLoading } = useGetBookingsForCreateCasualQuery();
   const [selectedBookingId, setSelectedBookingId] = useState<string | null>(bookingIdFromUrl);
   const [createMatch, { isLoading: isCreating }] = useCreateCasualMatchMutation();
 
   const eligibleBookings = useMemo(
-    () =>
-      (data?.data || []).filter((booking: Booking & { casualMatch?: unknown }) =>
-        booking.status === 'CONFIRMED' &&
-        booking.paymentStatus === 'PAID' &&
-        !booking.casualMatch
-      ),
+    () => data?.data || [],
     [data],
   );
 
@@ -39,6 +34,13 @@ export default function CreateCasualMatchPage() {
     ? `${selectedBooking.bookingDate.slice(0, 10)}T${selectedBooking.startTime}`
     : undefined;
   const defaultSlots = selectedBooking ? yardSlots[selectedBooking.fieldYard?.type] || 10 : 10;
+
+  // Mirror BE logic: maxSlotPrice = totalPrice / divisor (fixed per yard type)
+  const PRICE_DIVISORS: Record<string, number> = { FIVE_A_SIDE: 10, SEVEN_A_SIDE: 14, ELEVEN_A_SIDE: 22 };
+  const priceDivisor = selectedBooking ? (PRICE_DIVISORS[selectedBooking.fieldYard?.type] ?? 10) : 10;
+  const defaultSlotPrice = selectedBooking
+    ? Math.floor(Number(selectedBooking.totalPrice) / priceDivisor)
+    : undefined;
 
   const handleSubmit = async (values: CasualMatchFormValues) => {
     if (!selectedBooking) return;
@@ -69,7 +71,7 @@ export default function CreateCasualMatchPage() {
       <main className="mx-auto w-full max-w-5xl flex-1 px-6 py-8">
         <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h1 className="text-2xl font-black text-gray-900">Tạo trận ngẫu hứng</h1>
+            <h1 className="text-2xl font-bold text-gray-900">Tạo trận ngẫu hứng</h1>
             <p className="mt-1 text-sm text-gray-500">Chọn một booking đã thanh toán rồi mở kèo cho cộng đồng.</p>
           </div>
           <Button asChild variant="outline" className="rounded-xl">
@@ -87,7 +89,7 @@ export default function CreateCasualMatchPage() {
                 </div>
               ) : eligibleBookings.length === 0 ? (
                 <div className="mt-4 rounded-xl border border-dashed border-gray-200 p-5 text-center">
-                  <p className="text-sm text-gray-500">Bạn chưa có booking CONFIRMED + PAID phù hợp.</p>
+                  <p className="text-sm text-gray-500">Bạn chưa có trận đấu nào được đặt.</p>
                   <Button asChild className="mt-4 rounded-xl bg-emerald-700 hover:bg-emerald-800">
                     <Link href="/">Chọn sân mới</Link>
                   </Button>
@@ -138,12 +140,10 @@ export default function CreateCasualMatchPage() {
                 </div>
               ) : (
                 <div className="mt-5">
-                  <p className="mb-4 rounded-xl bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-                    Số slot gợi ý theo loại sân: <b>{defaultSlots}</b>. Bạn có thể chỉnh nếu cần.
-                  </p>
                   <CasualMatchForm
                     matchStartAt={matchStartAt}
-                    defaultValues={{ totalSlots: defaultSlots }}
+                    defaultValues={{ totalSlots: defaultSlots, slotPrice: defaultSlotPrice }}
+                    maxSlotPrice={defaultSlotPrice}
                     isSubmitting={isCreating}
                     onSubmit={handleSubmit}
                   />
