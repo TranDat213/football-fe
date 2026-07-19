@@ -70,7 +70,7 @@ export default function CheckoutSummary({
             </div>
             <div className="flex items-center justify-between pt-3 border-t border-gray-100">
               <span className="text-sm font-bold text-gray-900 uppercase tracking-widest">Tổng thanh toán</span>
-              <span className="text-xl font-black text-emerald-700">${total.toFixed(2)}</span>
+              <span className="text-xl font-bold text-emerald-700">${total.toFixed(2)}</span>
             </div>
           </div>
         </div>

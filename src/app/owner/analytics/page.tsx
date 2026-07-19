@@ -36,7 +36,7 @@ export default function OwnerAnalyticsPage() {
                         <p className="text-xs text-gray-500 mt-1">Daily revenue comparison for current period.</p>
                     </div>
                     <div className="text-right">
-                        <p className="text-2xl font-black text-emerald-700">$12,450.00</p>
+                        <p className="text-2xl font-bold text-emerald-700">$12,450.00</p>
                         <p className="flex items-center justify-end gap-1 text-[11px] font-bold text-emerald-600 mt-1">
                             <TrendingUp className="h-3 w-3" /> +18.4%
                         </p>
@@ -105,7 +105,7 @@ export default function OwnerAnalyticsPage() {
                         <div className="h-32 w-32 rounded-full border-[16px] border-emerald-600 border-r-indigo-500 border-b-amber-400 rotate-45" />
                         <div className="absolute inset-0 flex flex-col items-center justify-center">
                             <p className="text-xs text-gray-400 font-bold uppercase tracking-tight">Direct</p>
-                            <p className="text-lg font-black text-gray-900">65%</p>
+                            <p className="text-lg font-bold text-gray-900">65%</p>
                         </div>
                     </div>
                     <div className="mt-4 grid grid-cols-3 gap-4 text-center">

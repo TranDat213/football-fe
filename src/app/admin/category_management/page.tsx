@@ -78,7 +78,7 @@ export default function CategoryManagementPage() {
                 <span className="text-indigo-600">Danh mục sân</span>
               </nav>
             </div>
-            <h1 className="text-3xl font-black text-gray-900 border-b-4 border-indigo-500 inline-block pb-1">
+            <h1 className="text-3xl font-bold text-gray-900 border-b-4 border-indigo-500 inline-block pb-1">
               Danh mục sân
             </h1>
             <p className="text-sm text-gray-400 font-medium mt-2">
@@ -197,7 +197,7 @@ export default function CategoryManagementPage() {
                         // Display row
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
-                            <span className="h-7 w-7 rounded-lg bg-indigo-50 flex items-center justify-center text-xs font-black text-indigo-600">
+                            <span className="h-7 w-7 rounded-lg bg-indigo-50 flex items-center justify-center text-xs font-bold text-indigo-600">
                               {cat.display_order}
                             </span>
                             <div>

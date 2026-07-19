@@ -13,6 +13,8 @@ interface CasualMatchFormProps {
   defaultValues?: Partial<CasualMatchFormValues>;
   isSubmitting?: boolean;
   hideTotalSlots?: boolean;
+  /** Giá slot tối đa được phép (tính từ BE) — chỉ dùng để hiển thị hint */
+  maxSlotPrice?: number;
   onSubmit: (values: CasualMatchFormValues) => void | Promise<void>;
 }
 
@@ -24,6 +26,7 @@ export function CasualMatchForm({
   defaultValues,
   isSubmitting,
   hideTotalSlots,
+  maxSlotPrice,
   onSubmit,
 }: CasualMatchFormProps) {
   const {
@@ -36,7 +39,7 @@ export function CasualMatchForm({
       title: '',
       description: '',
       totalSlots: 10,
-      slotPrice: 50000,
+      slotPrice: undefined,
       joinDeadline: '',
       visibility: 'PUBLIC',
       teamMode: 'NO_TEAM',
@@ -72,7 +75,12 @@ export function CasualMatchForm({
 
         <div className="space-y-2">
           <label className={labelClass}>Giá mỗi slot</label>
-          <input type="number" min={1000} step={1000} className={fieldClass} {...register('slotPrice')} />
+          <input type="number" min={0} step={1000} className={fieldClass} {...register('slotPrice')} />
+          {maxSlotPrice !== undefined && (
+            <p className="text-xs text-gray-400">
+              Tối đa: <span className="font-semibold text-emerald-700">{maxSlotPrice.toLocaleString('vi-VN')} VNĐ</span>
+            </p>
+          )}
           <ErrorText message={errors.slotPrice?.message} />
         </div>
       </div>

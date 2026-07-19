@@ -104,7 +104,7 @@ export function FieldUpdateRequestDetailModal({ data, onClose }: Props) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
       <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[85vh] overflow-y-auto">
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 sticky top-0 bg-white">
-          <h2 className="text-lg font-black text-gray-900">
+          <h2 className="text-lg font-bold text-gray-900">
             Chi tiết yêu cầu cập nhật
           </h2>
           <button

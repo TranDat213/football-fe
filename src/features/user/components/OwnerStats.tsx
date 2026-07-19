@@ -12,7 +12,7 @@ export default function OwnerStats() {
 
   const STATS = [
     {
-      label: 'Total Revenue',
+      label: 'Tổng doanh thu tháng này',
       value: '$2,450',
       change: '+12.5%',
       isPositive: true,
@@ -36,14 +36,6 @@ export default function OwnerStats() {
       isPositive: false,
       icon: Users,
       color: 'indigo',
-    },
-    {
-      label: 'Avg Rating',
-      value: '4.8',
-      change: '0.0',
-      isPositive: true,
-      icon: Star,
-      color: 'amber',
     },
   ];
 

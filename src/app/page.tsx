@@ -2,21 +2,24 @@
 
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
-import { useGetPitchesQuery } from '@/features/pitch/api/pitchAPI';
+import { useGetPitchesQuery, useGetPitchCategoryQuery } from '@/features/pitch/api/pitchAPI';
 import Link from 'next/link';
-import { Loader2, MapPin, Star, ArrowRight, Users, Calendar} from 'lucide-react';
-import { useState } from 'react';
+import { Loader2, MapPin, Star, ArrowRight, Users, Calendar } from 'lucide-react';
+import { Suspense } from 'react';
 import { Pagination } from '@/features/admin/component/Pagination';
 
+import type { CategoryOption } from '@/components/filter/CategoryFilter';
+import { useFilters } from '@/hooks/useFilter';
+import { FieldFilterBar } from '@/features/pitch/components/FieldfilterBar';
 
 function VenueCard({ venue }: { venue: any }) {
   return (
     <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-shadow hover:shadow-md">
       <div className="relative h-44 w-full">
-        <img 
-          src={venue.images?.[0]?.url || "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?auto=format&fit=crop&w=800&q=80"} 
-          alt={venue.name} 
-          className="h-full w-full object-cover" 
+        <img
+          src={venue.images?.[0]?.url || "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?auto=format&fit=crop&w=800&q=80"}
+          alt={venue.name}
+          className="h-full w-full object-cover"
         />
         <span className="absolute left-3 top-3 flex items-center gap-1 rounded-full bg-emerald-900/85 px-2.5 py-1 text-xs font-semibold text-white">
           <Star className="h-3 w-3 text-amber-400 fill-current" />
@@ -45,13 +48,87 @@ function VenueCard({ venue }: { venue: any }) {
   );
 }
 
+function NearbyVenues() {
+  const limit = 10;
+  const f = useFilters();
+
+  const { data: categoryResponse } = useGetPitchCategoryQuery();
+  // Giả định PitchCategory có { id, name } — chỉnh lại field name nếu khác
+  const categories: CategoryOption[] = (categoryResponse?.data ?? []).map((c: any) => ({
+    value: c.id,
+    label: c.name,
+  }));
+
+  const { data: response, isLoading } = useGetPitchesQuery({
+    page: f.filters.page,
+    limit,
+    keyword: f.filters.keyword || undefined,
+    category: f.filters.category || undefined,
+    province: f.filters.province || undefined,
+    district: f.filters.district || undefined,
+    minPrice: f.filters.minPrice ? Number(f.filters.minPrice) * 1000 : undefined,
+    maxPrice: f.filters.maxPrice ? Number(f.filters.maxPrice) * 1000 : undefined,
+    sortBy: f.filters.sortBy || undefined,
+    sortOrder: f.filters.sortBy ? f.filters.sortOrder : undefined,
+  });
+
+  // field.controller.ts trả về { message, ...toPaginatedResult(...) }
+  // => { message, data, pagination } cùng cấp, không có lớp bọc nào khác.
+  const pitches = response?.data ?? [];
+  const pagination = response?.pagination;
+
+  return (
+    <section className="mt-12">
+      <div className="flex items-end justify-between">
+        <div>
+          <h2 className="text-xl font-bold text-gray-900">Sân bóng gần đây</h2>
+          <p className="mt-1 text-sm text-gray-500">Các khu đất có đánh giá cao hiện có sẵn tại khu vực của bạn</p>
+        </div>
+       
+      </div>
+
+      <FieldFilterBar
+        f={f}
+        categories={categories}
+        // TODO: gắn nguồn dữ liệu tỉnh/thành (API hoặc constants VN) khi có
+        provinces={[]}
+        className="mt-4"
+      />
+
+      {isLoading ? (
+        <div className="mt-12 flex justify-center">
+          <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
+        </div>
+      ) : pitches.length === 0 ? (
+        <div className="mt-8 rounded-2xl border border-dashed border-gray-200 py-16 text-center text-sm text-gray-500">
+          Không tìm thấy sân nào phù hợp với bộ lọc hiện tại.
+        </div>
+      ) : (
+        <>
+          <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {pitches.map((venue: any) => (
+              <VenueCard key={venue.id} venue={venue} />
+            ))}
+          </div>
+          {/* NOTE: trước đây <Pagination> nằm lẫn trong grid và itemsCount dùng
+              pitches.length (số item trên trang hiện tại). Đã tách ra ngoài grid
+              và đổi sang pagination.total từ BE — kiểm tra lại prop itemsCount
+              của component Pagination có đúng nghĩa "tổng số item" không. */}
+          <div className="mt-6 flex justify-center">
+            <Pagination
+              currentPage={f.filters.page}
+              itemsCount={pagination?.total ?? pitches.length}
+              limit={limit}
+              onPageChange={f.setPage}
+            />
+          </div>
+        </>
+      )}
+    </section>
+  );
+}
+
 export default function Home() {
-    const limit = 10;
-  const [page, setPage] = useState(1);
-
-  const { data: response, isLoading } = useGetPitchesQuery({page, limit});
-  const pitches = response?.data || [];
-
   return (
     <div className="min-h-screen bg-gray-50 font-sans text-gray-900">
       <Header />
@@ -70,65 +147,22 @@ export default function Home() {
             <h1 className="mx-auto max-w-2xl text-3xl font-bold leading-tight text-white sm:text-4xl">
               Tìm sân bóng hoàn hảo cho trận đấu tiếp theo của bạn.
             </h1>
-
-            <div className="mx-auto mt-8 flex w-full max-w-2xl flex-col gap-2 rounded-2xl bg-white p-2 shadow-xl sm:flex-row sm:items-center sm:gap-0 sm:divide-x sm:divide-gray-200 sm:rounded-full">
-              <div className="flex flex-1 items-center gap-2 px-4 py-2">
-                <MapPin className="h-4 w-4 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search by city or club"
-                  className="w-full bg-transparent text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none"
-                />
-              </div>
-              <div className="flex flex-1 items-center gap-2 px-4 py-2">
-                <Calendar className="h-4 w-4 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Select date and time"
-                  className="w-full bg-transparent text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none"
-                />
-              </div>
-              <button className="m-1 shrink-0 rounded-full bg-emerald-700 px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-emerald-800">
-                Tìm kiếm
-              </button>
-            </div>
+            <p className="mx-auto mt-3 max-w-xl text-sm text-white/80">
+              Dùng bộ lọc bên dưới để tìm đúng sân, đúng khu vực, đúng tầm giá.
+            </p>
           </div>
         </section>
 
-        {/* Nearby Venues */}
-        <section className="mt-12">
-          <div className="flex items-end justify-between">
-            <div>
-              <h2 className="text-xl font-bold text-gray-900">Sân bóng gần đây</h2>
-              <p className="mt-1 text-sm text-gray-500">Các khu đất có đánh giá cao hiện có sẵn tại khu vực của bạn</p>
-            </div>
-            <a
-              href="#"
-              className="flex items-center gap-1 text-sm font-medium text-emerald-700 hover:text-emerald-800"
-            >
-              Xem tất cả sân bóng
-              <ArrowRight className="h-3.5 w-3.5" />
-            </a>
-          </div>
-
-          {isLoading ? (
+        {/* Nearby Venues — bọc Suspense vì useFilters dùng useSearchParams */}
+        <Suspense
+          fallback={
             <div className="mt-12 flex justify-center">
               <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
             </div>
-          ) : (
-            <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {pitches.map((venue: any) => (
-                <VenueCard key={venue.id} venue={venue} />
-              ))}
-               <Pagination
-                  currentPage={page}
-                  itemsCount={pitches?.length || 0}
-                  limit={limit}
-                  onPageChange={setPage}
-                />
-            </div>
-          )}
-        </section>
+          }
+        >
+          <NearbyVenues />
+        </Suspense>
 
         {/* Spontaneous Match + My Activity */}
         <section className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-3">
@@ -151,7 +185,6 @@ export default function Home() {
             </div>
             <h4 className="mt-4 font-semibold text-gray-900">Hoạt động của tôi</h4>
             <p className="mt-1 text-sm text-gray-500">Bạn đã đặt dịch vụ trong tháng này</p>
-
           </div>
         </section>
       </main>

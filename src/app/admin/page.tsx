@@ -100,7 +100,7 @@ export default function AdminPage() {
         {/* Page header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-3xl font-black text-gray-900 border-b-4 border-indigo-600 inline-block pb-1">
+            <h1 className="text-3xl font-bold text-gray-900 border-b-4 border-indigo-600 inline-block pb-1">
               Quản trị
             </h1>
             <p className="mt-2 text-sm text-gray-500 font-medium">
@@ -130,7 +130,7 @@ export default function AdminPage() {
               <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">
                 {stat.label}
               </p>
-              <p className="mt-1 text-2xl font-black text-gray-900">
+              <p className="mt-1 text-2xl font-bold text-gray-900">
                 {stat.value}
               </p>
             </div>
@@ -169,7 +169,7 @@ export default function AdminPage() {
                 <div className="flex items-center gap-2">
                   {action.badge && (
                     <span
-                      className={`px-2 py-0.5 rounded-full bg-${action.badgeColor}-100 text-${action.badgeColor}-600 text-[10px] font-black`}
+                      className={`px-2 py-0.5 rounded-full bg-${action.badgeColor}-100 text-${action.badgeColor}-600 text-[10px] font-bold`}
                     >
                       {action.badge} chờ
                     </span>
@@ -207,7 +207,7 @@ export default function AdminPage() {
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="px-2.5 py-1 rounded-full bg-orange-100 text-orange-600 text-xs font-black">
+                        <span className="px-2.5 py-1 rounded-full bg-orange-100 text-orange-600 text-xs font-bold">
                           {pendingFieldCount}
                         </span>
                         <ArrowRight className="h-3.5 w-3.5 text-gray-300 group-hover:text-orange-400 transition-colors" />
@@ -231,7 +231,7 @@ export default function AdminPage() {
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="px-2.5 py-1 rounded-full bg-orange-100 text-orange-600 text-xs font-black">
+                        <span className="px-2.5 py-1 rounded-full bg-orange-100 text-orange-600 text-xs font-bold">
                           {pendingOwnerCount}
                         </span>
                         <ArrowRight className="h-3.5 w-3.5 text-gray-300 group-hover:text-orange-400 transition-colors" />
@@ -248,7 +248,7 @@ export default function AdminPage() {
             >
               <div className="absolute top-0 right-0 h-full w-1/3 bg-indigo-800 skew-x-12 -mr-12" />
               <div className="relative z-10">
-                <h3 className="text-xl font-black uppercase tracking-tight">
+                <h3 className="text-xl font-bold uppercase tracking-tight">
                   Danh mục sân
                 </h3>
                 <p className="mt-2 text-sm text-indigo-100/70 max-w-md italic font-medium leading-relaxed">

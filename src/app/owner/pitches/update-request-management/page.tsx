@@ -56,7 +56,7 @@ export default function OwnerFieldUpdateRequestPage() {
                 <span className="text-indigo-600">Yêu cầu chỉnh sửa sân</span>
               </nav>
             </div>
-            <h1 className="text-3xl font-black text-gray-900 border-b-4 border-indigo-500 inline-block pb-1">
+            <h1 className="text-3xl font-bold text-gray-900 border-b-4 border-indigo-500 inline-block pb-1">
               Yêu cầu chỉnh sửa sân
             </h1>
             <p className="text-sm text-gray-400 font-medium mt-2">

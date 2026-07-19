@@ -12,7 +12,7 @@ import {
 import { CasualMatchForm, matchToFormValues } from '@/features/casual-match/components/CasualMatchForm';
 import type { CasualMatch, CasualMatchStatus } from '@/features/casual-match/types/casual-match.types';
 import { toastApiError } from '@/features/casual-match/utils/error';
-import { statusLabels } from '@/features/casual-match/utils/labels';
+import { statusLabels, formatMatchTime } from '@/features/casual-match/utils/labels';
 import type { CasualMatchFormValues } from '@/features/casual-match/schema/casual-match.schema';
 import { Edit2, Loader2, Trash2 } from 'lucide-react';
 import { useState } from 'react';
@@ -72,7 +72,7 @@ export default function OwnerCasualMatchesPage() {
       <main className="mx-auto w-full max-w-6xl flex-1 px-6 py-8">
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h1 className="text-2xl font-black text-gray-900">Quản lý trận vãng lai</h1>
+            <h1 className="text-2xl font-bold text-gray-900">Quản lý trận vãng lai</h1>
             <p className="mt-1 text-sm text-gray-500">Theo dõi và cập nhật các trận bạn đang host.</p>
           </div>
           <div className="flex gap-2">
@@ -111,7 +111,7 @@ export default function OwnerCasualMatchesPage() {
                   <div>
                     <h2 className="font-bold text-gray-900">{match.title || 'Trận vãng lai'}</h2>
                     <p className="mt-1 text-sm text-gray-500">
-                      {match.booking ? new Date(match.booking.bookingDate).toLocaleDateString('vi-VN') : ''} · {match.booking?.startTime} - {match.booking?.endTime}
+                      {match.booking ? new Date(match.booking.bookingDate).toLocaleDateString('vi-VN') : ''} · {formatMatchTime(match.booking?.startTime)} - {formatMatchTime(match.booking?.endTime)}
                     </p>
                     <p className="mt-1 text-xs text-gray-400">Còn {match.availableSlots}/{match.totalSlots} slot · {statusLabels[match.status]}</p>
                   </div>

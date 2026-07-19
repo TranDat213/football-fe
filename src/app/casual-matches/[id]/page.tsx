@@ -4,23 +4,21 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { Button } from '@/components/ui/button';
 import {
-  useCreateCasualMatchPaymentMutation,
   useGetCasualMatchByIdQuery,
   useJoinCasualMatchMutation,
 } from '@/features/casual-match/api/casualMatch.api';
 import { toastApiError } from '@/features/casual-match/utils/error';
-import { skillLevelLabels, statusLabels, teamModeLabels } from '@/features/casual-match/utils/labels';
+import { skillLevelLabels, statusLabels, teamModeLabels, formatMatchTime } from '@/features/casual-match/utils/labels';
 import type { CasualMatchTeamSide } from '@/features/casual-match/types/casual-match.types';
-import type { RootState } from '@/store/store';
+import { useAppSelector } from '@/store/store';
 import { Calendar, Loader2, MapPin, Users } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { useState } from 'react';
-import { useSelector } from 'react-redux';
 import { toast } from 'sonner';
 
 export default function CasualMatchDetailPage() {
   const { id } = useParams<{ id: string }>();
-  const currentUser = useSelector((state: RootState) => state.auth.user);
+  const currentUser = useAppSelector((state) => state.auth.user);
   const { data, isLoading, error } = useGetCasualMatchByIdQuery(id, {
     refetchOnFocus: true,
     refetchOnMountOrArgChange: true,
@@ -28,7 +26,6 @@ export default function CasualMatchDetailPage() {
   const [slots, setSlots] = useState(1);
   const [selectedTeam, setSelectedTeam] = useState<CasualMatchTeamSide | ''>('');
   const [joinMatch, { isLoading: isJoining }] = useJoinCasualMatchMutation();
-  const [createPayment, { isLoading: isPaying }] = useCreateCasualMatchPaymentMutation();
 
   const match = data?.data;
   const isHost = Boolean(currentUser?.id && match?.hostId === currentUser.id);
@@ -36,14 +33,13 @@ export default function CasualMatchDetailPage() {
   const handleJoin = async () => {
     if (!match) return;
     try {
-      await joinMatch({
+      const result = await joinMatch({
         id: match.id,
         slotCount: slots,
         selectedTeam: selectedTeam || undefined,
       }).unwrap();
-      const payment = await createPayment(match.id).unwrap();
       toast.success('Đăng ký thành công, đang chuyển sang VNPay');
-      window.location.href = payment.data.paymentUrl;
+      window.location.href = result.data.paymentUrl;
     } catch (joinError) {
       toastApiError(joinError, 'Tham gia trận thất bại');
     }
@@ -61,14 +57,14 @@ export default function CasualMatchDetailPage() {
         <section className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
           <div className="bg-emerald-700 p-8 text-white">
             <span className="rounded-full bg-white/15 px-3 py-1 text-xs font-bold">{statusLabels[match.status]}</span>
-            <h1 className="mt-4 text-3xl font-black">{match.title || 'Trận vãng lai'}</h1>
+            <h1 className="mt-4 text-3xl font-bold">{match.title || 'Trận vãng lai'}</h1>
             {match.description && <p className="mt-2 max-w-2xl text-emerald-50">{match.description}</p>}
           </div>
 
           <div className="grid gap-6 p-6 lg:grid-cols-3">
             <div className="space-y-4 lg:col-span-2">
               <Info icon={<MapPin />} label="Địa điểm" value={`${field?.name || 'Sân bóng'} · ${field?.address || ''}`} />
-              <Info icon={<Calendar />} label="Thời gian" value={`${booking ? new Date(booking.bookingDate).toLocaleDateString('vi-VN') : ''} · ${booking?.startTime || ''} - ${booking?.endTime || ''}`} />
+              <Info icon={<Calendar />} label="Thời gian" value={`${booking ? new Date(booking.bookingDate).toLocaleDateString('vi-VN') : ''} · ${formatMatchTime(booking?.startTime)} - ${formatMatchTime(booking?.endTime)}`} />
               <Info icon={<Users />} label="Slot" value={`Còn ${match.availableSlots}/${match.totalSlots} slot · ${Number(match.slotPrice).toLocaleString('vi-VN')}đ/slot`} />
               <div className="grid gap-3 sm:grid-cols-2">
                 <Badge label="Trình độ" value={skillLevelLabels[match.skillLevel]} />
@@ -103,11 +99,11 @@ export default function CasualMatchDetailPage() {
                     </select>
                   )}
                   <Button
-                    disabled={isJoining || isPaying || match.availableSlots <= 0}
+                    disabled={isJoining || match.availableSlots <= 0}
                     onClick={handleJoin}
-                    className="h-11 w-full rounded-xl bg-emerald-700 hover:bg-emerald-800"
+                    className="h-11 w-full rounded-xl bg-emerald-700 text-white hover:bg-emerald-800"
                   >
-                    {(isJoining || isPaying) && <Loader2 className="h-4 w-4 animate-spin" />}
+                    {isJoining && <Loader2 className="h-4 w-4 animate-spin" />}
                     Tham gia
                   </Button>
                 </div>
