@@ -90,6 +90,15 @@ export interface Booking {
   fieldYard: FieldYard & {
     footballField: FootballFieldDetail;
   };
+  user?: {
+    id: string;
+    firstName?: string;
+    lastName?: string;
+    username?: string;
+    email?: string;
+    phone?: string;
+    avatarUrl?: string;
+  };
   createdAt: string;
   updatedAt: string;
 }

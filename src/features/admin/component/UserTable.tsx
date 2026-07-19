@@ -66,6 +66,9 @@ export function UserTable({
               Email & Phone
             </th>
             <th className="px-6 py-4 text-xs font-bold uppercase tracking-widest text-gray-400">
+              Vai trò
+            </th>
+            <th className="px-6 py-4 text-xs font-bold uppercase tracking-widest text-gray-400">
               Trạng thái
             </th>
             <th className="px-6 py-4 text-xs font-bold uppercase tracking-widest text-gray-400">
@@ -100,7 +103,7 @@ export function UserTable({
                       {user.firstName} {user.lastName}
                     </p>
                     <p className="text-xs text-gray-500 font-medium">
-                      @{user.username}
+                      {user.username}
                     </p>
                   </div>
                 </div>
@@ -114,6 +117,23 @@ export function UserTable({
                     {user.phone || 'Chưa cập nhật'}
                   </p>
                 </div>
+              </td>
+              <td className="px-6 py-4">
+                <span
+                  className={`inline-flex items-center rounded-lg px-2 py-0.5 text-[10px] uppercase font-bold tracking-tighter border ${
+                    user.role === 'OWNER'
+                      ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                      : user.role === 'ADMIN'
+                        ? 'bg-purple-50 text-purple-700 border-purple-200'
+                        : 'bg-indigo-50 text-indigo-700 border-indigo-200'
+                  }`}
+                >
+                  {user.role === 'OWNER'
+                    ? 'Chủ sân'
+                    : user.role === 'ADMIN'
+                      ? 'Quản trị'
+                      : 'Người dùng'}
+                </span>
               </td>
               <td className="px-6 py-4">
                 <span

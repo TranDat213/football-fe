@@ -1,9 +1,10 @@
-﻿'use client';
+'use client';
 
+import { useState } from 'react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { Button } from '@/components/ui/button';
-import { useGetMyParticipationsQuery, useCreateCasualMatchPaymentMutation } from '@/features/casual-match/api/casualMatch.api';
+import { useGetMyParticipationsQuery, useCreateCasualMatchPaymentMutation, useCancelParticipationMutation } from '@/features/casual-match/api/casualMatch.api';
 import { formatMatchTime, skillLevelLabels, statusLabels, teamModeLabels } from '@/features/casual-match/utils/labels';
 import { toastApiError } from '@/features/casual-match/utils/error';
 import { Calendar, Loader2, MapPin, Users, CreditCard } from 'lucide-react';
@@ -29,6 +30,10 @@ export default function ParticipationDetailPage() {
   const { id: matchId } = useParams<{ id: string }>();
   const { data, isLoading, isError } = useGetMyParticipationsQuery({ limit: 50 });
   const [initPayment, { isLoading: isPaying }] = useCreateCasualMatchPaymentMutation();
+  const [cancelParticipation, { isLoading: isCancelling }] = useCancelParticipationMutation();
+
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [cancelReason, setCancelReason] = useState('');
 
   // ponytail: reuse existing participations query, filter client-side — avoids new endpoint
   const item = data?.data.find((p) => p.casualMatchId === matchId);
@@ -39,10 +44,21 @@ export default function ParticipationDetailPage() {
   const handlePay = async () => {
     try {
       const result = await initPayment(matchId).unwrap();
-      toast.success('Dang chuyen sang VNPay...');
+      toast.success('Đang chuyển sang VNPay...');
       window.location.href = result.data.paymentUrl;
     } catch (err) {
-      toastApiError(err, 'Tao thanh toan that bai');
+      toastApiError(err, 'Tạo thanh toán thất bại');
+    }
+  };
+
+  const handleCancelParticipation = async () => {
+    try {
+      const res = await cancelParticipation({ id: matchId, reason: cancelReason }).unwrap();
+      toast.success(res.message || 'Hủy tham gia thành công');
+      setShowCancelModal(false);
+      setCancelReason('');
+    } catch (err) {
+      toastApiError(err, 'Hủy tham gia thất bại');
     }
   };
 
@@ -121,26 +137,78 @@ export default function ParticipationDetailPage() {
 
             {item.paymentStatus === 'UNPAID' && item.joinStatus !== 'CANCELLED' && (
               <div className="mt-5 rounded-xl bg-orange-50 border border-orange-200 p-4">
-                <p className="text-sm text-orange-800 font-medium">Ban chua thanh toan cho tran nay.</p>
-                <p className="text-xs text-orange-600 mt-1">Vui long thanh toan de xac nhan tham gia.</p>
+                <p className="text-sm text-orange-800 font-medium">Bạn chưa thanh toán cho trận này.</p>
+                <p className="text-xs text-orange-600 mt-1">Vui lòng thanh toán để xác nhận tham gia.</p>
                 <Button
                   onClick={handlePay}
                   disabled={isPaying}
                   className="mt-3 rounded-xl bg-emerald-700 text-white hover:bg-emerald-800 w-full h-10">
                   {isPaying ? <Loader2 className="h-4 w-4 animate-spin" /> : <CreditCard className="h-4 w-4" />}
-                  Thanh toan ngay
+                  Thanh toán ngay
+                </Button>
+              </div>
+            )}
+
+            {item.joinStatus !== 'CANCELLED' && (
+              <div className="mt-5 border-t border-gray-200 pt-4 flex justify-end">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowCancelModal(true)}
+                  className="rounded-xl border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
+                >
+                  Hủy tham gia trận
                 </Button>
               </div>
             )}
 
             {item.paidAt && (
-              <p className="mt-3 text-xs text-gray-400">Da thanh toan luc: {new Date(item.paidAt).toLocaleString('vi-VN')}</p>
+              <p className="mt-3 text-xs text-gray-400">Đã thanh toán lúc: {new Date(item.paidAt).toLocaleString('vi-VN')}</p>
             )}
             {item.transactionCode && (
-              <p className="text-xs text-gray-400">Ma giao dich: {item.transactionCode}</p>
+              <p className="text-xs text-gray-400">Mã giao dịch: {item.transactionCode}</p>
             )}
           </div>
         </section>
+
+        {/* Cancel Modal */}
+        {showCancelModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+            <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+              <h3 className="text-lg font-bold text-gray-900">Xác nhận hủy tham gia</h3>
+              <p className="mt-2 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-xl p-3">
+                <b>Lưu ý:</b> Bạn chỉ được hủy tham gia trước hạn đăng ký / giờ thi đấu ít nhất 1 giờ. Nếu bạn đã thanh toán, số tiền sẽ được hoàn lại tự động qua VNPay.
+              </p>
+              <div className="mt-4">
+                <label className="block text-xs font-bold text-gray-700 mb-1">Lý do hủy (không bắt buộc)</label>
+                <textarea
+                  value={cancelReason}
+                  onChange={(e) => setCancelReason(e.target.value)}
+                  placeholder="Nhập lý do hủy..."
+                  className="w-full rounded-xl border border-gray-200 p-3 text-sm outline-none focus:border-emerald-600"
+                  rows={3}
+                />
+              </div>
+              <div className="mt-6 flex justify-end gap-3">
+                <Button
+                  variant="outline"
+                  className="rounded-xl"
+                  disabled={isCancelling}
+                  onClick={() => setShowCancelModal(false)}
+                >
+                  Bỏ qua
+                </Button>
+                <Button
+                  onClick={handleCancelParticipation}
+                  disabled={isCancelling}
+                  className="rounded-xl bg-red-600 text-white hover:bg-red-700"
+                >
+                  {isCancelling && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
+                  Xác nhận hủy
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
     </Shell>
   );

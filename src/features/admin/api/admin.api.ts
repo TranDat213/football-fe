@@ -90,26 +90,26 @@ export const adminApi = createApi({
       invalidatesTags: ['Admin'],
     }),
     getAllUsers: builder.query<UserListResponse, ListParams>({
-      query: ({ page, limit }) => ({
+      query: ({ page, limit, keyword }) => ({
         url: '/user/all-users',
         method: 'GET',
-        params: { page, limit },
+        params: { page, limit, keyword: keyword || undefined },
       }),
       providesTags: ['Admin'],
     }),
     getAllOwners: builder.query<UserListResponse, ListParams>({
-      query: ({ page, limit }) => ({
+      query: ({ page, limit, keyword }) => ({
         url: '/user/all-owners',
         method: 'GET',
-        params: { page, limit },
+        params: { page, limit, keyword: keyword || undefined },
       }),
       providesTags: ['Admin'],
     }),
     getAllAccounts: builder.query<UserListResponse, ListParams>({
-      query: ({ page, limit }) => ({
+      query: ({ page, limit, keyword }) => ({
         url: '/user/all-accounts',
         method: 'GET',
-        params: { page, limit },
+        params: { page, limit, keyword: keyword || undefined },
       }),
       providesTags: ['Admin'],
     }),

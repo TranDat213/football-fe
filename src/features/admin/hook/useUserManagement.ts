@@ -2,21 +2,27 @@ import { useState } from 'react';
 import {
   useGetAllUsersQuery,
   useGetAllOwnersQuery,
+  useGetAllAccountsQuery,
   useGetAccountStatisticsQuery,
   useUpdateUserStatusMutation,
 } from '../api/admin.api';
 
-export function useUserManagement(role: 'USER' | 'OWNER') {
+export function useUserManagement(role: 'USER' | 'OWNER' | 'ALL' = 'ALL') {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
+  const [keyword, setKeyword] = useState('');
 
   const usersQuery = useGetAllUsersQuery(
-    { page, limit },
+    { page, limit, keyword },
     { skip: role !== 'USER' },
   );
   const ownersQuery = useGetAllOwnersQuery(
-    { page, limit },
+    { page, limit, keyword },
     { skip: role !== 'OWNER' },
+  );
+  const accountsQuery = useGetAllAccountsQuery(
+    { page, limit, keyword },
+    { skip: role !== 'ALL' },
   );
 
   const { data: statsData, isLoading: isLoadingStats } =
@@ -24,10 +30,16 @@ export function useUserManagement(role: 'USER' | 'OWNER') {
   const [updateStatus, { isLoading: isUpdatingStatus }] =
     useUpdateUserStatusMutation();
 
-  const query = role === 'USER' ? usersQuery : ownersQuery;
-  const data = query.data?.data;
-  const list = role === 'USER' ? data?.users : data?.owners;
-  const total = data?.total ?? 0;
+  const query =
+    role === 'USER'
+      ? usersQuery
+      : role === 'OWNER'
+      ? ownersQuery
+      : accountsQuery;
+
+  const list = query.data?.data ?? [];
+  const total = query.data?.pagination?.total ?? 0;
+  const totalPages = query.data?.pagination?.totalPages ?? 1;
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
@@ -38,16 +50,24 @@ export function useUserManagement(role: 'USER' | 'OWNER') {
     setPage(1);
   };
 
+  const handleKeywordChange = (newKeyword: string) => {
+    setKeyword(newKeyword);
+    setPage(1);
+  };
+
   return {
-    list: list ?? [],
+    list,
     total,
+    totalPages,
     page,
     limit,
+    keyword,
     isLoading: query.isLoading || isLoadingStats,
     isFetching: query.isFetching,
     stats: statsData?.data?.statistics,
     handlePageChange,
     handleLimitChange,
+    handleKeywordChange,
     updateStatus,
     isUpdatingStatus,
   };

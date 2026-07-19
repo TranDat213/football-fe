@@ -10,6 +10,7 @@ import { useCreateCasualMatchMutation } from '@/features/casual-match/api/casual
 import type { CasualMatchFormValues } from '@/features/casual-match/schema/casual-match.schema';
 import { toastApiError } from '@/features/casual-match/utils/error';
 import { yardLabel, yardSlots } from '@/features/casual-match/utils/labels';
+import { formatBookingTime } from '@/features/booking/utils/formatTime';
 import { Calendar, Check, Loader2, MapPin } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -118,7 +119,7 @@ export default function CreateCasualMatchPage() {
                         </div>
                         <p className="mt-3 flex items-center gap-1 text-xs font-medium text-gray-600">
                           <Calendar className="h-3 w-3" />
-                          {new Date(booking.bookingDate).toLocaleDateString('vi-VN')} · {booking.startTime} - {booking.endTime}
+                          {new Date(booking.bookingDate).toLocaleDateString('vi-VN')} · {formatBookingTime(booking.startTime)} - {formatBookingTime(booking.endTime)}
                         </p>
                         <p className="mt-1 text-xs text-gray-400">
                           {booking.fieldYard?.name} · {yardLabel[booking.fieldYard?.type] || booking.fieldYard?.type}
