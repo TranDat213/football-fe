@@ -3,7 +3,8 @@
 import { useGetOwnerBookingsQuery } from '@/features/booking/api/bookingAPI';
 import { Booking } from '@/features/booking/types/booking.types';
 import { ExternalLink } from 'lucide-react';
-import BookingStatusDropdown from './BookingStatusDropdown';
+import Link from 'next/link';
+import { ROUTES } from '@/lib/route.constants';
 
 const PAYMENT_STYLE: Record<Booking['paymentStatus'], string> = {
   PAID:     'text-emerald-600',
@@ -18,6 +19,73 @@ const PAYMENT_LABEL: Record<Booking['paymentStatus'], string> = {
   REFUNDED: 'Đã hoàn tiền',
   REFUND_PENDING: 'Chờ hoàn tiền',
 };
+
+const STATUS_CONFIG: Record<Booking['status'], { label: string; style: string; dot: string }> = {
+  PENDING: {
+    label: 'Thanh toán tại sân',
+    style: 'text-amber-700 bg-amber-50 ring-amber-600/10',
+    dot: 'bg-amber-500',
+  },
+  AWAITING_PAYMENT: {
+    label: 'Chờ thanh toán',
+    style: 'text-blue-700 bg-blue-50 ring-blue-600/10',
+    dot: 'bg-blue-500',
+  },
+  CONFIRMED: {
+    label: 'Đã đặt',
+    style: 'text-emerald-700 bg-emerald-50 ring-emerald-600/10',
+    dot: 'bg-emerald-500',
+  },
+  CANCELLED: {
+    label: 'Đã hủy',
+    style: 'text-red-700 bg-red-50 ring-red-600/10',
+    dot: 'bg-red-500',
+  },
+  OWNER_CANCELLED: {
+    label: 'Chủ sân hủy',
+    style: 'text-rose-700 bg-rose-50 ring-rose-600/10',
+    dot: 'bg-rose-500',
+  },
+};
+
+export function BookingStatusBadge({ status }: { status: Booking['status'] }) {
+  const config = STATUS_CONFIG[status] ?? STATUS_CONFIG.PENDING;
+  return (
+    <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide ring-1 ring-inset ${config.style}`}>
+      <span className={`w-1.5 h-1.5 rounded-full ${config.dot}`} />
+      {config.label}
+    </span>
+  );
+}
+
+const YARD_TYPE_LABEL: Record<string, string> = {
+  FIVE_A_SIDE: 'Sân 5',
+  SEVEN_A_SIDE: 'Sân 7',
+  ELEVEN_A_SIDE: 'Sân 11',
+  YARD_5: 'Sân 5',
+  YARD_7: 'Sân 7',
+  YARD_11: 'Sân 11',
+};
+
+export function getCustomerInfo(booking: Booking): { name: string; phone?: string } {
+  if (booking.note && booking.note.includes('[Đặt ngoài]')) {
+    const match = booking.note.match(/Khách:\s*([^-]+)(?:-\s*(.*))?/);
+    if (match) {
+      const name = match[1]?.trim();
+      const phone = match[2]?.trim();
+      return { name: name || 'Khách vãng lai', phone };
+    }
+    return { name: 'Chủ sân khóa lịch' };
+  }
+
+  if (booking.user) {
+    const fullName = [booking.user.lastName, booking.user.firstName].filter(Boolean).join(' ');
+    const name = fullName || booking.user.username || 'Khách đặt online';
+    return { name, phone: booking.user.phone };
+  }
+
+  return { name: 'Khách vãng lai' };
+}
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString('vi-VN', {
@@ -36,7 +104,7 @@ function formatAmount(amount: number) {
 function SkeletonRow() {
   return (
     <tr>
-      {Array.from({ length: 6 }).map((_, i) => (
+      {Array.from({ length: 7 }).map((_, i) => (
         <td key={i} className="px-6 py-4">
           <div className="h-3.5 rounded bg-gray-100 animate-pulse" style={{ width: i === 3 ? '80%' : '60%' }} />
         </td>
@@ -57,9 +125,12 @@ export default function RecentBookings() {
           <h3 className="font-bold text-gray-900">Lượt đặt sân gần đây</h3>
           <p className="text-xs text-gray-400 mt-0.5">5 lượt đặt mới nhất</p>
         </div>
-        <button className="flex items-center gap-1.5 text-xs font-semibold text-emerald-700 hover:text-emerald-800 transition-colors uppercase tracking-wider">
+        <Link 
+          href={ROUTES.ownerBookings}
+          className="flex items-center gap-1.5 text-xs font-semibold text-emerald-700 hover:text-emerald-800 transition-colors uppercase tracking-wider"
+        >
           Xem tất cả <ExternalLink className="h-3 w-3" />
-        </button>
+        </Link>
       </div>
 
       {/* Table */}
@@ -68,7 +139,9 @@ export default function RecentBookings() {
           <thead className="bg-gray-50/60 border-b border-gray-100">
             <tr>
               {[
+                { label: 'Người đặt' },
                 { label: 'Sân con' },
+                { label: 'Loại sân' },
                 { label: 'Lịch đặt' },
                 { label: 'Số tiền' },
                 { label: 'Thanh toán' },
@@ -89,7 +162,7 @@ export default function RecentBookings() {
 
             {isError && (
               <tr>
-                <td colSpan={6} className="px-6 py-10 text-center text-sm text-red-400">
+                <td colSpan={7} className="px-6 py-10 text-center text-sm text-red-400">
                   Không thể tải dữ liệu. Vui lòng thử lại.
                 </td>
               </tr>
@@ -97,21 +170,42 @@ export default function RecentBookings() {
 
             {!isLoading && !isError && bookings.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-6 py-10 text-center text-sm text-gray-400">
+                <td colSpan={7} className="px-6 py-10 text-center text-sm text-gray-400">
                   Chưa có lượt đặt sân nào.
                 </td>
               </tr>
             )}
 
-            {bookings.map((booking) => (
-              <tr key={booking.id} className="group hover:bg-gray-50/40 transition-colors">
+            {bookings.map((booking) => {
+              const customer = getCustomerInfo(booking);
+              return (
+                <tr key={booking.id} className="group hover:bg-gray-50/40 transition-colors">
+
+                  {/* Người đặt */}
+                  <td className="px-6 py-4">
+                    <div className="flex flex-col">
+                      <span className="text-sm font-semibold text-gray-900">
+                        {customer.name}
+                      </span>
+                      {customer.phone && (
+                        <span className="text-xs text-gray-400">{customer.phone}</span>
+                      )}
+                    </div>
+                  </td>
 
                 {/* Sân con */}
                 <td className="px-6 py-4">
                   <div className="flex flex-col">
-                    <span className="text-sm font-semibold text-gray-900">{booking.fieldYard.name}</span>
-                    <span className="text-xs text-gray-400">{booking.fieldYard.footballField.name}</span>
+                    <span className="text-sm font-semibold text-gray-900">{booking.fieldYard?.name}</span>
+                    <span className="text-xs text-gray-400">{booking.fieldYard?.footballField?.name}</span>
                   </div>
+                </td>
+
+                {/* Loại sân */}
+                <td className="px-6 py-4">
+                  <span className="inline-flex items-center rounded-md bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-700">
+                    {YARD_TYPE_LABEL[booking.fieldYard?.type] || booking.fieldYard?.type || 'Sân 5'}
+                  </span>
                 </td>
 
                 {/* Lịch */}
@@ -134,15 +228,13 @@ export default function RecentBookings() {
                   </span>
                 </td>
 
-                {/* Trạng thái — dropdown */}
+                {/* Trạng thái — static badge */}
                 <td className="px-6 py-4 text-center">
-                  <BookingStatusDropdown
-                    bookingId={booking.id}
-                    currentStatus={booking.status}
-                  />
+                  <BookingStatusBadge status={booking.status} />
                 </td>
               </tr>
-            ))}
+            );
+          })}
           </tbody>
         </table>
       </div>

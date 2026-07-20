@@ -1,7 +1,7 @@
 'use client';
 
-import React, { Suspense } from 'react';
-import { useGetMyBookingsQuery } from '@/features/booking/api/bookingAPI';
+import React, { useState, Suspense } from 'react';
+import { useGetMyBookingsQuery, useCancelBookingMutation } from '@/features/booking/api/bookingAPI';
 import { useGetPitchesQuery } from '@/features/pitch/api/pitchAPI';
 import { Booking } from '@/features/booking/types/booking.types';
 import { format } from 'date-fns';
@@ -9,6 +9,9 @@ import { Loader2 } from 'lucide-react';
 import { Pagination } from '@/features/admin/component/Pagination';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
+import { formatBookingTime } from '@/features/booking/utils/formatTime';
 import { YARD_TYPE } from '@/types/field.types';
 import { SearchInput } from '@/components/filter/SearchInput';
 import { useBookingFilters } from '@/features/booking/hook/useBookingFilter';
@@ -41,6 +44,22 @@ function MyBookingContent() {
   // response = { message, data, pagination } — cùng shape với field/active
   const bookings = response?.data ?? [];
   const pagination = response?.pagination;
+
+  const [cancelBooking, { isLoading: isCancelling }] = useCancelBookingMutation();
+  const [cancellingBookingId, setCancellingBookingId] = useState<string | null>(null);
+  const [cancelReason, setCancelReason] = useState('');
+
+  const handleConfirmCancel = async () => {
+    if (!cancellingBookingId) return;
+    try {
+      const res = await cancelBooking({ id: cancellingBookingId, reason: cancelReason }).unwrap();
+      toast.success(res.message || 'Huỷ đặt sân thành công');
+      setCancellingBookingId(null);
+      setCancelReason('');
+    } catch (err: any) {
+      toast.error(err?.data?.message || err?.message || 'Huỷ đặt sân thất bại');
+    }
+  };
 
   return (
     <div className="container mx-auto p-4 md:p-8 max-w-4xl min-h-screen">
@@ -80,73 +99,142 @@ function MyBookingContent() {
         </div>
       ) : (
         <div className="grid gap-4">
-          {bookings.map((booking: Booking) => (
-            <div
-              key={booking.id}
-              className="p-4 md:p-6 bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow"
-            >
-              <div className="flex flex-col md:flex-row justify-between mb-4 pb-4 border-b border-gray-100">
-                <div>
-                  <h3 className="font-semibold text-lg text-gray-900">
-                    {booking.fieldYard.footballField.name}
-                  </h3>
-                  <p className="text-sm text-gray-500">
-                    {booking.fieldYard.footballField.address}
-                  </p>
+          {bookings.map((booking: any) => {
+            const canCancel = booking.status === 'PENDING' || booking.status === 'CONFIRMED' || booking.status === 'AWAITING_PAYMENT';
+            const hasCasualMatch = Boolean(booking.casualMatch && booking.casualMatch.status !== 'CANCELLED');
+            return (
+              <div
+                key={booking.id}
+                className="p-4 md:p-6 bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow"
+              >
+                <div className="flex flex-col md:flex-row justify-between mb-4 pb-4 border-b border-gray-100">
+                  <div>
+                    <h3 className="font-semibold text-lg text-gray-900">
+                      {booking.fieldYard.footballField.name}
+                    </h3>
+                    <p className="text-sm text-gray-500">
+                      {booking.fieldYard.footballField.address}
+                    </p>
+                  </div>
+                  <div className="mt-2 md:mt-0 flex flex-wrap items-center gap-2">
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusConfig(booking.status).className}`}
+                    >
+                      {getStatusConfig(booking.status).label}
+                    </span>
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-medium ${getPaymentStatusConfig(booking.paymentStatus).className}`}
+                    >
+                      {getPaymentStatusConfig(booking.paymentStatus).label}
+                    </span>
+                    {hasCasualMatch && (
+                      <span className="px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700">
+                        Đã tạo trận vãng lai
+                      </span>
+                    )}
+                  </div>
                 </div>
-                <div className="mt-2 md:mt-0 flex gap-2">
-                  <span
-                    className={`px-3 py-1 rounded-full text-xs font-medium self-start ${getStatusConfig(booking.status).className}`}
+
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                  <div>
+                    <p className="text-gray-500 mb-1">Ngày đặt</p>
+                    <p className="font-medium text-gray-900">
+                      {format(new Date(booking.bookingDate), 'dd/MM/yyyy')}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-gray-500 mb-1">Thời gian</p>
+                    <p className="font-medium text-gray-900">
+                      {formatBookingTime(booking.startTime)} - {formatBookingTime(booking.endTime)}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-gray-500 mb-1">Sân</p>
+                    <p className="font-medium text-gray-900">
+                      {booking.fieldYard.name} ({YARD_TYPE[booking.fieldYard.type as keyof typeof YARD_TYPE]})
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-gray-500 mb-1">Tổng tiền</p>
+                    <p className="font-medium text-emerald-600">
+                      {new Intl.NumberFormat('vi-VN', {
+                        style: 'currency',
+                        currency: 'VND',
+                      }).format(booking.totalPrice)}
+                    </p>
+                  </div>
+                </div>
+
+                {booking.note && (
+                  <div className="mt-4 pt-4 border-t border-gray-100 text-sm">
+                    <p className="text-gray-500 mb-1">Ghi chú</p>
+                    <p className="text-gray-700">{booking.note}</p>
+                  </div>
+                )}
+
+                {canCancel && (
+                  <div className="mt-4 pt-4 border-t border-gray-100 flex flex-wrap items-center justify-between gap-2">
+                    {hasCasualMatch ? (
+                      <span className="text-xs text-amber-600 font-medium">
+                        * Đơn đặt sân đã tạo trận vãng lai, không thể hủy trực tiếp.
+                      </span>
+                    ) : <span />}
+                    <Button
+                      variant="outline"
+                      disabled={hasCasualMatch}
+                      onClick={() => {
+                        setCancellingBookingId(booking.id);
+                        setCancelReason('');
+                      }}
+                      className="rounded-xl border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 disabled:opacity-40"
+                    >
+                      Hủy đặt sân
+                    </Button>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+
+          {/* Cancel Modal */}
+          {cancellingBookingId && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+              <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+                <h3 className="text-lg font-bold text-gray-900">Xác nhận hủy đặt sân</h3>
+                <p className="mt-2 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-xl p-3">
+                  <b>Lưu ý:</b> Chỉ được hủy trước giờ thi đấu ít nhất 1 giờ. Nếu đơn đặt sân đã được thanh toán, hệ thống sẽ tự động hoàn tiền qua VNPay.
+                </p>
+                <div className="mt-4">
+                  <label className="block text-xs font-bold text-gray-700 mb-1">Lý do hủy (không bắt buộc)</label>
+                  <textarea
+                    value={cancelReason}
+                    onChange={(e) => setCancelReason(e.target.value)}
+                    placeholder="Nhập lý do hủy sân..."
+                    className="w-full rounded-xl border border-gray-200 p-3 text-sm outline-none focus:border-emerald-600"
+                    rows={3}
+                  />
+                </div>
+                <div className="mt-6 flex justify-end gap-3">
+                  <Button
+                    variant="outline"
+                    className="rounded-xl"
+                    disabled={isCancelling}
+                    onClick={() => setCancellingBookingId(null)}
                   >
-                    {getStatusConfig(booking.status).label}
-                  </span>
-                  <span
-                    className={`px-3 py-1 rounded-full text-xs font-medium self-start ${getPaymentStatusConfig(booking.paymentStatus).className}`}
+                    Bỏ qua
+                  </Button>
+                  <Button
+                    onClick={handleConfirmCancel}
+                    disabled={isCancelling}
+                    className="rounded-xl bg-red-600 text-white hover:bg-red-700"
                   >
-                    {getPaymentStatusConfig(booking.paymentStatus).label}
-                  </span>
+                    {isCancelling && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
+                    Xác nhận hủy
+                  </Button>
                 </div>
               </div>
-
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                <div>
-                  <p className="text-gray-500 mb-1">Ngày đặt</p>
-                  <p className="font-medium text-gray-900">
-                    {format(new Date(booking.bookingDate), 'dd/MM/yyyy')}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-gray-500 mb-1">Thời gian</p>
-                  <p className="font-medium text-gray-900">
-                    {format(new Date(booking.startTime), 'HH:mm')} -{' '}
-                    {format(new Date(booking.endTime), 'HH:mm')}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-gray-500 mb-1">Sân</p>
-                  <p className="font-medium text-gray-900">
-                    {booking.fieldYard.name} ({YARD_TYPE[booking.fieldYard.type]})
-                  </p>
-                </div>
-                <div>
-                  <p className="text-gray-500 mb-1">Tổng tiền</p>
-                  <p className="font-medium text-emerald-600">
-                    {new Intl.NumberFormat('vi-VN', {
-                      style: 'currency',
-                      currency: 'VND',
-                    }).format(booking.totalPrice)}
-                  </p>
-                </div>
-              </div>
-
-              {booking.note && (
-                <div className="mt-4 pt-4 border-t border-gray-100 text-sm">
-                  <p className="text-gray-500 mb-1">Ghi chú</p>
-                  <p className="text-gray-700">{booking.note}</p>
-                </div>
-              )}
             </div>
-          ))}
+          )}
 
           {/* Phân trang thật từ server (pagination.total), không còn slice() ở client */}
           {pagination && pagination.totalPages > 1 && (

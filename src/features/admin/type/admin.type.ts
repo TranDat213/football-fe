@@ -1,5 +1,5 @@
-// src/features/pitch/types/field-admin.types.ts
 import type { FieldImage, YardStatus } from '@/types/field.types';
+import type { PaginatedApiResponse } from '@/types/pagination.type';
 
 export type FieldStatus = 'ACTIVE' | 'PENDING' | 'INACTIVE';
 
@@ -79,14 +79,7 @@ export interface UpdateUserStatusPayload {
   status: 'ACTIVE' | 'INACTIVE' | 'BANNED';
 }
 
-export interface PaginatedUsers {
-  users?: UserAdmin[];
-  owners?: UserAdmin[];
-  accounts?: UserAdmin[];
-  total: number;
-}
-
-export type UserListResponse = ApiResponse<PaginatedUsers>;
+export type UserListResponse = PaginatedApiResponse<UserAdmin>;
 
 export interface OwnerRegisterPending {
   id: string;

@@ -21,7 +21,7 @@ export default function OwnerDashboardPage() {
               <p className="mt-1 text-sm text-gray-500">Chào mừng trở lại! Đây là những gì đang diễn ra với sân của bạn hôm nay.</p>
             </div>
             <Link href={ROUTES.ownerPitchNew}>
-                <Button className="bg-emerald-700 hover:bg-emerald-800 rounded-xl px-6 h-10 text-xs font-bold uppercase tracking-wider group">
+                <Button className="bg-emerald-700 hover:bg-emerald-800 rounded-xl px-6 h-10 text-xs font-bold uppercase tracking-wider group text-white">
                 <Plus className="mr-2 h-4 w-4 group-hover:rotate-90 transition-transform" />
                 Thêm sân mới
                 </Button>

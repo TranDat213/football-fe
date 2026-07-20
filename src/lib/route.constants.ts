@@ -20,6 +20,7 @@ export const ROUTES = {
     //owner
     ownerReview:    "/owner/review",
     ownerDashboard: "/owner/dashboard",
+    ownerBookings:  "/owner/bookings",
     ownerPitches:   "/owner/pitches",
     ownerAnalytics: "/owner/analytics",
     ownerPitchSuccess: "/owner/pitches/success",

@@ -7,15 +7,18 @@ import Link from 'next/link';
 import { useUserManagement } from '@/features/admin/hook/useUserManagement';
 import { UserTable } from '@/features/admin/component/UserTable';
 import { Pagination } from '@/features/admin/component/Pagination';
+import { SearchInput } from '@/components/filter/SearchInput';
 
 export default function UserManagementPage() {
   const {
     list,
     page,
     limit,
+    keyword,
     isLoading,
     stats,
     handlePageChange,
+    handleKeywordChange,
     updateStatus,
     isUpdatingStatus,
   } = useUserManagement('USER');
@@ -67,11 +70,11 @@ export default function UserManagementPage() {
           </div>
         </div>
 
-        {/* Stats Summary */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="h-10 w-10 rounded-xl bg-indigo-50 flex items-center justify-center">
+        {/* Stats Summary & Search */}
+        <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 mb-8">
+          <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm flex-1">
+            <div className="flex items-center gap-4">
+              <div className="h-10 w-10 rounded-xl bg-indigo-50 flex items-center justify-center shrink-0">
                 <Users className="h-5 w-5 text-indigo-600" />
               </div>
               <div>
@@ -83,6 +86,14 @@ export default function UserManagementPage() {
                 </p>
               </div>
             </div>
+          </div>
+
+          <div className="w-full md:w-80">
+            <SearchInput
+              value={keyword}
+              onChange={handleKeywordChange}
+              placeholder="Tìm theo tên, email, SĐT, username..."
+            />
           </div>
         </div>
 

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useVerifyVNPayReturnQuery, useGetBookingByIdQuery } from '@/features/booking/api/bookingAPI';
 import type { VNPayReturnResult } from '@/features/booking/types/payment.types';
+import { formatBookingTime } from '@/features/booking/utils/formatTime';
 
 export default function PaymentResultPage() {
   const searchParams = useSearchParams();
@@ -95,7 +96,7 @@ export default function PaymentResultPage() {
                 <InfoRow label="Ngày" value={new Date(booking.bookingDate).toLocaleDateString('vi-VN')} />
                 <InfoRow
                   label="Giờ"
-                  value={`${new Date(booking.startTime).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })} — ${new Date(booking.endTime).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}`}
+                  value={`${formatBookingTime(booking.startTime)} — ${formatBookingTime(booking.endTime)}`}
                 />
                 <InfoRow label="Mã đơn" value={booking.id.slice(0, 8).toUpperCase()} mono />
               </div>

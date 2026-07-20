@@ -1,7 +1,7 @@
 'use client';
 
 const STATUS_OPTIONS = [
-  { value: 'PENDING', label: 'Chờ xử lý' },
+  { value: 'PENDING', label: 'Thanh toán tại sân' },
   { value: 'AWAITING_PAYMENT', label: 'Chờ thanh toán' },
   { value: 'CONFIRMED', label: 'Đã xác nhận' },
   { value: 'CANCELLED', label: 'Đã huỷ' },

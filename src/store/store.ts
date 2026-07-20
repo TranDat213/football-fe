@@ -9,6 +9,7 @@ import { pitchApi } from '../features/pitch/api/pitchAPI';
 import { adminApi } from '@/features/admin/api/admin.api';
 import { adminPaymentApi } from '@/features/admin/api/adminPaymentAPI';
 import { casualMatchApi } from '@/features/casual-match/api/casualMatch.api';
+import { notificationApi } from '@/features/notification/api/notificationAPI';
 
 export const store = configureStore({
   reducer: {
@@ -23,6 +24,7 @@ export const store = configureStore({
     [adminApi.reducerPath]: adminApi.reducer,
     [adminPaymentApi.reducerPath]: adminPaymentApi.reducer,
     [casualMatchApi.reducerPath]: casualMatchApi.reducer,
+    [notificationApi.reducerPath]: notificationApi.reducer,
   },
 
   middleware: (getDefaultMiddleware) =>
@@ -34,6 +36,7 @@ export const store = configureStore({
       adminApi.middleware,
       adminPaymentApi.middleware,
       casualMatchApi.middleware,
+      notificationApi.middleware,
     ),
 });
 

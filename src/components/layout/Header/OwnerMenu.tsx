@@ -4,13 +4,14 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import ProfileMenu from './components/ProfileMenu';
 import { 
-  LayoutDashboard, MapPin, PlusCircle, BarChart3 
+  LayoutDashboard, Calendar, MapPin, PlusCircle, BarChart3 
 } from 'lucide-react';
 import { User } from './types';
 import { ROUTES } from '@/lib/route.constants';
 
 const OWNER_NAV_LINKS = [
   { href: ROUTES.ownerDashboard, label: 'Dashboard', icon: LayoutDashboard },
+  { href: ROUTES.ownerBookings,  label: 'Đặt sân', icon: Calendar },
   { href: ROUTES.ownerPitches,   label: 'Sân của tôi', icon: MapPin },
   { href: ROUTES.ownerPitchNew, label: 'Thêm sân', icon: PlusCircle },
   { href: ROUTES.ownerAnalytics, label: 'Thống kê',  icon: BarChart3 },

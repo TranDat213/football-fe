@@ -49,7 +49,8 @@ export type BookingStatus =
   | 'PENDING'
   | 'AWAITING_PAYMENT'
   | 'CONFIRMED'
-  | 'CANCELLED';
+  | 'CANCELLED'
+  | 'OWNER_CANCELLED';
 export type BookingSource = 'ONLINE' | 'OFFLINE';
 export type PaymentStatus = 'UNPAID' | 'PAID' | 'REFUNDED' | 'REFUND_PENDING';
 export type PaymentMethod = 'CASH' | 'MOMO' | 'VNPAY' | 'BANK_TRANSFER';
@@ -87,8 +88,20 @@ export interface Booking {
   expiredAt?: string;
   cancelledAt?: string;
   cancelReason?: string;
+  ownerCancelReason?: string;
+  ownerCancelledAt?: string;
+  ownerCancelledBy?: string;
   fieldYard: FieldYard & {
     footballField: FootballFieldDetail;
+  };
+  user?: {
+    id: string;
+    firstName?: string;
+    lastName?: string;
+    username?: string;
+    email?: string;
+    phone?: string;
+    avatarUrl?: string;
   };
   createdAt: string;
   updatedAt: string;
