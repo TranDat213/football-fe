@@ -162,6 +162,18 @@ export const bookingApi = createApi({
       query: () => '/bookings/for-create-casual',
       providesTags: ['Booking'],
     }),
+
+    ownerCancelBooking: builder.mutation<
+      { success: boolean; message: string },
+      { id: string; reason: string }
+    >({
+      query: ({ id, reason }) => ({
+        url: `/bookings/owner/${id}/cancel`,
+        method: 'PATCH',
+        body: { reason },
+      }),
+      invalidatesTags: ['Booking'],
+    }),
   }),
 });
 
@@ -182,4 +194,5 @@ export const {
   useCountBookingByDateQuery,
   useCreateOfflineBookingMutation,
   useGetBookingsForCreateCasualQuery,
+  useOwnerCancelBookingMutation,
 } = bookingApi;

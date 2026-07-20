@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
-import { useGetOwnerBookingsQuery } from '@/features/booking/api/bookingAPI';
+import { useGetOwnerBookingsQuery, useOwnerCancelBookingMutation } from '@/features/booking/api/bookingAPI';
 import { Booking, BookingStatus } from '@/features/booking/types/booking.types';
 import { BookingStatusBadge, getCustomerInfo } from '@/features/booking/components/management/RecentBookings';
 import { 
@@ -14,15 +14,18 @@ import {
   Search, 
   User as UserIcon, 
   Clock, 
-  CreditCard 
+  CreditCard,
+  XCircle,
+  Loader2,
 } from 'lucide-react';
 
 const STATUS_TABS: { label: string; value: 'ALL' | BookingStatus }[] = [
   { label: 'Tất cả', value: 'ALL' },
   { label: 'Đã đặt', value: 'CONFIRMED' },
-  { label: 'Đang chờ', value: 'PENDING' },
+  { label: 'Thanh toán tại sân', value: 'PENDING' },
   { label: 'Chờ thanh toán', value: 'AWAITING_PAYMENT' },
   { label: 'Đã hủy', value: 'CANCELLED' },
+  { label: 'Chủ sân hủy', value: 'OWNER_CANCELLED' },
 ];
 
 const PAYMENT_STYLE: Record<Booking['paymentStatus'], string> = {
@@ -81,6 +84,28 @@ export default function OwnerBookingsPage() {
   const [selectedStatus, setSelectedStatus] = useState<'ALL' | BookingStatus>('ALL');
   const [searchKeyword, setSearchKeyword] = useState('');
   const limit = 10;
+
+  // Cancel booking state
+  const [cancelTarget, setCancelTarget] = useState<Booking | null>(null);
+  const [cancelReason, setCancelReason] = useState('');
+  const [cancelError, setCancelError] = useState('');
+  const [ownerCancelBooking, { isLoading: isCancelling }] = useOwnerCancelBookingMutation();
+
+  const handleConfirmCancel = async () => {
+    if (!cancelTarget) return;
+    if (!cancelReason.trim()) {
+      setCancelError('Vui lòng nhập lý do hủy');
+      return;
+    }
+    setCancelError('');
+    try {
+      await ownerCancelBooking({ id: cancelTarget.id, reason: cancelReason.trim() }).unwrap();
+      setCancelTarget(null);
+      setCancelReason('');
+    } catch (err: any) {
+      setCancelError(err?.data?.message || 'Có lỗi xảy ra khi hủy đặt sân');
+    }
+  };
 
   const { data, isLoading, isError, isFetching } = useGetOwnerBookingsQuery({
     page,
@@ -204,6 +229,9 @@ export default function OwnerBookingsPage() {
                   <th className="px-6 py-3.5 text-[11px] font-bold uppercase tracking-wider text-gray-500 text-right">
                     Ngày tạo
                   </th>
+                  <th className="px-6 py-3.5 text-[11px] font-bold uppercase tracking-wider text-gray-500 text-center">
+                    Thao tác
+                  </th>
                 </tr>
               </thead>
 
@@ -213,7 +241,7 @@ export default function OwnerBookingsPage() {
 
                 {isError && !isLoading && (
                   <tr>
-                    <td colSpan={8} className="px-6 py-12 text-center text-sm font-medium text-red-500">
+                    <td colSpan={9} className="px-6 py-12 text-center text-sm font-medium text-red-500">
                       Không thể tải danh sách đơn đặt sân. Vui lòng thử lại.
                     </td>
                   </tr>
@@ -221,7 +249,7 @@ export default function OwnerBookingsPage() {
 
                 {!isLoading && !isFetching && !isError && filteredBookings.length === 0 && (
                   <tr>
-                    <td colSpan={8} className="px-6 py-16 text-center">
+                    <td colSpan={9} className="px-6 py-16 text-center">
                       <div className="flex flex-col items-center justify-center">
                         <Calendar className="h-10 w-10 text-gray-300 mb-2" />
                         <p className="text-sm font-semibold text-gray-600">Chưa có lượt đặt sân nào</p>
@@ -312,6 +340,19 @@ export default function OwnerBookingsPage() {
                           {formatDate(booking.createdAt)}
                         </span>
                       </td>
+
+                      {/* Actions */}
+                      <td className="px-6 py-4 text-center">
+                        {(booking.status === 'CONFIRMED' || booking.status === 'PENDING') && (
+                          <button
+                            onClick={() => { setCancelTarget(booking); setCancelReason(''); }}
+                            className="inline-flex items-center gap-1 text-xs font-medium text-red-600 hover:text-red-800 bg-red-50 hover:bg-red-100 border border-red-200 px-2.5 py-1 rounded-lg transition-colors"
+                          >
+                            <XCircle className="h-3.5 w-3.5" />
+                            Hủy
+                          </button>
+                        )}
+                      </td>
                     </tr>
                   );
                 })}
@@ -378,6 +419,57 @@ export default function OwnerBookingsPage() {
           )}
         </div>
       </main>
+
+      {/* Cancel Booking Modal */}
+      {cancelTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-md bg-white rounded-2xl p-6 shadow-2xl space-y-4">
+            <h3 className="text-lg font-bold text-gray-900">Hủy đặt sân</h3>
+            <p className="text-sm text-gray-600">
+              Bạn có chắc chắn muốn hủy đơn đặt sân{' '}
+              <strong className="text-gray-900">{cancelTarget.fieldYard?.name}</strong> của{' '}
+              <strong className="text-gray-900">
+                {getCustomerInfo(cancelTarget).name}
+              </strong>
+              ?
+            </p>
+
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 mb-1">
+                Lý do hủy sân <span className="text-red-500">*</span>
+              </label>
+              <textarea
+                value={cancelReason}
+                onChange={(e) => setCancelReason(e.target.value)}
+                placeholder="Nhập lý do hủy sân (bắt buộc)..."
+                rows={3}
+                className="w-full text-sm p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+              />
+              {cancelError && <p className="text-xs text-red-600 mt-1">{cancelError}</p>}
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setCancelTarget(null)}
+                disabled={isCancelling}
+                className="px-4 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-100 rounded-xl transition-colors"
+              >
+                Hủy bỏ
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmCancel}
+                disabled={isCancelling}
+                className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-red-600 hover:bg-red-700 rounded-xl transition-colors disabled:opacity-50"
+              >
+                {isCancelling && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+                Xác nhận hủy đơn
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <Footer />
     </div>

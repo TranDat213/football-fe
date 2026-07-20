@@ -16,7 +16,7 @@ interface Option {
 const OPTIONS: Option[] = [
   {
     value: 'PENDING',
-    label: 'Đang chờ',
+    label: 'Thanh toán tại sân',
     style: 'text-amber-700 bg-amber-50 ring-amber-600/10',
     dot: 'bg-amber-500',
   },

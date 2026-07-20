@@ -22,7 +22,7 @@ const PAYMENT_LABEL: Record<Booking['paymentStatus'], string> = {
 
 const STATUS_CONFIG: Record<Booking['status'], { label: string; style: string; dot: string }> = {
   PENDING: {
-    label: 'Đang chờ',
+    label: 'Thanh toán tại sân',
     style: 'text-amber-700 bg-amber-50 ring-amber-600/10',
     dot: 'bg-amber-500',
   },
@@ -40,6 +40,11 @@ const STATUS_CONFIG: Record<Booking['status'], { label: string; style: string; d
     label: 'Đã hủy',
     style: 'text-red-700 bg-red-50 ring-red-600/10',
     dot: 'bg-red-500',
+  },
+  OWNER_CANCELLED: {
+    label: 'Chủ sân hủy',
+    style: 'text-rose-700 bg-rose-50 ring-rose-600/10',
+    dot: 'bg-rose-500',
   },
 };
 
