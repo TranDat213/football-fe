@@ -1,44 +1,50 @@
 'use client';
 
-import { useGetTotalBookingByOwnerQuery } from '@/features/booking/api/bookingAPI';
-import { TrendingUp, TrendingDown, DollarSign, Calendar, Users, Star } from 'lucide-react';
-
+import { useGetOwnerAnalyticsQuery } from '@/features/booking/api/bookingAPI';
+import { DollarSign, Calendar, TrendingUp, Award } from 'lucide-react';
 
 export default function OwnerStats() {
+  const { data: analyticsResponse, isLoading } = useGetOwnerAnalyticsQuery();
 
-  const { data: totalBookingResponse, isLoading } =
-    useGetTotalBookingByOwnerQuery();
+  const summary = analyticsResponse?.data?.summary;
 
+  const formatCurrency = (val?: number) =>
+    new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val || 0);
 
   const STATS = [
     {
-      label: 'Tổng doanh thu tháng này',
-      value: '$2,450',
-      change: '+12.5%',
-      isPositive: true,
+      label: 'Doanh thu tháng này',
+      value: isLoading ? '...' : formatCurrency(summary?.totalRevenueThisMonth),
       icon: DollarSign,
       color: 'emerald',
+      bgColor: 'bg-emerald-50',
+      textColor: 'text-emerald-600',
     },
     {
-      label: 'Đơn đặt sân',
-      value: isLoading 
-        ? '...' 
-        : totalBookingResponse?.data?.toString() ?? '0',
-      change: '+3',
-      isPositive: true,
+      label: 'Đơn đặt tháng này',
+      value: isLoading ? '...' : summary?.totalBookingsThisMonth?.toString() || '0',
       icon: Calendar,
       color: 'blue',
+      bgColor: 'bg-blue-50',
+      textColor: 'text-blue-600',
     },
     {
-      label: 'Unique Players',
-      value: '156',
-      change: '-2',
-      isPositive: false,
-      icon: Users,
+      label: 'Tổng doanh thu năm',
+      value: isLoading ? '...' : formatCurrency(summary?.totalRevenueYear),
+      icon: TrendingUp,
       color: 'indigo',
+      bgColor: 'bg-indigo-50',
+      textColor: 'text-indigo-600',
+    },
+    {
+      label: 'Tổng đơn đặt sân năm',
+      value: isLoading ? '...' : summary?.totalBookingsYear?.toString() || '0',
+      icon: Award,
+      color: 'amber',
+      bgColor: 'bg-amber-50',
+      textColor: 'text-amber-600',
     },
   ];
-
 
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -47,59 +53,20 @@ export default function OwnerStats() {
           key={stat.label}
           className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm transition-shadow hover:shadow-md"
         >
-
           <div className="flex items-center justify-between">
-
             <div
-              className={`
-                flex h-10 w-10 items-center justify-center 
-                rounded-xl bg-${stat.color}-50 
-                text-${stat.color}-600
-              `}
+              className={`flex h-10 w-10 items-center justify-center rounded-xl ${stat.bgColor} ${stat.textColor}`}
             >
               <stat.icon className="h-5 w-5" />
             </div>
-
-
-            <div
-              className={`
-                flex items-center gap-1 rounded-full px-2 py-0.5 
-                text-xs font-medium
-                ${
-                  stat.isPositive
-                    ? 'bg-emerald-50 text-emerald-600'
-                    : 'bg-red-50 text-red-600'
-                }
-              `}
-            >
-              {
-                stat.isPositive 
-                ? <TrendingUp className="h-3 w-3" />
-                : <TrendingDown className="h-3 w-3" />
-              }
-
-              {stat.change}
-
-            </div>
-
           </div>
-
 
           <div className="mt-4">
-
-            <h4 className="text-sm font-medium text-gray-500">
+            <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
               {stat.label}
             </h4>
-
-
-            <p className="mt-1 text-2xl font-bold text-gray-900">
-              {stat.value}
-            </p>
-
-
+            <p className="mt-1 text-xl font-bold text-gray-900">{stat.value}</p>
           </div>
-
-
         </div>
       ))}
     </div>

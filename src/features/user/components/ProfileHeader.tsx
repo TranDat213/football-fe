@@ -1,6 +1,10 @@
 'use client';
 
+import React, { useRef } from 'react';
 import { UserProfile } from '@/features/user/types/user.type';
+import { useUpdateProfileMutation } from '@/features/user/api/userAPI';
+import { Camera, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface ProfileHeaderProps {
   profile: UserProfile;
@@ -13,17 +17,67 @@ const ROLE_BADGE: Record<string, { label: string; className: string }> = {
 };
 
 export default function ProfileHeader({ profile }: ProfileHeaderProps) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [updateProfile, { isLoading: isUploading }] = useUpdateProfileMutation();
+
   const badge = ROLE_BADGE[profile.role] ?? {
     label: profile.role,
     className: 'bg-gray-100 text-gray-600 border border-gray-200',
   };
 
+  const handleAvatarClick = () => {
+    if (isUploading) return;
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast.error('Vui lòng chọn tệp hình ảnh hợp lệ (JPG, PNG, WEBP,...)');
+      return;
+    }
+
+    // Max 5MB limit
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Kích thước ảnh tối đa là 5MB');
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append('avatar', file);
+
+      await updateProfile(formData).unwrap();
+      toast.success('Cập nhật ảnh đại diện thành công!');
+    } catch (err: any) {
+      toast.error(err?.data?.message || 'Không thể tải ảnh đại diện lên. Vui lòng thử lại!');
+    } finally {
+      if (e.target) {
+        e.target.value = '';
+      }
+    }
+  };
+
   return (
     <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
       <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-start">
-        {/* Avatar */}
-        <div className="relative shrink-0">
-          <div className="h-20 w-20 overflow-hidden rounded-full ring-4 ring-emerald-100">
+        {/* Avatar Container with Upload */}
+        <div className="relative shrink-0 group">
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            accept="image/*"
+            className="hidden"
+          />
+
+          <div
+            onClick={handleAvatarClick}
+            className="h-24 w-24 overflow-hidden rounded-full ring-4 ring-emerald-100 relative cursor-pointer group-hover:ring-emerald-300 transition-all"
+            title="Nhấn để đổi ảnh đại diện"
+          >
             {profile.avatarUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -33,13 +87,42 @@ export default function ProfileHeader({ profile }: ProfileHeaderProps) {
                 referrerPolicy="no-referrer"
               />
             ) : (
-              <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-emerald-500 to-emerald-700 text-2xl font-bold text-white">
+              <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-emerald-500 to-emerald-700 text-3xl font-bold text-white">
                 {profile.firstName?.charAt(0).toUpperCase() ?? profile.username.charAt(0).toUpperCase()}
               </div>
             )}
+
+            {/* Loading Overlay */}
+            {isUploading && (
+              <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center rounded-full text-white">
+                <Loader2 className="h-6 w-6 animate-spin" />
+                <span className="text-[10px] font-medium mt-1">Đang tải...</span>
+              </div>
+            )}
+
+            {/* Hover Camera Overlay */}
+            {!isUploading && (
+              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center rounded-full text-white">
+                <Camera className="h-6 w-6" />
+                <span className="text-[10px] font-medium mt-0.5">Đổi ảnh</span>
+              </div>
+            )}
           </div>
-          {/* Online dot */}
-          <span className="absolute bottom-0.5 right-0.5 h-4 w-4 rounded-full border-2 border-white bg-emerald-500" />
+
+          {/* Quick Action Button Badge */}
+          <button
+            type="button"
+            onClick={handleAvatarClick}
+            disabled={isUploading}
+            className="absolute bottom-0 right-0 flex h-8 w-8 items-center justify-center rounded-full bg-emerald-600 text-white ring-2 ring-white shadow-md hover:bg-emerald-700 transition-transform active:scale-95 disabled:opacity-50"
+            title="Đổi ảnh đại diện"
+          >
+            {isUploading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Camera className="h-4 w-4" />
+            )}
+          </button>
         </div>
 
         {/* Info */}
