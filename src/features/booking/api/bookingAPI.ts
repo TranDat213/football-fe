@@ -174,6 +174,26 @@ export const bookingApi = createApi({
       }),
       invalidatesTags: ['Booking'],
     }),
+
+    getOwnerAnalytics: builder.query<
+      ApiResponse<{
+        monthlyRevenue: { month: number; monthLabel: string; revenue: number; bookingCount: number }[];
+        fieldRevenue: { fieldId: string; fieldName: string; revenue: number; bookingCount: number }[];
+        summary: {
+          totalRevenueThisMonth: number;
+          totalRevenueYear: number;
+          totalBookingsThisMonth: number;
+          totalBookingsYear: number;
+        };
+      }>,
+      { year?: number } | void
+    >({
+      query: (params) => ({
+        url: '/bookings/owner/analytics',
+        params: params?.year ? { year: params.year } : undefined,
+      }),
+      providesTags: ['Booking'],
+    }),
   }),
 });
 
@@ -195,4 +215,5 @@ export const {
   useCreateOfflineBookingMutation,
   useGetBookingsForCreateCasualQuery,
   useOwnerCancelBookingMutation,
+  useGetOwnerAnalyticsQuery,
 } = bookingApi;

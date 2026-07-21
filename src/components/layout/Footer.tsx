@@ -2,14 +2,6 @@
 
 const FOOTER_COLUMNS = [
   {
-    heading: "TÌM SÂN",
-    links: ["Sân Trong Nhà", "Sân Ngoài Trời", "Sân Futsal"],
-  },
-  {
-    heading: "DÀNH CHO CHỦ SÂN",
-    links: ["Đăng Ký Cho Thuê Sân", "Bảng Điều Khiển Cho Chủ Sân", "Hỗ Trợ Đối Tác"],
-  },
-  {
     heading: "PHÁP LÝ & HỖ TRỢ",
     links: ["Trung Tâm Trợ Giúp", "Điều Khoản Dịch Vụ", "Chính Sách Bảo Mật"],
   },

@@ -49,17 +49,19 @@ export const userApi = createApi({
         url: `/user/profile`,
         method: 'GET',
       }),
+      providesTags: ['User'],
     }),
 
     updateProfile: builder.mutation<
       UpdateProfileResponse,
-      UpdateProfilePayload
+      FormData | UpdateProfilePayload
     >({
       query: (payload) => ({
         url: `/user/profile`,
         method: 'PUT',
         body: payload,
       }),
+      invalidatesTags: ['User'],
     }),
 
     
