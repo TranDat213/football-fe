@@ -70,6 +70,9 @@ export interface FootballFieldDetail {
   name: string;
   description: string;
   address: string;
+  province?: string;
+  district?: string;
+  ward?: string;
   rating?: number;
   reviewCount?: number;
   images: FieldImage[];

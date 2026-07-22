@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, Suspense } from 'react';
+import Link from 'next/link';
 import { useGetMyBookingsQuery, useCancelBookingMutation } from '@/features/booking/api/bookingAPI';
 import { useGetPitchesQuery } from '@/features/pitch/api/pitchAPI';
 import { Booking } from '@/features/booking/types/booking.types';
@@ -172,26 +173,48 @@ function MyBookingContent() {
                   </div>
                 )}
 
-                {canCancel && (
-                  <div className="mt-4 pt-4 border-t border-gray-100 flex flex-wrap items-center justify-between gap-2">
-                    {hasCasualMatch ? (
-                      <span className="text-xs text-amber-600 font-medium">
-                        * Đơn đặt sân đã tạo trận vãng lai, không thể hủy trực tiếp.
-                      </span>
-                    ) : <span />}
-                    <Button
-                      variant="outline"
-                      disabled={hasCasualMatch}
-                      onClick={() => {
-                        setCancellingBookingId(booking.id);
-                        setCancelReason('');
-                      }}
-                      className="rounded-xl border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 disabled:opacity-40"
-                    >
-                      Hủy đặt sân
-                    </Button>
+                <div className="mt-4 pt-4 border-t border-gray-100 flex flex-wrap items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <Link href={`/my-booking/${booking.id}`}>
+                      <Button
+                        variant="outline"
+                        className="rounded-xl border-emerald-200 text-emerald-700 hover:bg-emerald-50"
+                      >
+                        Xem chi tiết
+                      </Button>
+                    </Link>
+                    {(booking.status === 'AWAITING_PAYMENT' || (booking.paymentStatus === 'UNPAID' && booking.status !== 'CANCELLED' && booking.status !== 'OWNER_CANCELLED')) && (
+                      <Link href={`/my-booking/${booking.id}`}>
+                        <Button
+                          className="rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 font-semibold"
+                        >
+                          Thanh toán ngay
+                        </Button>
+                      </Link>
+                    )}
                   </div>
-                )}
+
+                  {canCancel && (
+                    <div className="flex items-center gap-2">
+                      {hasCasualMatch && (
+                        <span className="text-xs text-amber-600 font-medium">
+                          * Không thể hủy đơn đã tạo trận vãng lai.
+                        </span>
+                      )}
+                      <Button
+                        variant="outline"
+                        disabled={hasCasualMatch}
+                        onClick={() => {
+                          setCancellingBookingId(booking.id);
+                          setCancelReason('');
+                        }}
+                        className="rounded-xl border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 disabled:opacity-40"
+                      >
+                        Hủy đặt sân
+                      </Button>
+                    </div>
+                  )}
+                </div>
               </div>
             );
           })}
@@ -280,6 +303,10 @@ function getStatusConfig(status: string) {
       return { label: 'Chờ xử lý', className: 'bg-yellow-100 text-yellow-700' };
     case 'CANCELLED':
       return { label: 'Đã huỷ', className: 'bg-red-100 text-red-700' };
+    case 'AWAITING_PAYMENT':
+      return { label: 'Đang chờ thanh toán', className: 'bg-yellow-100 text-yellow-700' };
+    case 'OWNER_CANCELLED':
+      return { label: 'Đã huỷ bởi chủ sân', className: 'bg-red-100 text-red-700' };
     default:
       return { label: status, className: 'bg-gray-100 text-gray-700' };
   }
