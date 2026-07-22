@@ -49,7 +49,7 @@ function VenueCard({ venue }: { venue: any }) {
 }
 
 function NearbyVenues() {
-  const limit = 10;
+  const limit = 9;
   const f = useFilters();
 
   const { data: categoryResponse } = useGetPitchCategoryQuery();
