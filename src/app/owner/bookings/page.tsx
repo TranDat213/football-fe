@@ -6,6 +6,7 @@ import Footer from '@/components/layout/Footer';
 import { useGetOwnerBookingsQuery, useOwnerCancelBookingMutation } from '@/features/booking/api/bookingAPI';
 import { Booking, BookingStatus } from '@/features/booking/types/booking.types';
 import { BookingStatusBadge, getCustomerInfo } from '@/features/booking/components/management/RecentBookings';
+import { SearchInput } from '@/components/filter/SearchInput';
 import { 
   Calendar, 
   ChevronLeft, 
@@ -186,14 +187,11 @@ export default function OwnerBookingsPage() {
             </div>
 
             {/* Search Input */}
-            <div className="relative w-full lg:w-72">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <input
-                type="text"
+            <div className="w-full lg:w-72">
+              <SearchInput
                 placeholder="Tìm theo tên người đặt, sân..."
                 value={searchKeyword}
-                onChange={(e) => setSearchKeyword(e.target.value)}
-                className="w-full rounded-xl border border-gray-200 bg-gray-50/50 pl-9 pr-4 py-2 text-xs font-medium text-gray-900 placeholder-gray-400 focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                onChange={setSearchKeyword}
               />
             </div>
           </div>

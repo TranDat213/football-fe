@@ -52,11 +52,6 @@ export const ChatInput = React.memo(({ input, setInput, onSend, disabled }: Chat
           </Button>
         </div>
       </div>
-      <div className="mt-2 text-center">
-        <span className="text-[10px] text-muted-foreground/60 flex items-center justify-center gap-1">
-          Press <CornerDownLeft size={10} /> to send, Shift + <CornerDownLeft size={10} /> for new line
-        </span>
-      </div>
     </div>
   );
 });

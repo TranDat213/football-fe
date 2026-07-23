@@ -4,6 +4,7 @@ import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import { CheckCircle, Slash, Ban, MoreVertical, Loader2 } from 'lucide-react';
 import { useState } from 'react';
+import { fixMojibake } from '@/lib/stringUtils';
 
 interface UserTableProps {
   users: UserAdmin[];
@@ -100,7 +101,7 @@ export function UserTable({
                   </div>
                   <div>
                     <p className="text-sm font-bold text-gray-900">
-                      {user.firstName} {user.lastName}
+                      {fixMojibake(user.firstName)} {fixMojibake(user.lastName)}
                     </p>
                     <p className="text-xs text-gray-500 font-medium">
                       {user.username}
@@ -120,7 +121,7 @@ export function UserTable({
               </td>
               <td className="px-6 py-4">
                 <span
-                  className={`inline-flex items-center rounded-lg px-2 py-0.5 text-[10px] uppercase font-bold tracking-tighter border ${
+                  className={`inline-flex items-center rounded-lg px-2.5 py-1 text-xs font-semibold border ${
                     user.role === 'OWNER'
                       ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
                       : user.role === 'ADMIN'
@@ -137,7 +138,7 @@ export function UserTable({
               </td>
               <td className="px-6 py-4">
                 <span
-                  className={`inline-flex items-center rounded-lg px-2 py-0.5 text-[10px] uppercase font-bold tracking-tighter ${
+                  className={`inline-flex items-center rounded-lg px-2.5 py-1 text-xs font-semibold ${
                     user.status === 'ACTIVE'
                       ? 'bg-emerald-50 text-emerald-600'
                       : user.status === 'BANNED'

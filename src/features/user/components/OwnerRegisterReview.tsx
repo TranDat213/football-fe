@@ -78,16 +78,16 @@ export default function OwnerRegisterReview() {
         <div className="flex h-14 w-14 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
           <IconCheck className="h-7 w-7" />
         </div>
-        <h2 className="mt-5 text-xl font-bold text-gray-900">Application submitted</h2>
+        <h2 className="mt-5 text-xl font-bold text-gray-900">Gửi yêu cầu thành công</h2>
         <p className="mt-2 max-w-md text-sm text-gray-500">
-          Thanks, {data.first_name} {data.last_name}. Our team will verify your facility and get back to
-          you within 2 business days at {data.email}.
+          Cảm ơn, {data.first_name} {data.last_name}. Đội ngũ của chúng tôi sẽ xác minh sân của bạn và sẽ liên hệ lại với
+          bạn trong vòng 2 ngày làm việc tại {data.email}.
         </p>
         <Link
           href={ROUTES.home}
           className="mt-6 rounded-lg bg-emerald-700 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-emerald-800"
         >
-          Back to homepage
+          Về trang chủ
         </Link>
       </div>
     );
@@ -97,9 +97,9 @@ export default function OwnerRegisterReview() {
     <div className="rounded-2xl border border-gray-100 bg-white p-8 shadow-sm">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h2 className="text-lg font-bold text-gray-900">Review Your Information</h2>
+          <h2 className="text-lg font-bold text-gray-900">Xem lại thông tin của bạn</h2>
           <p className="mt-1 text-sm text-gray-500">
-            Please confirm everything is correct before submitting.
+            Vui lòng xác nhận mọi thứ đã chính xác trước khi gửi.
           </p>
         </div>
         <Link
@@ -107,16 +107,16 @@ export default function OwnerRegisterReview() {
           className="flex shrink-0 items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-50"
         >
           <IconPencil />
-          Edit
+          Chỉnh sửa
         </Link>
       </div>
 
       <div className="mt-6 divide-y divide-gray-100">
-        <ReviewRow label="Full Name" value={`${data.first_name} ${data.last_name}`} />
-        <ReviewRow label="Stadium Name" value={data.stadium_name} />
-        <ReviewRow label="Stadium Address" value={data.address} />
-        <ReviewRow label="Email Address" value={data.email} />
-        <ReviewRow label="Phone Number" value={data.phone} />
+        <ReviewRow label="Họ và tên" value={`${data.first_name} ${data.last_name}`} />
+        <ReviewRow label="Tên Sân Vận Động" value={data.stadium_name} />
+        <ReviewRow label="Địa chỉ Sân Vận Động" value={data.address} />
+        <ReviewRow label="Email" value={data.email} />
+        <ReviewRow label="Số điện thoại" value={data.phone} />
       </div>
 
       <label className="mt-6 flex items-start gap-2.5 cursor-pointer">
@@ -127,9 +127,9 @@ export default function OwnerRegisterReview() {
           className="mt-0.5 h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-600/30"
         />
         <span className="text-[13px] leading-snug text-gray-500">
-          I confirm that all information provided is accurate and I agree to the{" "}
+          Tôi xác nhận rằng tất cả thông tin đã cung cấp là chính xác và tôi đồng ý với{" "}
           <Link href="/terms" className="font-medium text-emerald-700 hover:underline">
-            Host Terms &amp; Conditions
+            Điều khoản &amp; Điều kiện Chủ sở hữu
           </Link>
           .
         </span>
@@ -141,7 +141,7 @@ export default function OwnerRegisterReview() {
           className="flex h-10 items-center gap-2 rounded-lg border border-gray-200 px-5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
         >
           <IconArrowLeft />
-          Back
+          Quay lại
         </Link>
         <button
           type="button"
@@ -152,10 +152,10 @@ export default function OwnerRegisterReview() {
           {isLoading ? (
             <>
               <Spinner />
-              Submitting…
+              Đang gửi…
             </>
           ) : (
-            "Submit Application"
+            "Gửi yêu cầu"
           )}
         </button>
       </div>

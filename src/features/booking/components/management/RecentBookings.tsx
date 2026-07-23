@@ -51,7 +51,7 @@ const STATUS_CONFIG: Record<Booking['status'], { label: string; style: string; d
 export function BookingStatusBadge({ status }: { status: Booking['status'] }) {
   const config = STATUS_CONFIG[status] ?? STATUS_CONFIG.PENDING;
   return (
-    <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide ring-1 ring-inset ${config.style}`}>
+    <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ring-inset ${config.style}`}>
       <span className={`w-1.5 h-1.5 rounded-full ${config.dot}`} />
       {config.label}
     </span>

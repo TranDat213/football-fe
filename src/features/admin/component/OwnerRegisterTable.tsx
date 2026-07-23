@@ -10,6 +10,7 @@ import {
   Eye,
 } from 'lucide-react';
 import { useState } from 'react';
+import { fixMojibake } from '@/lib/stringUtils';
 
 type RegisterStatus = 'PENDING' | 'CONTACTING' | 'APPROVED' | 'REJECTED';
 
@@ -96,7 +97,7 @@ export function OwnerRegisterTable({
                     </div>
                     <div>
                       <p className="text-sm font-bold text-gray-900">
-                        {rec.firstName} {rec.lastName}
+                        {fixMojibake(rec.firstName)} {fixMojibake(rec.lastName)}
                       </p>
                       <p className="text-xs text-gray-400">{rec.email}</p>
                     </div>
@@ -114,10 +115,10 @@ export function OwnerRegisterTable({
                 {/* Sân / Địa chỉ */}
                 <td className="px-6 py-4">
                   <p className="text-sm font-medium text-gray-800">
-                    {rec.stadiumName ?? '—'}
+                    {fixMojibake(rec.stadiumName) || '—'}
                   </p>
                   <p className="text-xs text-gray-400 mt-0.5 max-w-[180px] truncate">
-                    {rec.address ?? ''}
+                    {fixMojibake(rec.address) ?? ''}
                   </p>
                 </td>
 
@@ -128,7 +129,7 @@ export function OwnerRegisterTable({
 
                 {/* Trạng thái */}
                 <td className="px-6 py-4">
-                  <span className={`inline-flex items-center rounded-lg px-2 py-0.5 text-[10px] uppercase font-bold tracking-tighter ${cfg.className}`}>
+                  <span className={`inline-flex items-center rounded-lg px-2.5 py-1 text-xs font-semibold ${cfg.className}`}>
                     {cfg.label}
                   </span>
                 </td>

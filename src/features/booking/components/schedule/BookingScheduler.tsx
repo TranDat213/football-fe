@@ -142,6 +142,14 @@ export default function BookingScheduler({
   const selectedYardMeta = yards.find((y) => y.id === selectedYardId);
   const isLoadingSlots = isLoading || isFetching;
 
+  const isSlotCutoff = (startTimeStr: string) => {
+    const [h, m] = startTimeStr.split(':').map(Number);
+    const slotDate = new Date(selectedDate);
+    slotDate.setHours(h, m, 0, 0);
+    const cutoffTime = new Date(Date.now() + 60 * 60 * 1000); // 1 hour cutoff
+    return slotDate < cutoffTime;
+  };
+
   return (
     <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
       {/* Header: Date picker */}
@@ -188,7 +196,7 @@ export default function BookingScheduler({
                   (y) => y.yardId === yard.id,
                 );
                 const hasAvailable = yardAvail
-                  ? yardAvail.slots.some((s) => s.status === 'AVAILABLE')
+                  ? yardAvail.slots.some((s) => s.status === 'AVAILABLE' && !isSlotCutoff(s.startTime))
                   : true;
 
                 return (
@@ -247,7 +255,8 @@ export default function BookingScheduler({
               {slots.map((slot) => {
                 const isSelected = selectedSlot?.startTime === slot.startTime;
                 const isBooked = slot.status === 'BOOKED';
-                const unavailable = isBooked;
+                const isCutoff = isSlotCutoff(slot.startTime);
+                const unavailable = isBooked || isCutoff;
 
                 return (
                   <button
@@ -275,9 +284,9 @@ export default function BookingScheduler({
                       </span>
                     )}
                     {isSelected && <Check className="mt-1 h-3 w-3" />}
-                    {isBooked && (
-                      <span className="mt-1 text-[10px] font-bold uppercase tracking-tight">
-                        Full
+                    {unavailable && (
+                      <span className="mt-1 text-[10px] font-bold uppercase tracking-tight text-gray-400">
+                        {isBooked && !isCutoff ? 'Full' : 'Hết giờ'}
                       </span>
                     )}
                   </button>

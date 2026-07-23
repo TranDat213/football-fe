@@ -30,10 +30,13 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
+      lang="vi"
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <head>
+        <meta charSet="utf-8" />
+      </head>
       <body className="flex min-h-full flex-col">
         <StoreProvider>
           <AuthInitializer>

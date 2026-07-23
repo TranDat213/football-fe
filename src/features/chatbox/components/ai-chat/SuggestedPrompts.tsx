@@ -8,10 +8,10 @@ interface SuggestedPromptsProps {
 }
 
 const PROMPTS = [
-  "Find available fields",
-  "Book a field",
-  "Pricing",
-  "Contact support",
+  "Tìm sân",
+  "Đặt sân",
+  "Giá cả",
+  "Hỗ trợ",
 ];
 
 export const SuggestedPrompts = React.memo(({ onSelect, disabled }: SuggestedPromptsProps) => {

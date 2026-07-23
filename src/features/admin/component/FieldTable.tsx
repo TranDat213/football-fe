@@ -125,7 +125,7 @@ export function FieldTable({
                       )}
                     </div>
                     <div>
-                      <p className="text-sm font-bold text-gray-900 uppercase tracking-tight">
+                      <p className="text-sm font-bold text-gray-900">
                         {field.name}
                       </p>
                       <p className="text-[11px] text-gray-400 font-medium">
@@ -166,7 +166,7 @@ export function FieldTable({
                 {/* Trạng thái */}
                 <td className="px-6 py-4">
                   <span
-                    className={`inline-flex items-center rounded-lg px-2 py-0.5 text-[10px] uppercase font-bold tracking-tighter ${status.className}`}
+                    className={`inline-flex items-center rounded-lg px-2.5 py-1 text-xs font-semibold ${status.className}`}
                   >
                     {status.label}
                   </span>
