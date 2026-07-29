@@ -25,6 +25,7 @@ import { format, addDays, startOfDay } from 'date-fns';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 
+
 interface BookingSchedulerProps {
   pitchId: string;
   yards: FieldYard[];
@@ -38,7 +39,7 @@ const YARD_TYPE_LABEL: Record<string, string> = {
 
 const PAYMENT_OPTIONS: { value: PaymentMethod; label: string; desc: string }[] = [
   { value: 'VNPAY', label: 'VNPay', desc: 'Thanh toán online an toàn' },
-  { value: 'CASH', label: 'Tiền mặt tại sân', desc: 'Thanh toán sau khi đến sân' },
+  // { value: 'CASH', label: 'Tiền mặt tại sân', desc: 'Thanh toán sau khi đến sân' },
 ];
 
 const PRICE_LABEL: Record<string, string> = {

@@ -25,6 +25,7 @@ export const useChat = () => {
 
     setError(null);
     setIsLoading(true);
+    console.log("🟢 isLoading set true" , performance.now().toFixed(0), "ms");
 
     const newUserMsg: ChatMessage = {
       id: crypto.randomUUID(),
@@ -38,6 +39,7 @@ export const useChat = () => {
     performScroll();
 
     try {
+      await new Promise((r) => setTimeout(r, 3000)); // TEST - xóa sau khi xong
       const result = await chatApi.sendMessage(msgContent);
       
       const newAssistantMsg: ChatMessage = {
@@ -56,6 +58,7 @@ export const useChat = () => {
       // We keep the user message, so they can retry later.
     } finally {
       setIsLoading(false);
+      console.log("🔴 isLoading set false") , performance.now().toFixed(0), "ms";
       performScroll();
     }
   };

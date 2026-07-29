@@ -10,7 +10,11 @@ export type CasualMatchStatus =
 
 export type CasualMatchVisibility = 'PUBLIC' | 'PRIVATE';
 export type CasualMatchTeamMode = 'NO_TEAM' | 'OPTIONAL_TEAM' | 'REQUIRED_TEAM';
-export type CasualMatchSkillLevel = 'ANY' | 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
+export type CasualMatchSkillLevel =
+  | 'ANY'
+  | 'BEGINNER'
+  | 'INTERMEDIATE'
+  | 'ADVANCED';
 export type CasualMatchTeamSide = 'TEAM_A' | 'TEAM_B';
 
 export interface CasualMatchUser {
@@ -18,6 +22,8 @@ export interface CasualMatchUser {
   firstName?: string;
   lastName?: string;
   avatarUrl?: string | null;
+  email?: string | null;
+  phone?: string | null;
 }
 
 export interface CasualMatchParticipant {
@@ -69,18 +75,18 @@ export interface CasualMatchDetailResponse {
   data: CasualMatch;
 }
 
-  export interface CasualMatchListParams {
-    province?: string;
-    district?: string;
-    footballFieldId?: string;
-    bookingDate?: string;
-    skillLevel?: CasualMatchSkillLevel;
-    keyword?: string;
-    status?: CasualMatchStatus;
-    date?: string;
-    page?: number;
-    limit?: number;
-  }
+export interface CasualMatchListParams {
+  province?: string;
+  district?: string;
+  footballFieldId?: string;
+  bookingDate?: string;
+  skillLevel?: CasualMatchSkillLevel;
+  keyword?: string;
+  status?: CasualMatchStatus;
+  date?: string;
+  page?: number;
+  limit?: number;
+}
 
 export interface CreateCasualMatchPayload {
   bookingId: string;
@@ -94,7 +100,9 @@ export interface CreateCasualMatchPayload {
   skillLevel?: CasualMatchSkillLevel;
 }
 
-export type UpdateCasualMatchPayload = Partial<Omit<CreateCasualMatchPayload, 'bookingId' | 'totalSlots'>> & {
+export type UpdateCasualMatchPayload = Partial<
+  Omit<CreateCasualMatchPayload, 'bookingId' | 'totalSlots'>
+> & {
   id: string;
 };
 
@@ -182,6 +190,9 @@ export interface ParticipantDetail {
     email?: string | null;
     phone?: string | null;
     avatarUrl?: string | null;
+  };
+  casualMatch?: {
+    host?: CasualMatchUser;
   };
 }
 

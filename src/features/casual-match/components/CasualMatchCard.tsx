@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { Calendar, MapPin, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { CasualMatch } from '../types/casual-match.types';
-import { skillLevelLabels, statusLabels, teamModeLabels, yardLabel, formatMatchTime } from '../utils/labels';
+import { skillLevelLabels, statusLabels, statusColors, teamModeLabels, yardLabel, formatMatchTime } from '../utils/labels';
 
 export function CasualMatchCard({ match, detailHref }: { match: CasualMatch; detailHref?: string }) {
   const booking = match.booking;
@@ -21,7 +21,7 @@ export function CasualMatchCard({ match, detailHref }: { match: CasualMatch; det
             {field?.name || 'Sân bóng'} · {booking?.fieldYard?.name || yardLabel[booking?.fieldYard?.type || ''] || ''}
           </p>
         </div>
-        <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-700">
+        <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${statusColors[match.status]?.active ?? 'bg-emerald-50 text-emerald-700'}`}>
           {statusLabels[match.status]}
         </span>
       </div>

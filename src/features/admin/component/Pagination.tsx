@@ -23,9 +23,7 @@ export function Pagination({
 
   return (
     <div className="flex items-center justify-between px-2 py-4">
-      <p className="text-xs font-medium text-gray-500">
-        Trang <span className="font-bold text-gray-900">{currentPage}</span>
-      </p>
+      
       <div className="flex items-center gap-2">
         <Button
           variant="outline"

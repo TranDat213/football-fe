@@ -14,6 +14,15 @@ export const statusLabels: Record<CasualMatchStatus, string> = {
   FINISHED: 'Đã kết thúc',
 };
 
+export const statusColors: Record<CasualMatchStatus, { active: string; inactive: string }> = {
+  OPEN:      { active: 'bg-emerald-600 text-white',   inactive: 'border border-emerald-300 text-emerald-700 hover:bg-emerald-50' },
+  FULL:      { active: 'bg-blue-600 text-white',      inactive: 'border border-blue-300 text-blue-700 hover:bg-blue-50' },
+  STARTED:   { active: 'bg-amber-500 text-white',     inactive: 'border border-amber-300 text-amber-700 hover:bg-amber-50' },
+  FINISHED:  { active: 'bg-gray-600 text-white',      inactive: 'border border-gray-300 text-gray-600 hover:bg-gray-50' },
+  CLOSED:    { active: 'bg-slate-600 text-white',     inactive: 'border border-slate-300 text-slate-600 hover:bg-slate-50' },
+  CANCELLED: { active: 'bg-red-500 text-white',       inactive: 'border border-red-300 text-red-600 hover:bg-red-50' },
+};
+
 export const visibilityLabels: Record<CasualMatchVisibility, string> = {
   PUBLIC: 'Công khai',
   PRIVATE: 'Riêng tư',
