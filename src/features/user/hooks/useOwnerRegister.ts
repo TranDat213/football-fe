@@ -20,7 +20,7 @@ export function useOwnerRegister() {
             const res = await ownerRegister(data).unwrap();
             console.log(res);
             toast.success('Đăng ký thành công!');
-            router.push(ROUTES.ownerRegister);
+            router.push(ROUTES.home);
         } catch (err: any) {
             // Nếu backend trả về validation errors
             if (err?.data?.errors) {
