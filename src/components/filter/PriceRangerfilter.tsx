@@ -33,7 +33,7 @@ export function PriceRangeFilter({ min, max, onChange, className = '' }: PriceRa
         step={10}
         value={localMin}
         onChange={(e) => setLocalMin(e.target.value)}
-        placeholder="Từ (nghìn đ)"
+        placeholder="Từ (VNĐ)"
         className="w-28 rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-700 placeholder:text-gray-400 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
       />
       <span className="text-gray-400">–</span>
@@ -43,7 +43,7 @@ export function PriceRangeFilter({ min, max, onChange, className = '' }: PriceRa
         step={10}
         value={localMax}
         onChange={(e) => setLocalMax(e.target.value)}
-        placeholder="Đến (nghìn đ)"
+        placeholder="Đến (VNĐ)"
         className="w-28 rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-700 placeholder:text-gray-400 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
       />
     </div>

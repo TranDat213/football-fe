@@ -70,6 +70,12 @@ export function FieldFilterBar({ f, categories, provinces, districts, className 
           options={FIELD_SORT_OPTIONS}
           className="sm:w-48"
         />
+        <CategoryFilter
+          value={f.filters.category}
+          onChange={f.setCategory}
+          categories={categories}
+          className="sm:w-64"
+        />
       </div>
       {chips.length > 0 && (
         <ActiveFilters chips={chips} onRemove={(key) => f.clearOne(key as keyof typeof f.filters)} onClearAll={f.clearAll} />

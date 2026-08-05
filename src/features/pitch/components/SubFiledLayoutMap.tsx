@@ -48,9 +48,6 @@ export function SubFieldLayoutMap({ subFields, selectedId, onSelect }: Prop) {
               >
                 {sf.name}
               </span>
-              {sf.type && (
-                <span className="text-xs text-gray-400">{sf.type}</span>
-              )}
             </button>
           );
         })}

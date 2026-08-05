@@ -22,7 +22,7 @@ export default function OwnerPitchesPage() {
               </p>
             </div>
             <Link href={ROUTES.ownerPitchNew}>
-              <Button className="bg-emerald-700 hover:bg-emerald-800 rounded-xl px-6 h-10 text-xs font-bold uppercase tracking-wider">
+              <Button className="bg-emerald-700 hover:bg-emerald-800 rounded-xl px-6 h-10 text-white font-bold uppercase tracking-wider">
                 <Plus className="mr-2 h-4 w-4" />
                 Thêm sân mới
               </Button>
