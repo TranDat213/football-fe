@@ -11,6 +11,10 @@ const LocationPicker = dynamic(() => import('../LocationPicker'), {
     <div className="h-[420px] w-full rounded-2xl bg-gray-100 animate-pulse" />
   ),
 });
+const HOUR_OPTIONS = Array.from({ length: 24 }, (_, i) => {
+  const hour = i.toString().padStart(2, '0');
+  return `${hour}:00`;
+});
 
 export default function FieldInformationStep() {
   const {
@@ -131,11 +135,16 @@ export default function FieldInformationStep() {
         {/* Open time */}
         <div className="space-y-2">
           <label className={labelClass}>Giờ mở cửa</label>
-          <input
-            type="time"
+          <select
             {...register('open_time')}
-            className={inputClass}
-          />
+            className={`${inputClass} bg-white`}
+          >
+            {HOUR_OPTIONS.map((hour) => (
+              <option key={hour} value={hour}>
+                {hour}
+              </option>
+            ))}
+          </select>
           {errors.open_time && (
             <p className={errorClass}>{errors.open_time.message}</p>
           )}
@@ -144,11 +153,16 @@ export default function FieldInformationStep() {
         {/* Close time */}
         <div className="space-y-2">
           <label className={labelClass}>Giờ đóng cửa</label>
-          <input
-            type="time"
+          <select
             {...register('close_time')}
-            className={inputClass}
-          />
+            className={`${inputClass} bg-white`}
+          >
+            {HOUR_OPTIONS.map((hour) => (
+              <option key={hour} value={hour}>
+                {hour}
+              </option>
+            ))}
+          </select>
           {errors.close_time && (
             <p className={errorClass}>{errors.close_time.message}</p>
           )}

@@ -4,11 +4,13 @@ import {
   useGetFieldStaticsQuery,
   useUpdateFieldStatusMutation,
 } from '../api/admin.api';
+import type { PendingField } from '../type/admin.type';
 import { toast } from 'sonner';
 
 export function useFieldManagement() {
   const [page, setPage] = useState(1);
   const limit = 10;
+  const [selectedField, setSelectedField] = useState<PendingField | null>(null);
 
   const fieldsQuery = useGetPendingFieldsQuery({ page, limit });
   const { data: fieldStatics, isLoading: isLoadingStatics } = useGetFieldStaticsQuery();
@@ -52,5 +54,7 @@ export function useFieldManagement() {
     handleApprove,
     handleReject,
     isUpdating,
+    selectedField,
+    setSelectedField,
   };
 }

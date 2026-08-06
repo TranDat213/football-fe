@@ -29,15 +29,15 @@ export default function ReviewSubmitStep({
         <div className="flex items-center gap-2 mb-1">
           <MapPin className="w-4 h-4 text-emerald-600" />
           <h4 className="font-bold text-sm uppercase tracking-widest text-emerald-700">
-            Field Information
+            Thông tin sân bóng
           </h4>
         </div>
         <div className={row}>
-          <span className={key}>Name</span>
+          <span className={key}>Tên sân bóng</span>
           <span className={val}>{d.name || '—'}</span>
         </div>
         <div className={row}>
-          <span className={key}>Address</span>
+          <span className={key}>Địa chỉ</span>
           <span className={val}>
             {[d.address, d.ward, d.district, d.province]
               .filter(Boolean)
@@ -45,18 +45,18 @@ export default function ReviewSubmitStep({
           </span>
         </div>
         <div className={row}>
-          <span className={key}>Description</span>
+          <span className={key}>Mô tả</span>
           <span className={val}>{d.description || '—'}</span>
         </div>
         <div className={row}>
-          <span className={key}>Hours</span>
+          <span className={key}>Giờ hoạt động</span>
           <span className={val}>
             {d.open_time} – {d.close_time}
           </span>
         </div>
         {(d.latitude || d.longitude) && (
           <div className={row}>
-            <span className={key}>Coordinates</span>
+            <span className={key}>Tọa độ</span>
             <span className={val}>
               {d.latitude}, {d.longitude}
             </span>
@@ -69,14 +69,14 @@ export default function ReviewSubmitStep({
         <div className="flex items-center gap-2 mb-1">
           <Clock className="w-4 h-4 text-emerald-600" />
           <h4 className="font-bold text-sm uppercase tracking-widest text-emerald-700">
-            Yards ({d.yards?.length ?? 0})
+            Các sân con ({d.yards?.length ?? 0})
           </h4>
         </div>
         {d.yards?.map((y, i) => (
           <div key={i} className={row}>
-            <span className={key}>Yard {i + 1}</span>
+            <span className={key}>Sân {i + 1}</span>
             <span className={val}>
-              {y.name || '(unnamed)'} · {y.type}
+              {y.name || '(unnamed)'}
             </span>
           </div>
         ))}
@@ -87,12 +87,12 @@ export default function ReviewSubmitStep({
         <div className="flex items-center gap-2 mb-1">
           <Image className="w-4 h-4 text-emerald-600" />
           <h4 className="font-bold text-sm uppercase tracking-widest text-emerald-700">
-            Images ({d.images?.length ?? 0})
+            Hình ảnh ({d.images?.length ?? 0})
           </h4>
         </div>
         <div className="flex flex-wrap gap-2">
           {d.images?.map((img, i) => {
-             const url = img.kind === 'new' ? URL.createObjectURL(img.file) : img.url;
+            const url = img.kind === 'new' ? URL.createObjectURL(img.file) : img.url;
             return url ? (
               <div
                 key={i}
@@ -101,7 +101,7 @@ export default function ReviewSubmitStep({
                 <img src={url} alt="" className="w-full h-full object-cover" />
                 {img.isCover && (
                   <div className="absolute inset-x-0 bottom-0 bg-emerald-600/80 text-white text-[8px] text-center font-bold py-0.5">
-                    COVER
+                    Ảnh bìa
                   </div>
                 )}
               </div>

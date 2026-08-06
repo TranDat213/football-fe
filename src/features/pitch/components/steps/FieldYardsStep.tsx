@@ -54,11 +54,11 @@ export default function FieldYardsStep() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Name */}
             <div className="space-y-1.5">
-              <label className={labelClass}>Yard Name</label>
+              <label className={labelClass}>Tên Sân Con</label>
               <input
                 {...register(`yards.${index}.name`)}
                 className={inputClass}
-                placeholder="e.g. Yard A"
+                placeholder="e.g. Sân A"
               />
               {errors?.yards?.[index]?.name && (
                 <p className={errorClass}>

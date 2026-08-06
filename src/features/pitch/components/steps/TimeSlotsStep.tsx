@@ -7,20 +7,25 @@ import { Plus, Trash2, ChevronDown } from 'lucide-react';
 import { useState } from 'react';
 
 const DAY_OPTIONS = [
-  'Sunday',
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday',
+  'Chủ Nhật',
+  'Thứ 2',
+  'Thứ 3',
+  'Thứ 4',
+  'Thứ 5',
+  'Thứ 6',
+  'Thứ 7',
 ];
 
 const TIME_SLOT_LABELS = [
-  { value: 'REGULAR', label: 'Regular' },
-  { value: 'PEAK', label: 'Peak' },
-  { value: 'LATE_NIGHT', label: 'Late Night' },
+  { value: 'REGULAR', label: 'Thông thường' },
+  { value: 'PEAK', label: 'Cao điểm' },
+  { value: 'LATE_NIGHT', label: 'Đêm muộn' },
 ];
+
+const HOUR_OPTIONS = Array.from({ length: 24 }, (_, i) => {
+  const hour = i.toString().padStart(2, '0');
+  return `${hour}:00`;
+});
 
 interface TimeSlotFieldsProps {
   control: Control<PitchFormData>;
@@ -54,7 +59,7 @@ export default function TimeSlotFields({
   return (
     <div className="space-y-3">
       <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
-        Time Slots
+        Khung giờ
       </span>
 
       {fields.map((field, slotIndex) => {
@@ -72,7 +77,7 @@ export default function TimeSlotFields({
               className="w-full flex items-center justify-between px-3 py-2 bg-gray-50 hover:bg-gray-100 transition-colors"
             >
               <span className="text-xs font-semibold text-gray-700">
-                Slot {slotIndex + 1}
+                Khung giờ {slotIndex + 1}
               </span>
               <div className="flex items-center gap-2">
                 {fields.length > 1 && (
@@ -97,7 +102,7 @@ export default function TimeSlotFields({
               <div className="p-3 space-y-3">
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   <div className="space-y-1">
-                    <label className={labelClass}>Day of Week</label>
+                    <label className={labelClass}>Ngày</label>
                     <select
                       {...register(
                         `yards.${yardIndex}.timeSlots.${slotIndex}.dayOfWeek`,
@@ -117,35 +122,45 @@ export default function TimeSlotFields({
                   </div>
 
                   <div className="space-y-1">
-                    <label className={labelClass}>Start Time</label>
-                    <input
-                      type="time"
+                    <label className={labelClass}>Thời gian bắt đầu</label>
+                    <select
                       {...register(
                         `yards.${yardIndex}.timeSlots.${slotIndex}.startTime`,
                       )}
-                      className={inputClass}
-                    />
+                      className={`${inputClass} bg-white`}
+                    >
+                      {HOUR_OPTIONS.map((hour) => (
+                        <option key={hour} value={hour}>
+                          {hour}
+                        </option>
+                      ))}
+                    </select>
                     {errs?.startTime && (
                       <p className={errorClass}>{errs.startTime.message}</p>
                     )}
                   </div>
 
                   <div className="space-y-1">
-                    <label className={labelClass}>End Time</label>
-                    <input
-                      type="time"
+                    <label className={labelClass}>Thời gian kết thúc</label>
+                    <select
                       {...register(
                         `yards.${yardIndex}.timeSlots.${slotIndex}.endTime`,
                       )}
-                      className={inputClass}
-                    />
+                      className={`${inputClass} bg-white`}
+                    >
+                      {HOUR_OPTIONS.map((hour) => (
+                        <option key={hour} value={hour}>
+                          {hour}
+                        </option>
+                      ))}
+                    </select>
                     {errs?.endTime && (
                       <p className={errorClass}>{errs.endTime.message}</p>
                     )}
                   </div>
 
                   <div className="space-y-1">
-                    <label className={labelClass}>Label</label>
+                    <label className={labelClass}>Loại khung giờ</label>
                     <select
                       {...register(
                         `yards.${yardIndex}.timeSlots.${slotIndex}.label`,
@@ -165,7 +180,7 @@ export default function TimeSlotFields({
                 </div>
 
                 <div className="rounded-xl border border-emerald-100 bg-emerald-50/40 p-3">
-                  <label className={labelClass}>Price (VNĐ)</label>
+                  <label className={labelClass}>Giá (VNĐ)</label>
 
                   <div className="relative mt-1">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-500">
@@ -217,7 +232,7 @@ export default function TimeSlotFields({
         }}
         className="w-full border-dashed border-emerald-200 text-emerald-700 hover:bg-emerald-50 text-xs h-8"
       >
-        <Plus className="w-3.5 h-3.5 mr-1.5" /> Add Time Slot
+        <Plus className="w-3.5 h-3.5 mr-1.5" /> Thêm khung giờ
       </Button>
 
       {slotErrors?.root && (
