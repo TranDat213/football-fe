@@ -22,6 +22,7 @@ import {
   AvailabilitySlot,
 } from '@/features/booking/types/booking.types';
 import { format, addDays, startOfDay } from 'date-fns';
+import { vi } from 'date-fns/locale';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { AlertTriangle, X } from 'lucide-react';
@@ -173,7 +174,7 @@ export default function BookingScheduler({
           <div className="flex items-center gap-2">
             <CalendarIcon className="h-4 w-4 text-emerald-400" />
             <span className="text-sm font-semibold uppercase tracking-wide">
-              {format(selectedDate, 'MMMM yyyy')} — {format(selectedDate, 'dd')}
+              {format(selectedDate, "'Ngày' dd 'tháng' MM, yyyy", { locale: vi })}
             </span>
           </div>
           <button
