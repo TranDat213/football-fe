@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, Suspense } from 'react';
+import Link from 'next/link';
 import { useGetMyBookingsQuery, useCancelBookingMutation } from '@/features/booking/api/bookingAPI';
 import { useGetPitchesQuery } from '@/features/pitch/api/pitchAPI';
 import { Booking } from '@/features/booking/types/booking.types';
@@ -102,6 +103,7 @@ function MyBookingContent() {
           {bookings.map((booking: any) => {
             const canCancel = booking.status === 'PENDING' || booking.status === 'CONFIRMED' || booking.status === 'AWAITING_PAYMENT';
             const hasCasualMatch = Boolean(booking.casualMatch && booking.casualMatch.status !== 'CANCELLED');
+            const isPast = isStartTimePast(booking.bookingDate, booking.startTime);
             return (
               <div
                 key={booking.id}
@@ -172,26 +174,63 @@ function MyBookingContent() {
                   </div>
                 )}
 
-                {canCancel && (
-                  <div className="mt-4 pt-4 border-t border-gray-100 flex flex-wrap items-center justify-between gap-2">
-                    {hasCasualMatch ? (
-                      <span className="text-xs text-amber-600 font-medium">
-                        * Đơn đặt sân đã tạo trận vãng lai, không thể hủy trực tiếp.
-                      </span>
-                    ) : <span />}
-                    <Button
-                      variant="outline"
-                      disabled={hasCasualMatch}
-                      onClick={() => {
-                        setCancellingBookingId(booking.id);
-                        setCancelReason('');
-                      }}
-                      className="rounded-xl border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 disabled:opacity-40"
-                    >
-                      Hủy đặt sân
-                    </Button>
+                <div className="mt-4 pt-4 border-t border-gray-100 flex flex-wrap items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <Link href={`/my-booking/${booking.id}`}>
+                      <Button
+                        variant="outline"
+                        className="rounded-xl border-emerald-200 text-emerald-700 hover:bg-emerald-50"
+                      >
+                        Xem chi tiết
+                      </Button>
+                    </Link>
+                    {(booking.status === 'AWAITING_PAYMENT' || (booking.paymentStatus === 'UNPAID' && booking.status !== 'CANCELLED' && booking.status !== 'OWNER_CANCELLED')) && (
+                      isPast ? (
+                        <Button
+                          disabled
+                          className="rounded-xl bg-emerald-600 text-white font-semibold opacity-40 cursor-not-allowed"
+                          title="Đã qua giờ bắt đầu, không thể thanh toán"
+                        >
+                          Thanh toán ngay
+                        </Button>
+                      ) : (
+                        <Link href={`/my-booking/${booking.id}`}>
+                          <Button
+                            className="rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 font-semibold"
+                          >
+                            Thanh toán ngay
+                          </Button>
+                        </Link>
+                      )
+                    )}
                   </div>
-                )}
+
+                  {canCancel && (
+                    <div className="flex items-center gap-2">
+                      {hasCasualMatch && (
+                        <span className="text-xs text-amber-600 font-medium">
+                          * Không thể hủy đơn đã tạo trận vãng lai.
+                        </span>
+                      )}
+                      {isPast && (
+                        <span className="text-xs text-gray-400 font-medium">
+                          * Đã qua giờ bắt đầu.
+                        </span>
+                      )}
+                      <Button
+                        variant="outline"
+                        disabled={hasCasualMatch || isPast}
+                        onClick={() => {
+                          setCancellingBookingId(booking.id);
+                          setCancelReason('');
+                        }}
+                        className="rounded-xl border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 disabled:opacity-40"
+                      >
+                        Hủy đặt sân
+                      </Button>
+                    </div>
+                  )}
+                </div>
               </div>
             );
           })}
@@ -280,6 +319,10 @@ function getStatusConfig(status: string) {
       return { label: 'Chờ xử lý', className: 'bg-yellow-100 text-yellow-700' };
     case 'CANCELLED':
       return { label: 'Đã huỷ', className: 'bg-red-100 text-red-700' };
+    case 'AWAITING_PAYMENT':
+      return { label: 'Đang chờ thanh toán', className: 'bg-yellow-100 text-yellow-700' };
+    case 'OWNER_CANCELLED':
+      return { label: 'Đã huỷ bởi chủ sân', className: 'bg-red-100 text-red-700' };
     default:
       return { label: status, className: 'bg-gray-100 text-gray-700' };
   }
@@ -308,3 +351,20 @@ function getPaymentStatusConfig(status: string) {
       return { label: status, className: 'bg-gray-100 text-gray-700' };
   }
 }
+
+/**
+ * Trả về true nếu thời điểm bắt đầu của booking đã qua thời điểm hiện tại.
+ * bookingDate: ISO string hoặc "yyyy-MM-dd..."
+ * startTime:   ISO string hoặc "HH:mm:ss"
+ */
+function isStartTimePast(bookingDate: string, startTime: string): boolean {
+  try {
+    const datePart = bookingDate.split('T')[0]; // "yyyy-MM-dd"
+    // startTime có thể là full ISO hoặc "HH:mm:ss"
+    const timePart = startTime.length > 8 ? startTime.slice(11, 16) : startTime.slice(0, 5); // "HH:mm"
+    const start = new Date(`${datePart}T${timePart}:00+07:00`);
+    return start < new Date();
+  } catch {
+    return false;
+  }
+}

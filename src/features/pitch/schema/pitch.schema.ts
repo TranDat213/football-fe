@@ -3,7 +3,7 @@ import { z } from 'zod';
 // Matches FieldImageCompletePayload (pre-upload shape, still has `file`)
 export const newImageSchema = z.object({
   kind: z.literal('new'),
-  file: z.instanceof(File, { message: 'Image file is required' }),
+  file: z.instanceof(File, { message: 'Ảnh là bắt buộc' }),
   sortOrder: z.number().int().min(0),
   isCover: z.boolean(),
 });
@@ -24,7 +24,7 @@ export const imageSchema = z.discriminatedUnion('kind', [
 
 // Matches priceRules entry inside YardCompletePayload.timeSlots[].priceRules
 export const priceRuleSchema = z.object({
-  price: z.number().min(0, 'Price must be positive'),
+  price: z.number().min(0, 'Giá phải lớn hơn 0'),
 });
 
 // Matches YardCompletePayload.timeSlots[]
@@ -51,22 +51,57 @@ export const timeSlotSchema = z
     if (data.startTime >= data.endTime) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: 'Start time must be before end time',
+        message: 'Thời gian bắt đầu phải trước thời gian kết thúc',
         path: ['startTime'],
       });
     }
   });
 
 // Matches YardCompletePayload (status removed — not part of the payload anymore)
-export const yardSchema = z.object({
-  name: z.string().min(1, 'Yard name is required'),
+export const yardSchema = z
+  .object({
+    name: z.string().min(1, 'Tên sân con là bắt buộc'),
 
-  type: z.enum(['FIVE_A_SIDE', 'SEVEN_A_SIDE', 'ELEVEN_A_SIDE'] as const),
+    type: z.enum(['FIVE_A_SIDE', 'SEVEN_A_SIDE', 'ELEVEN_A_SIDE'] as const),
 
-  timeSlots: z
-    .array(timeSlotSchema)
-    .min(1, 'At least one time slot is required'),
-});
+    timeSlots: z
+      .array(timeSlotSchema)
+      .min(1, 'Bạn phải thêm ít nhất một khung giờ'),
+  })
+  .superRefine((data, ctx) => {
+    // Nhóm slots theo ngày trong tuần
+    const byDay = new Map<
+      number,
+      { start: string; end: string; index: number }[]
+    >();
+
+    data.timeSlots.forEach((slot, index) => {
+      const list = byDay.get(slot.dayOfWeek) ?? [];
+      list.push({ start: slot.startTime, end: slot.endTime, index });
+      byDay.set(slot.dayOfWeek, list);
+    });
+
+    // Kiểm tra overlap từng cặp slot trong cùng ngày
+    // Hai slot A và B overlap khi: A.start < B.end VÀ B.start < A.end
+    // (Trường hợp giáp nhau A.end === B.start thì KHÔNG overlap)
+    byDay.forEach((slots) => {
+      for (let i = 0; i < slots.length; i++) {
+        for (let j = i + 1; j < slots.length; j++) {
+          const a = slots[i];
+          const b = slots[j];
+          const overlaps = a.start < b.end && b.start < a.end;
+          if (overlaps) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: `Khung giờ bị trùng với khung giờ ${a.index + 1} (${a.start}–${a.end})`,
+              path: ['timeSlots', b.index, 'startTime'],
+            });
+          }
+        }
+      }
+    });
+  });
+
 
 // Matches CreateFootballFieldCompletePayload
 export const PitchFormSchema = z
@@ -89,22 +124,22 @@ export const PitchFormSchema = z
     ),
     open_time: z
       .string()
-      .regex(/^([01]\d|2[0-3]):([0-5]\d)$/, 'Must be HH:mm format'),
+      .regex(/^([01]\d|2[0-3]):([0-5]\d)$/, 'Sai định dạng'),
     close_time: z
       .string()
-      .regex(/^([01]\d|2[0-3]):([0-5]\d)$/, 'Must be HH:mm format'),
+      .regex(/^([01]\d|2[0-3]):([0-5]\d)$/, 'Sai định dạng'),
 
     // Step 1: Yards (with nested time slots + price rules)
-    yards: z.array(yardSchema).min(1, 'At least one yard is required'),
+    yards: z.array(yardSchema).min(1, 'Bạn phải thêm ít nhất một sân con'),
 
     // Step 2: Images
-    images: z.array(imageSchema).min(1, 'At least one image is required'),
+    images: z.array(imageSchema).min(1, 'Bạn phải thêm ít nhất một ảnh'),
   })
   .superRefine((data, ctx) => {
     if (data.open_time >= data.close_time) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: 'Open time must be before close time',
+        message: 'Thời gian mở cửa phải trước thời gian đóng cửa',
         path: ['open_time'],
       });
     }
@@ -114,7 +149,7 @@ export const PitchFormSchema = z
         if (slot.startTime < data.open_time) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: 'Time slot cannot start before field opening time',
+            message: 'Thời gian bắt đầu phải sau thời gian mở cửa',
             path: ['yards', yardIndex, 'timeSlots', slotIndex, 'startTime'],
           });
         }
@@ -122,7 +157,7 @@ export const PitchFormSchema = z
         if (slot.endTime > data.close_time) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: 'Time slot cannot end after field closing time',
+            message: 'Thời gian kết thúc phải sau thời gian đóng cửa',
             path: ['yards', yardIndex, 'timeSlots', slotIndex, 'endTime'],
           });
         }

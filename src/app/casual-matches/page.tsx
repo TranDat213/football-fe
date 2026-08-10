@@ -9,12 +9,22 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { useGetCasualMatchesQuery } from '@/features/casual-match/api/casualMatch.api';
 import { CasualMatchCard } from '@/features/casual-match/components/CasualMatchCard';
+import { Pagination } from '@/features/admin/component/Pagination';
 import { ROUTES } from '@/lib/route.constants';
 
 
 export default function CommunityPage() {
   const [keyword, setKeyword] = useState('');
-  const { data: matches, isLoading } = useGetCasualMatchesQuery({ keyword: keyword || undefined, limit: 10 });
+  const [page, setPage] = useState(1);
+  const limit = 5;
+
+  const { data: matches, isLoading } = useGetCasualMatchesQuery({
+    keyword: keyword || undefined,
+    page,
+    limit,
+  });
+
+  const meta = matches?.meta;
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -41,7 +51,10 @@ export default function CommunityPage() {
                     type="text" 
                     placeholder="Tìm trận vãng lai..." 
                     value={keyword}
-                    onChange={(event) => setKeyword(event.target.value)}
+                    onChange={(event) => {
+                      setKeyword(event.target.value);
+                      setPage(1);
+                    }}
                     className="w-full bg-white border border-gray-100 rounded-xl pl-10 pr-4 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500"
                 />
             </div>
@@ -53,7 +66,16 @@ export default function CommunityPage() {
                         <Loader2 className="h-6 w-6 animate-spin text-emerald-600" />
                     </div>
                 ) : matches?.data.length ? (
-                    matches.data.map((match) => <CasualMatchCard key={match.id} match={match} />)
+                    <>
+                      {matches.data.map((match) => <CasualMatchCard key={match.id} match={match} />)}
+                      
+                      <Pagination
+                        currentPage={page}
+                        itemsCount={matches.data.length}
+                        limit={limit}
+                        onPageChange={setPage}
+                      />
+                    </>
                 ) : (
                     <div className="rounded-2xl border border-dashed border-gray-200 bg-white p-5 text-center text-sm text-gray-500">
                         Chưa có trận đang mở.

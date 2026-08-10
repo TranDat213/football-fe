@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { Loader2, AlertCircle } from 'lucide-react';
 import { CasualMatchCard } from '@/features/casual-match/components/CasualMatchCard';
 import { useGetHostCasualMatchesQuery } from '@/features/casual-match/api/casualMatch.api';
-import { statusLabels } from '@/features/casual-match/utils/labels';
+import { statusLabels, statusColors } from '@/features/casual-match/utils/labels';
 import type { CasualMatchStatus } from '@/features/casual-match/types/casual-match.types';
 import { useState } from 'react';
 
@@ -40,19 +40,28 @@ export default function MyCasualMatchesPage() {
 
         {/* Status filter tabs */}
         <div className="mb-5 flex flex-wrap gap-2">
-          {STATUS_TABS.map((tab) => (
-            <button
-              key={tab.value}
-              onClick={() => setStatus(tab.value)}
-              className={`rounded-full px-3 py-1 text-xs font-semibold transition ${
-                status === tab.value
-                  ? 'bg-emerald-700 text-white'
-                  : 'border border-gray-200 bg-white text-gray-600 hover:border-emerald-400'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
+          {STATUS_TABS.map((tab) => {
+            const color = tab.value
+              ? statusColors[tab.value]
+              : null;
+            const activeClass = color
+              ? color.active
+              : 'bg-emerald-700 text-white';
+            const inactiveClass = color
+              ? color.inactive
+              : 'border border-gray-200 bg-white text-gray-600 hover:border-emerald-400';
+            return (
+              <button
+                key={tab.value}
+                onClick={() => setStatus(tab.value)}
+                className={`rounded-full px-3 py-1 text-xs font-semibold transition ${
+                  status === tab.value ? activeClass : inactiveClass
+                }`}
+              >
+                {tab.label}
+              </button>
+            );
+          })}
         </div>
 
         {/* Loading */}
@@ -75,11 +84,11 @@ export default function MyCasualMatchesPage() {
         {!isLoading && !isError && matches.length === 0 && (
           <section className="rounded-2xl border border-dashed border-gray-200 bg-white p-10 text-center shadow-sm">
             <p className="mx-auto mt-3 max-w-md text-sm text-gray-500">
-              {status ? `Khong co tran nao o trang thai nay.` : 'Ban chua tao tran vang lai nao.'}
+              {status ? `Không có trận nào ở trạng thái này.` : 'Bạn chưa tạo trận vãng lai nào.'}
             </p>
             {!status && (
               <Button asChild className="mt-6 rounded-xl bg-emerald-700 text-white hover:bg-emerald-800">
-                <Link href="/casual-matches/create">Tao tran moi</Link>
+                <Link href="/casual-matches/create">Tạo trận mới</Link>
               </Button>
             )}
           </section>

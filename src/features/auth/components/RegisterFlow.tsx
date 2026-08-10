@@ -11,35 +11,24 @@ import { ROUTES } from '@/lib/route.constants';
 type RegisterStep = 'form' | 'otp';
 
 /**
- * RegisterFlow — quản lý toàn bộ luồng đăng ký 2 bước:
+ * RegisterFlow — quản lý luồng đăng ký qua mã OTP:
  *
- * 1. SignUpForm: validate form → useSignUp gọi requestOtp(purpose='SIGN_UP', ...formData)
- *    Backend lưu pendingSignUp trong OTP store, gửi mail OTP.
+ * 1. SignUpForm: submit form → call requestOtp(purpose='SIGN_UP', ...formData)
+ *    Backend lưu pendingSignUp trong OTP store, gửi mail chứa OTP 6 số.
  *
- * 2. OtpForm: user nhập OTP → verifyOtp(purpose='SIGN_UP') → backend tạo user trong DB.
- *    CHỈ KHI verifyOtp thành công mới redirect sang login.
- *
- * UI không cho phép bỏ qua bước OTP: chỉ khi verifyOtp thành công mới redirect.
+ * 2. OtpForm: user nhập OTP 6 số → verifyOtp(purpose='SIGN_UP') → backend tạo user trong DB.
+ *    KHI verifyOtp thành công mới redirect sang trang đăng nhập.
  */
 export default function RegisterFlow() {
   const router = useRouter();
   const [step, setStep] = useState<RegisterStep>('form');
   const [registeredEmail, setRegisteredEmail] = useState('');
 
-  /**
-   * Gọi từ SignUpForm.onSuccess — requestOtp đã gửi thành công, email đã được
-   * lưu tạm trong OTP store của backend kèm pendingSignUp.
-   */
   const handleRegistered = (email: string) => {
-    // ponytail: redirect directly to login
-    toast.success('Đăng ký thành công! Vui lòng đăng nhập.');
-    router.push(ROUTES.login);
+    setRegisteredEmail(email);
+    setStep('otp');
   };
 
-  /**
-   * Gọi từ OtpForm.onVerified — verifyOtp thành công, backend đã tạo user trong DB.
-   * Lúc này mới coi là đăng ký hoàn tất.
-   */
   const handleVerified = (_result: { email: string; resetToken?: string; user?: unknown }) => {
     toast.success('Đăng ký thành công! Vui lòng đăng nhập.');
     router.push(ROUTES.login);

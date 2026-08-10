@@ -26,7 +26,7 @@ const ADMIN_NAV_LINKS = [
   },
   {
     href: ROUTES.adminFields,
-    label: 'Quản lý tạo sân',
+    label: 'Quản lý sân bóng',
     icon: MapPinned,
   },
 ];

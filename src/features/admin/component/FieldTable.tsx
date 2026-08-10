@@ -2,7 +2,7 @@
 
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
-import { CheckCircle2, XCircle, Loader2, ArrowRight } from 'lucide-react';
+import { CheckCircle2, XCircle, Loader2, Eye } from 'lucide-react';
 import { useState } from 'react';
 import type {
   PendingField,
@@ -14,6 +14,7 @@ interface FieldTableProps {
   isLoading: boolean;
   onApprove?: (id: string) => void;
   onReject?: (id: string) => void;
+  onViewDetail?: (field: PendingField) => void;
   isUpdating?: boolean;
 }
 
@@ -22,6 +23,7 @@ export function FieldTable({
   isLoading,
   onApprove,
   onReject,
+  onViewDetail,
   isUpdating,
 }: FieldTableProps) {
   const [updatingId, setUpdatingId] = useState<string | null>(null);
@@ -125,7 +127,7 @@ export function FieldTable({
                       )}
                     </div>
                     <div>
-                      <p className="text-sm font-bold text-gray-900 uppercase tracking-tight">
+                      <p className="text-sm font-bold text-gray-900">
                         {field.name}
                       </p>
                       <p className="text-[11px] text-gray-400 font-medium">
@@ -166,7 +168,7 @@ export function FieldTable({
                 {/* Trạng thái */}
                 <td className="px-6 py-4">
                   <span
-                    className={`inline-flex items-center rounded-lg px-2 py-0.5 text-[10px] uppercase font-bold tracking-tighter ${status.className}`}
+                    className={`inline-flex items-center rounded-lg px-2.5 py-1 text-xs font-semibold ${status.className}`}
                   >
                     {status.label}
                   </span>
@@ -207,10 +209,11 @@ export function FieldTable({
                           </>
                         )}
                         <button
+                          onClick={() => onViewDetail?.(field)}
                           title="Xem chi tiết"
-                          className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100 transition-all"
+                          className="p-1.5 rounded-lg text-indigo-400 hover:bg-indigo-50 transition-all"
                         >
-                          <ArrowRight className="h-4 w-4" />
+                          <Eye className="h-4 w-4" />
                         </button>
                       </>
                     )}

@@ -7,7 +7,7 @@ export const TypingIndicator = React.memo(() => {
       {[0, 1, 2].map((i) => (
         <motion.div
           key={i}
-          className="h-2 w-2 rounded-full bg-muted-foreground/50"
+          className="h-2 w-2 rounded-full bg-green-500"
           animate={{ y: [0, -5, 0] }}
           transition={{
             duration: 0.6,

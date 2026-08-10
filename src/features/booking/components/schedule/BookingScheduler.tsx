@@ -13,17 +13,20 @@ import { Button } from '@/components/ui/button';
 import {
   useGetAvailabilityQuery,
   useCreateBookingMutation,
+  useCreateOfflineBookingMutation,
   useCreatePaymentMutation,
 } from '@/features/booking/api/bookingAPI';
 import {
   FieldYard,
   YardAvailability,
   AvailabilitySlot,
-  PaymentMethod,
 } from '@/features/booking/types/booking.types';
 import { format, addDays, startOfDay } from 'date-fns';
+import { vi } from 'date-fns/locale';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import { AlertTriangle, X } from 'lucide-react';
+
 
 interface BookingSchedulerProps {
   pitchId: string;
@@ -36,10 +39,6 @@ const YARD_TYPE_LABEL: Record<string, string> = {
   ELEVEN_A_SIDE: '11v11',
 };
 
-const PAYMENT_OPTIONS: { value: PaymentMethod; label: string; desc: string }[] = [
-  { value: 'VNPAY', label: 'VNPay', desc: 'Thanh toán online an toàn' },
-  { value: 'CASH', label: 'Tiền mặt tại sân', desc: 'Thanh toán sau khi đến sân' },
-];
 
 const PRICE_LABEL: Record<string, string> = {
   REGULAR: 'Giá thường',
@@ -62,7 +61,7 @@ export default function BookingScheduler({
   const [selectedSlot, setSelectedSlot] = useState<AvailabilitySlot | null>(
     null,
   );
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('VNPAY');
+  const [cashWarning, setCashWarning] = useState<{ bookingId: string; unlockTime: string } | null>(null);
 
   const dateStr = format(selectedDate, 'yyyy-MM-dd');
 
@@ -76,9 +75,10 @@ export default function BookingScheduler({
   });
 
   const [createBooking, { isLoading: isBooking }] = useCreateBookingMutation();
+  const [createOfflineBooking, { isLoading: isOfflineBooking }] = useCreateOfflineBookingMutation();
   const [createPayment, { isLoading: isPaying }] = useCreatePaymentMutation();
 
-  const isSubmitting = isBooking || isPaying;
+  const isSubmitting = isBooking || isOfflineBooking || isPaying;
 
   const availabilityYards: YardAvailability[] =
     availabilityResponse?.data?.yards ?? [];
@@ -97,7 +97,7 @@ export default function BookingScheduler({
     setSelectedSlot(null);
   };
 
-  const handleBooking = async () => {
+  const handleBookingVNPay = async () => {
     if (!selectedSlot || !selectedYardId) return;
 
     try {
@@ -106,34 +106,48 @@ export default function BookingScheduler({
         bookingDate: dateStr,
         startTime: selectedSlot.startTime,
         endTime: selectedSlot.endTime,
-        paymentMethod,
       }).unwrap();
 
       const bookingId = result.data.id;
 
-      if (paymentMethod === 'CASH') {
-        toast.success('Đặt sân thành công!');
-        router.push('/booking/success');
-      } else {
-        // VNPAY: gọi createPayment để lấy paymentUrl
-        try {
-          const paymentResult = await createPayment({
-            bookingId,
-            paymentMethod,
-          }).unwrap();
+      try {
+        const paymentResult = await createPayment({
+          bookingId,
+          paymentMethod: 'VNPAY',
+        }).unwrap();
 
-          if (paymentResult.paymentUrl) {
-            window.location.href = paymentResult.paymentUrl;
-          } else {
-            toast.success('Đặt sân thành công!');
-            router.push(`/booking/${bookingId}`);
-          }
-        } catch {
-          // Nếu tạo payment thất bại, vẫn redirect sang trang booking để user có thể thử lại
-          toast.error('Không thể tạo link thanh toán, vui lòng thử lại trong trang đặt chỗ');
+        if (paymentResult.paymentUrl) {
+          window.location.href = paymentResult.paymentUrl;
+        } else {
+          toast.success('Đặt sân thành công!');
           router.push(`/booking/${bookingId}`);
         }
+      } catch {
+        toast.error('Không thể tạo link thanh toán, vui lòng thử lại trong trang đặt chỗ');
+        router.push(`/booking/${bookingId}`);
       }
+    } catch (err: any) {
+      toast.error(err?.data?.message || 'Có lỗi xảy ra khi đặt sân');
+    }
+  };
+
+  const handleBookingCash = async () => {
+    if (!selectedSlot || !selectedYardId) return;
+
+    try {
+      const result = await createOfflineBooking({
+        fieldYardId: selectedYardId,
+        bookingDate: dateStr,
+        startTime: selectedSlot.startTime,
+        endTime: selectedSlot.endTime,
+      }).unwrap();
+
+      // Tính unlockTime = startTime - 30 phút để hiện dialog
+      const [h, m] = selectedSlot.startTime.split(':').map(Number);
+      const unlockDate = new Date(selectedDate);
+      unlockDate.setHours(h, m - 30, 0, 0);
+      const unlockTime = `${String(unlockDate.getHours()).padStart(2, '0')}:${String(unlockDate.getMinutes()).padStart(2, '0')}`;
+      setCashWarning({ bookingId: result.data.id, unlockTime });
     } catch (err: any) {
       toast.error(err?.data?.message || 'Có lỗi xảy ra khi đặt sân');
     }
@@ -142,7 +156,9 @@ export default function BookingScheduler({
   const selectedYardMeta = yards.find((y) => y.id === selectedYardId);
   const isLoadingSlots = isLoading || isFetching;
 
+
   return (
+    <>
     <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
       {/* Header: Date picker */}
       <div className="bg-gray-900 p-5 text-white">
@@ -158,7 +174,7 @@ export default function BookingScheduler({
           <div className="flex items-center gap-2">
             <CalendarIcon className="h-4 w-4 text-emerald-400" />
             <span className="text-sm font-semibold uppercase tracking-wide">
-              {format(selectedDate, 'MMMM yyyy')} — {format(selectedDate, 'dd')}
+              {format(selectedDate, "'Ngày' dd 'tháng' MM, yyyy", { locale: vi })}
             </span>
           </div>
           <button
@@ -247,6 +263,7 @@ export default function BookingScheduler({
               {slots.map((slot) => {
                 const isSelected = selectedSlot?.startTime === slot.startTime;
                 const isBooked = slot.status === 'BOOKED';
+                // const isCutoff = isSlotCutoff(slot.startTime);
                 const unavailable = isBooked;
 
                 return (
@@ -275,9 +292,9 @@ export default function BookingScheduler({
                       </span>
                     )}
                     {isSelected && <Check className="mt-1 h-3 w-3" />}
-                    {isBooked && (
-                      <span className="mt-1 text-[10px] font-bold uppercase tracking-tight">
-                        Full
+                    {unavailable && (
+                      <span className="mt-1 text-[10px] font-bold uppercase tracking-tight text-gray-400">
+                        {isBooked ? 'Full' : 'Hết giờ'}
                       </span>
                     )}
                   </button>
@@ -287,36 +304,7 @@ export default function BookingScheduler({
           )}
         </div>
 
-        {/* Step 3 — Payment method */}
-        <div>
-          <p className="mb-2.5 text-xs font-semibold uppercase tracking-widest text-gray-400">
-            3. Phương thức thanh toán
-          </p>
-          <div className="grid grid-cols-2 gap-2">
-            {PAYMENT_OPTIONS.map((opt) => {
-              const isActive = paymentMethod === opt.value;
-              return (
-                <button
-                  key={opt.value}
-                  type="button"
-                  onClick={() => setPaymentMethod(opt.value)}
-                  className={`flex flex-col gap-0.5 rounded-xl border px-3 py-2.5 text-left transition-all ${
-                    isActive
-                      ? 'border-emerald-600 bg-emerald-50 text-emerald-800 shadow-sm ring-1 ring-emerald-600/30'
-                      : 'border-gray-200 bg-gray-50 text-gray-700 hover:border-emerald-300 hover:bg-emerald-50/50'
-                  }`}
-                >
-                  <span className="text-sm font-semibold">{opt.label}</span>
-                  <span className={`text-[11px] ${isActive ? 'text-emerald-600' : 'text-gray-400'}`}>
-                    {opt.desc}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Summary & CTA */}
+        {/* Step 3 — CTA */}
         <div className="space-y-4">
           {selectedYardMeta && selectedSlot && (
             <div className="rounded-xl bg-gray-50 px-4 py-3 text-sm space-y-1.5">
@@ -364,10 +352,20 @@ export default function BookingScheduler({
           <Button
             className="w-full bg-emerald-700 hover:bg-emerald-800 rounded-xl h-12 text-sm font-bold shadow-lg shadow-emerald-700/10 active:scale-[0.98] transition-transform"
             disabled={!selectedSlot || !selectedYardId || isSubmitting}
-            onClick={handleBooking}
+            onClick={handleBookingVNPay}
           >
-            {isSubmitting && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
-            {paymentMethod === 'VNPAY' ? 'Đặt sân & Thanh toán VNPay' : 'Đặt sân (Tiền mặt tại sân)'}
+            {(isBooking || isPaying) && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+            Đặt sân &amp; Thanh toán VNPay
+          </Button>
+
+          <Button
+            variant="outline"
+            className="w-full rounded-xl h-12 text-sm font-bold border-2 border-gray-200 text-gray-700 hover:border-emerald-500 hover:text-emerald-700 active:scale-[0.98] transition-transform"
+            disabled={!selectedSlot || !selectedYardId || isSubmitting}
+            onClick={handleBookingCash}
+          >
+            {isOfflineBooking && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+            Tiền mặt tại sân
           </Button>
 
           <p className="text-center text-[11px] text-gray-400">
@@ -376,7 +374,47 @@ export default function BookingScheduler({
         </div>
       </div>
     </div>
-  );
+
+    {/* Dialog cảnh báo CASH booking */}
+    {cashWarning && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+        <div className="relative w-full max-w-sm rounded-2xl bg-white shadow-2xl">
+          <div className="flex items-start gap-3 rounded-t-2xl bg-amber-50 px-5 py-4">
+            <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-amber-500" />
+            <div>
+              <p className="font-bold text-amber-800">Lưu ý quan trọng</p>
+              <p className="mt-1 text-sm text-amber-700">
+                Đây là đặt sân <strong>thanh toán tại sân</strong>. Slot sẽ bị khoá đến{' '}
+                <strong>{cashWarning.unlockTime}</strong> (30 phút trước giờ bắt đầu).
+              </p>
+            </div>
+          </div>
+          <div className="px-5 py-4">
+            <ul className="space-y-2 text-sm text-gray-600">
+              <li className="flex items-start gap-2">
+                <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-gray-400" />
+                Khách cần đến sân <strong>trước {cashWarning.unlockTime}</strong>.
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-gray-400" />
+                Và báo chủ sân để xác nhận, nếu quá thời gian <strong>{cashWarning.unlockTime}</strong>, slot sẽ <strong>tự mở khoá</strong> và có thể bị người khác đặt.
+              </li>
+            </ul>
+            <Button
+              className="mt-4 w-full bg-amber-500 hover:bg-amber-600 text-white rounded-xl h-11 font-bold"
+              onClick={() => {
+                setCashWarning(null);
+                toast.success('Đặt sân thành công!');
+                router.push('/booking/success');
+              }}
+            >
+              Đã hiểu, tiếp tục
+            </Button>
+          </div>
+        </div>
+      </div>
+    )}
+  </>);
 }
 
 function EmptyState({ message }: { message: string }) {

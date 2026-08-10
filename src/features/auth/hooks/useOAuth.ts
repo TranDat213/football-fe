@@ -21,7 +21,11 @@ function decodeGoogleJwt(token: string): {
   avatarUrl?: string;
 } {
   const payload = token.split('.')[1];
-  const json = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')));
+  const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
+  const binaryStr = atob(base64);
+  const bytes = Uint8Array.from(binaryStr, (c) => c.charCodeAt(0));
+  const jsonStr = new TextDecoder('utf-8').decode(bytes);
+  const json = JSON.parse(jsonStr);
   return { 
     email: json.email as string, 
     sub: json.sub as string,

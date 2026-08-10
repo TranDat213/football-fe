@@ -7,14 +7,14 @@ import Footer from "@/components/layout/Footer";
 import OwnerRegisterReview from "@/features/user/components/OwnerRegisterReview";
 
 const STEPS = [
-  { id: 1, label: "Information" },
-  { id: 2, label: "Review & Submit" },
+  { id: 1, label: "Thông tin" },
+  { id: 2, label: "Xem lại và Gửi" },
 ];
 
 const BENEFITS = [
-  "Reach 10,000+ active athletes",
-  "Automated scheduling & payments",
-  "Professional dashboard analytics",
+  "Tiếp cận hơn 10.000 vận động viên đang hoạt động",
+  "Lập lịch và thanh toán tự động",
+  "Quản lý sân chuyên nghiệp",
 ];
 
 function IconCheck({ className = "h-4 w-4" }: { className?: string }) {

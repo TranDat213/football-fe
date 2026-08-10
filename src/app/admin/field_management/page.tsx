@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useFieldManagement } from '@/features/admin/hook/useFieldManagement';
 import { FieldTable } from '@/features/admin/component/FieldTable';
 import { Pagination } from '@/features/admin/component/Pagination';
+import { FieldDetailModal } from '@/features/admin/component/FieldDetailModal';
 import { ROUTES } from '@/lib/route.constants';
 
 export default function FieldManagementPage() {
@@ -21,6 +22,8 @@ export default function FieldManagementPage() {
     handleApprove,
     handleReject,
     isUpdating,
+    selectedField,
+    setSelectedField,
   } = useFieldManagement();
 
   return (
@@ -138,6 +141,7 @@ export default function FieldManagementPage() {
             onApprove={handleApprove}
             onReject={handleReject}
             isUpdating={isUpdating}
+            onViewDetail={(field) => setSelectedField(field)}
           />
 
           {!isLoading && (
@@ -152,6 +156,22 @@ export default function FieldManagementPage() {
       </main>
 
       <Footer />
+
+      {selectedField && (
+        <FieldDetailModal
+          field={selectedField}
+          onClose={() => setSelectedField(null)}
+          onApprove={(id) => {
+            handleApprove(id);
+            setSelectedField(null);
+          }}
+          onReject={(id) => {
+            handleReject(id);
+            setSelectedField(null);
+          }}
+          isUpdating={isUpdating}
+        />
+      )}
     </div>
   );
 }

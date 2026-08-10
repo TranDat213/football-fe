@@ -3,6 +3,8 @@ import { useAproveFieldUpdateRequestMutation, useGetFieldUpdateRequestStatusQuer
 import { FootballFieldUpdateRequest } from '@/features/pitch/types/pich.types';
 import { useState } from 'react';
 import { useAppSelector } from '@/store/store';
+import { toastApiError } from '@/features/casual-match/utils/error';
+import { toast } from 'sonner';
 
 const LIMIT =10;
 
@@ -22,19 +24,22 @@ export function useFieldUpdateRequestManagement() {
   const [rejectRequest, { isLoading: isRejecting }] =
     useRejectFieldUpdateRequestMutation();
 
-  const handleApprove = async (id: string) => {
-    await approveRequest({
-      id,
-    }).unwrap();
+const handleApprove = async (id: string) => {
+    try {
+      await approveRequest({ id }).unwrap();
+      toast.success('Đã duyệt yêu cầu thành công');
+    } catch (err) {
+      toastApiError(err, 'Không thể duyệt yêu cầu');
+    }
   };
 
   const handleReject = async (id: string, reason: string) => {
-    await rejectRequest({
-      id,
-      body: {
-        reason,
-      },
-    }).unwrap();
+    try {
+      await rejectRequest({ id, body: { reason } }).unwrap();
+      toast.success('Đã từ chối yêu cầu');
+    } catch (err) {
+      toastApiError(err, 'Không thể từ chối yêu cầu');
+    }
   };
 
   return {

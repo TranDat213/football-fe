@@ -70,10 +70,14 @@ export interface FootballFieldDetail {
   name: string;
   description: string;
   address: string;
+  province?: string;
+  district?: string;
+  ward?: string;
   rating?: number;
   reviewCount?: number;
   images: FieldImage[];
   yards: FieldYard[];
+  owner?: { id: string; firstName: string; lastName: string; avatarUrl?: string | null; email?: string };
 }
 
 export interface Pitch extends FootballFieldDetail {

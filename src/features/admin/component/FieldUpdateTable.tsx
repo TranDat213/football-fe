@@ -163,7 +163,7 @@ export function FieldUpdateRequestTable({
 
                 <td className="px-6 py-4">
                   <span
-                    className={`inline-flex items-center rounded-lg px-2 py-0.5 text-[10px] uppercase font-bold tracking-tighter ${cfg.className}`}
+                    className={`inline-flex items-center rounded-lg px-2.5 py-1 text-xs font-semibold ${cfg.className}`}
                   >
                     {cfg.label}
                   </span>

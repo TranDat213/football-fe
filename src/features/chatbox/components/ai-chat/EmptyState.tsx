@@ -15,9 +15,9 @@ export const EmptyState = React.memo(({ onPromptClick, disabled }: EmptyStatePro
       </div>
       
       <div className="space-y-2">
-        <h3 className="text-xl font-semibold tracking-tight">How can I help you?</h3>
+        <h3 className="text-xl font-semibold tracking-tight">Bạn cần hỗ trợ gì?</h3>
         <p className="text-sm text-muted-foreground">
-          Ask me anything about football fields, booking, or pricing.
+          Hãy hỏi tôi bất cứ điều gì về sân bóng, đặt sân hoặc giá cả.
         </p>
       </div>
 

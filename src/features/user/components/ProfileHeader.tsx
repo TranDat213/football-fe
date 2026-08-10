@@ -5,6 +5,7 @@ import { UserProfile } from '@/features/user/types/user.type';
 import { useUpdateProfileMutation } from '@/features/user/api/userAPI';
 import { Camera, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { fixMojibake } from '@/lib/stringUtils';
 
 interface ProfileHeaderProps {
   profile: UserProfile;
@@ -128,7 +129,7 @@ export default function ProfileHeader({ profile }: ProfileHeaderProps) {
         {/* Info */}
         <div className="flex-1 text-center sm:text-left">
           <h2 className="text-xl font-bold text-gray-900">
-            {profile.firstName} {profile.lastName}
+            {fixMojibake(profile.firstName)} {fixMojibake(profile.lastName)}
           </h2>
           <p className="mt-0.5 text-sm text-gray-500">@{profile.username}</p>
 

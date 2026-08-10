@@ -7,6 +7,7 @@ import PitchInfo from '@/features/pitch/components/PitchInfo';
 import BookingScheduler from '@/features/booking/components/schedule/BookingScheduler';
 import { useParams } from 'next/navigation';
 import { useGetPitchByIdQuery } from '@/features/pitch/api/pitchAPI';
+import { SubFieldLayoutMap } from '@/features/pitch/components/SubFiledLayoutMap';
 
 export default function PitchDetailPage() {
   const params = useParams();
@@ -16,7 +17,7 @@ export default function PitchDetailPage() {
   if (isLoading)
     return (
       <div className="flex min-h-screen items-center justify-center">
-        Đamg tải...
+      Đang tải...
       </div>
     );
   if (error || !response)
@@ -41,10 +42,9 @@ export default function PitchDetailPage() {
             <div className="hidden lg:block">
               <PitchInfo
                 name={pitch.name}
-                rating={pitch.rating || 4.5}
-                reviewCount={100} // Mock review count as it's not in API yet
                 address={pitch.address}
                 description={pitch.description}
+                owner={pitch.owner}
               />
             </div>
 
@@ -56,6 +56,19 @@ export default function PitchDetailPage() {
                 {pitch.description || 'Không có mô tả cho sân này.'}
               </p>
             </section>
+
+            {pitch.yards && pitch.yards.length > 0 && (
+              <section className="space-y-4">
+                <h2 className="text-xl font-bold text-gray-900 border-l-4 border-emerald-600 pl-4">
+                  Sơ đồ sân con
+                </h2>
+                <SubFieldLayoutMap
+                  subFields={pitch.yards}
+                  selectedId={null}
+                  onSelect={() => {}}
+                />
+              </section>
+            )}
           </div>
 
           {/* Sidebar (Right) */}
@@ -63,10 +76,9 @@ export default function PitchDetailPage() {
             <div className="lg:hidden">
               <PitchInfo
                 name={pitch.name}
-                rating={pitch.rating || 4.5}
-                reviewCount={100}
                 address={pitch.address}
                 description={pitch.description}
+                owner={pitch.owner}
               />
             </div>
 

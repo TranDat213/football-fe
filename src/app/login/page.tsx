@@ -16,7 +16,7 @@ export default function SignInPage() {
         <div className="hidden lg:flex flex-col justify-center px-16 py-12">
           <div className="max-w-[420px]">
             <span className="text-[15px] font-bold text-[#40916C] tracking-tight">
-              ChanDenclub
+              ChanDenClub
             </span>
 
             <h1 className="mt-4 text-[34px] font-bold text-[#1B3A2D] leading-[1.15]">

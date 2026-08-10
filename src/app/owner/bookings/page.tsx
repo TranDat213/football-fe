@@ -3,9 +3,10 @@
 import React, { useState } from 'react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
-import { useGetOwnerBookingsQuery, useOwnerCancelBookingMutation } from '@/features/booking/api/bookingAPI';
+import { useGetOwnerBookingsQuery, useOwnerCancelBookingMutation, useConfirmArrivalMutation, useReclaimBookingMutation } from '@/features/booking/api/bookingAPI';
 import { Booking, BookingStatus } from '@/features/booking/types/booking.types';
 import { BookingStatusBadge, getCustomerInfo } from '@/features/booking/components/management/RecentBookings';
+import { SearchInput } from '@/components/filter/SearchInput';
 import { 
   Calendar, 
   ChevronLeft, 
@@ -17,6 +18,8 @@ import {
   CreditCard,
   XCircle,
   Loader2,
+  CheckCircle2,
+  RefreshCw,
 } from 'lucide-react';
 
 const STATUS_TABS: { label: string; value: 'ALL' | BookingStatus }[] = [
@@ -83,13 +86,15 @@ export default function OwnerBookingsPage() {
   const [page, setPage] = useState(1);
   const [selectedStatus, setSelectedStatus] = useState<'ALL' | BookingStatus>('ALL');
   const [searchKeyword, setSearchKeyword] = useState('');
-  const limit = 10;
+  const limit = 5;
 
   // Cancel booking state
   const [cancelTarget, setCancelTarget] = useState<Booking | null>(null);
   const [cancelReason, setCancelReason] = useState('');
   const [cancelError, setCancelError] = useState('');
   const [ownerCancelBooking, { isLoading: isCancelling }] = useOwnerCancelBookingMutation();
+  const [confirmArrival, { isLoading: isConfirming }] = useConfirmArrivalMutation();
+  const [reclaimBooking, { isLoading: isReclaiming }] = useReclaimBookingMutation();
 
   const handleConfirmCancel = async () => {
     if (!cancelTarget) return;
@@ -105,6 +110,19 @@ export default function OwnerBookingsPage() {
     } catch (err: any) {
       setCancelError(err?.data?.message || 'Có lỗi xảy ra khi hủy đặt sân');
     }
+  };
+
+  // Helper: booking có thể confirm/reclaim không
+  // Điều kiện: OFFLINE + PENDING + chưa arrived + chưa qua giờ bắt đầu
+  const canConfirmOrReclaim = (b: import('@/features/booking/types/booking.types').Booking) => {
+    if (b.source !== 'OFFLINE') return false;
+    if (b.status !== 'PENDING') return false;
+    if (b.customerArrivedAt) return false;
+    // Chưa qua giờ bắt đầu
+    const dateStr = b.bookingDate.split('T')[0];
+    const timeStr = b.startTime.slice(11, 16); // "HH:mm" from ISO
+    const start = new Date(`${dateStr}T${timeStr}:00+07:00`);
+    return start > new Date();
   };
 
   const { data, isLoading, isError, isFetching } = useGetOwnerBookingsQuery({
@@ -186,14 +204,11 @@ export default function OwnerBookingsPage() {
             </div>
 
             {/* Search Input */}
-            <div className="relative w-full lg:w-72">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <input
-                type="text"
+            <div className="w-full lg:w-72">
+              <SearchInput
                 placeholder="Tìm theo tên người đặt, sân..."
                 value={searchKeyword}
-                onChange={(e) => setSearchKeyword(e.target.value)}
-                className="w-full rounded-xl border border-gray-200 bg-gray-50/50 pl-9 pr-4 py-2 text-xs font-medium text-gray-900 placeholder-gray-400 focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                onChange={setSearchKeyword}
               />
             </div>
           </div>
@@ -342,16 +357,63 @@ export default function OwnerBookingsPage() {
                       </td>
 
                       {/* Actions */}
-                      <td className="px-6 py-4 text-center">
-                        {(booking.status === 'CONFIRMED' || booking.status === 'PENDING') && (
-                          <button
-                            onClick={() => { setCancelTarget(booking); setCancelReason(''); }}
-                            className="inline-flex items-center gap-1 text-xs font-medium text-red-600 hover:text-red-800 bg-red-50 hover:bg-red-100 border border-red-200 px-2.5 py-1 rounded-lg transition-colors"
-                          >
-                            <XCircle className="h-3.5 w-3.5" />
-                            Hủy
-                          </button>
-                        )}
+                      <td className="px-6 py-4">
+                        <div className="flex flex-col gap-1.5 items-start">
+                          {/* Confirm Arrival — OFFLINE PENDING, slot vẫn locked, chưa arrived */}
+                          {canConfirmOrReclaim(booking) && booking.expiresAt && (
+                            <button
+                              onClick={async () => {
+                                try {
+                                  await confirmArrival(booking.id).unwrap();
+                                } catch (err: any) {
+                                  alert(err?.data?.message || 'Không thể xác nhận');
+                                }
+                              }}
+                              disabled={isConfirming}
+                              className="inline-flex items-center gap-1 text-xs font-medium text-emerald-700 hover:text-emerald-900 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-2.5 py-1 rounded-lg transition-colors disabled:opacity-50"
+                            >
+                              {isConfirming ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <CheckCircle2 className="h-3.5 w-3.5" />}
+                              Xác nhận đến sân
+                            </button>
+                          )}
+
+                          {/* Reclaim — OFFLINE PENDING, slot đã mở khoá (expiresAt null), chưa arrived */}
+                          {canConfirmOrReclaim(booking) && !booking.expiresAt && (
+                            <button
+                              onClick={async () => {
+                                if (!confirm('Slot này đã được mở khoá. Xác nhận nếu khách vẫn có mặt và slot chưa có ai đặt?')) return;
+                                try {
+                                  await reclaimBooking(booking.id).unwrap();
+                                } catch (err: any) {
+                                  alert(err?.data?.message || 'Không thể xác nhận slot');
+                                }
+                              }}
+                              disabled={isReclaiming}
+                              className="inline-flex items-center gap-1 text-xs font-medium text-amber-700 hover:text-amber-900 bg-amber-50 hover:bg-amber-100 border border-amber-200 px-2.5 py-1 rounded-lg transition-colors disabled:opacity-50"
+                            >
+                              {isReclaiming ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <CheckCircle2 className="h-3.5 w-3.5" />}
+                              Xác nhận lại
+                            </button>
+                          )}
+
+                          {/* Huỷ booking */}
+                          {(booking.status === 'CONFIRMED' || booking.status === 'PENDING') && (() => {
+                            const dateStr = booking.bookingDate.split('T')[0];
+                            const timePart = booking.startTime.length > 8 ? booking.startTime.slice(11, 16) : booking.startTime.slice(0, 5);
+                            const isPast = new Date(`${dateStr}T${timePart}:00+07:00`) < new Date();
+                            return (
+                              <button
+                                onClick={() => { setCancelTarget(booking); setCancelReason(''); }}
+                                disabled={isPast}
+                                title={isPast ? 'Đã qua giờ bắt đầu, không thể hủy' : undefined}
+                                className="inline-flex items-center gap-1 text-xs font-medium text-red-600 hover:text-red-800 bg-red-50 hover:bg-red-100 border border-red-200 px-2.5 py-1 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                              >
+                                <XCircle className="h-3.5 w-3.5" />
+                                Hủy
+                              </button>
+                            );
+                          })()}
+                        </div>
                       </td>
                     </tr>
                   );

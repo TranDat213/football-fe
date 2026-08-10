@@ -92,7 +92,7 @@ export function CasualMatchForm({
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <SelectField label="Hiển thị" register={register('visibility')} options={visibilityLabels} />
+        {/* <SelectField label="Hiển thị" register={register('visibility')} options={visibilityLabels} /> */}
         <SelectField label="Chia đội" register={register('teamMode')} options={teamModeLabels} />
         <SelectField label="Trình độ" register={register('skillLevel')} options={skillLevelLabels} />
       </div>
