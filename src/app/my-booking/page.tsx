@@ -103,6 +103,7 @@ function MyBookingContent() {
           {bookings.map((booking: any) => {
             const canCancel = booking.status === 'PENDING' || booking.status === 'CONFIRMED' || booking.status === 'AWAITING_PAYMENT';
             const hasCasualMatch = Boolean(booking.casualMatch && booking.casualMatch.status !== 'CANCELLED');
+            const isPast = isStartTimePast(booking.bookingDate, booking.startTime);
             return (
               <div
                 key={booking.id}
@@ -184,13 +185,23 @@ function MyBookingContent() {
                       </Button>
                     </Link>
                     {(booking.status === 'AWAITING_PAYMENT' || (booking.paymentStatus === 'UNPAID' && booking.status !== 'CANCELLED' && booking.status !== 'OWNER_CANCELLED')) && (
-                      <Link href={`/my-booking/${booking.id}`}>
+                      isPast ? (
                         <Button
-                          className="rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 font-semibold"
+                          disabled
+                          className="rounded-xl bg-emerald-600 text-white font-semibold opacity-40 cursor-not-allowed"
+                          title="Đã qua giờ bắt đầu, không thể thanh toán"
                         >
                           Thanh toán ngay
                         </Button>
-                      </Link>
+                      ) : (
+                        <Link href={`/my-booking/${booking.id}`}>
+                          <Button
+                            className="rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 font-semibold"
+                          >
+                            Thanh toán ngay
+                          </Button>
+                        </Link>
+                      )
                     )}
                   </div>
 
@@ -201,9 +212,14 @@ function MyBookingContent() {
                           * Không thể hủy đơn đã tạo trận vãng lai.
                         </span>
                       )}
+                      {isPast && (
+                        <span className="text-xs text-gray-400 font-medium">
+                          * Đã qua giờ bắt đầu.
+                        </span>
+                      )}
                       <Button
                         variant="outline"
-                        disabled={hasCasualMatch}
+                        disabled={hasCasualMatch || isPast}
                         onClick={() => {
                           setCancellingBookingId(booking.id);
                           setCancelReason('');
@@ -335,3 +351,20 @@ function getPaymentStatusConfig(status: string) {
       return { label: status, className: 'bg-gray-100 text-gray-700' };
   }
 }
+
+/**
+ * Trả về true nếu thời điểm bắt đầu của booking đã qua thời điểm hiện tại.
+ * bookingDate: ISO string hoặc "yyyy-MM-dd..."
+ * startTime:   ISO string hoặc "HH:mm:ss"
+ */
+function isStartTimePast(bookingDate: string, startTime: string): boolean {
+  try {
+    const datePart = bookingDate.split('T')[0]; // "yyyy-MM-dd"
+    // startTime có thể là full ISO hoặc "HH:mm:ss"
+    const timePart = startTime.length > 8 ? startTime.slice(11, 16) : startTime.slice(0, 5); // "HH:mm"
+    const start = new Date(`${datePart}T${timePart}:00+07:00`);
+    return start < new Date();
+  } catch {
+    return false;
+  }
+}

@@ -1,9 +1,8 @@
 'use client';
 
-
 import { ActiveFilters } from '@/components/filter/Activefilters';
 import { CategoryFilter, type CategoryOption } from '@/components/filter/CategoryFilter';
-import { LocationFilter, type LocationOption } from '@/components/filter/Locationfilter';
+import { type LocationOption } from '@/components/filter/Locationfilter';
 import { PriceRangeFilter } from '@/components/filter/PriceRangerfilter';
 import { SearchInput } from '@/components/filter/SearchInput';
 import { SortDropdown, type SortOption } from '@/components/filter/SortDropdown';
@@ -19,8 +18,7 @@ const FIELD_SORT_OPTIONS: SortOption[] = [
 interface FieldFilterBarProps {
   f: UseFiltersReturn;
   categories: CategoryOption[];
-  provinces: LocationOption[];
-  districts?: LocationOption[];
+  districts: LocationOption[];
   className?: string;
 }
 
@@ -29,16 +27,16 @@ interface FieldFilterBarProps {
  * Không tự giữ state — nhận `f` (kết quả của useFilters() ở component cha)
  * để cha dùng chung state đó gọi useGetPitchesQuery.
  */
-export function FieldFilterBar({ f, categories, provinces, districts, className = '' }: FieldFilterBarProps) {
+export function FieldFilterBar({ f, categories, districts, className = '' }: FieldFilterBarProps) {
   const chips = [
     f.filters.keyword && { key: 'keyword', label: `Từ khóa: ${f.filters.keyword}` },
     f.filters.category && {
       key: 'category',
       label: `Loại sân: ${categories.find((c) => c.value === f.filters.category)?.label ?? f.filters.category}`,
     },
-    f.filters.province && {
-      key: 'province',
-      label: `Khu vực: ${provinces.find((p) => p.value === f.filters.province)?.label ?? f.filters.province}`,
+    f.filters.district && {
+      key: 'district',
+      label: `Quận/Huyện: ${districts.find((d) => d.value === f.filters.district)?.label ?? f.filters.district}`,
     },
     (f.filters.minPrice || f.filters.maxPrice) && {
       key: 'minPrice',
@@ -76,6 +74,16 @@ export function FieldFilterBar({ f, categories, provinces, districts, className 
           categories={categories}
           className="sm:w-64"
         />
+        <select
+          value={f.filters.district}
+          onChange={(e) => f.setDistrict(e.target.value)}
+          className="rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-700 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+        >
+          <option value="">Tất cả quận/huyện</option>
+          {districts.map((d) => (
+            <option key={d.value} value={d.value}>{d.label}</option>
+          ))}
+        </select>
       </div>
       {chips.length > 0 && (
         <ActiveFilters chips={chips} onRemove={(key) => f.clearOne(key as keyof typeof f.filters)} onClearAll={f.clearAll} />

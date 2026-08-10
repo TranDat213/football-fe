@@ -77,6 +77,7 @@ export interface FootballFieldDetail {
   reviewCount?: number;
   images: FieldImage[];
   yards: FieldYard[];
+  owner?: { id: string; firstName: string; lastName: string; avatarUrl?: string | null; email?: string };
 }
 
 export interface Pitch extends FootballFieldDetail {

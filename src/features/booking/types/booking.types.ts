@@ -62,16 +62,17 @@ export interface CreateBookingPayload {
   bookingDate: string;
   startTime: string;
   endTime: string;
-  paymentMethod: PaymentMethod;
+  // Không có paymentMethod — createBooking luôn dùng VNPAY
   note?: string;
 }
 
-export interface CreateOfflineBookingPayload {
+// Dùng khi gọi createOfflineBooking (tiền mặt tại sân)
+export interface CreateCashBookingPayload {
+  fieldYardId: string;
   bookingDate: string;
   startTime: string;
   endTime: string;
-  customerName?: string;
-  customerPhone?: string;
+  note?: string;
 }
 export interface Booking {
   id: string;
@@ -85,7 +86,8 @@ export interface Booking {
   paymentStatus: PaymentStatus;
   source: BookingSource;
   note?: string;
-  expiredAt?: string;
+  expiresAt?: string | null;
+  customerArrivedAt?: string | null;
   cancelledAt?: string;
   cancelReason?: string;
   ownerCancelReason?: string;

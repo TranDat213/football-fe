@@ -17,7 +17,7 @@ export default function PitchDetailPage() {
   if (isLoading)
     return (
       <div className="flex min-h-screen items-center justify-center">
-        Đamg tải...
+      Đang tải...
       </div>
     );
   if (error || !response)
@@ -42,10 +42,9 @@ export default function PitchDetailPage() {
             <div className="hidden lg:block">
               <PitchInfo
                 name={pitch.name}
-                rating={pitch.rating || 4.5}
-                reviewCount={100} // Mock review count as it's not in API yet
                 address={pitch.address}
                 description={pitch.description}
+                owner={pitch.owner}
               />
             </div>
 
@@ -77,10 +76,9 @@ export default function PitchDetailPage() {
             <div className="lg:hidden">
               <PitchInfo
                 name={pitch.name}
-                rating={pitch.rating || 4.5}
-                reviewCount={100}
                 address={pitch.address}
                 description={pitch.description}
+                owner={pitch.owner}
               />
             </div>
 

@@ -5,6 +5,7 @@ import Footer from '@/components/layout/Footer';
 import { Button } from '@/components/ui/button';
 import { CheckCircle2, ChevronRight, Home, Calendar } from 'lucide-react';
 import Link from 'next/link';
+import { ROUTES } from '@/lib/route.constants';
 
 export default function BookingSuccessPage() {
   return (
@@ -27,7 +28,7 @@ export default function BookingSuccessPage() {
               </Button>
             </Link>
             
-            <Link href="/profile" className="block">
+            <Link href="/my-booking" className="block">
               <Button variant="outline" className="w-full h-12 border-gray-200 rounded-xl font-bold text-gray-700">
                 Xem lịch sử đặt chỗ <Calendar className="ml-2 h-4 w-4" />
               </Button>

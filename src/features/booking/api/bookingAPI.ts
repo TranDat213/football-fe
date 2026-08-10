@@ -5,6 +5,7 @@ import {
   AvailabilityResponse,
   Booking,
   CreateBookingPayload,
+  CreateCashBookingPayload,
   GetBookingsParams,
   PaymentPayload,
   PaymentResponse,
@@ -148,14 +149,14 @@ export const bookingApi = createApi({
 
     createOfflineBooking: builder.mutation<
       ApiResponse<Booking>,
-      CreateBookingPayload
+      CreateCashBookingPayload
     >({
       query: ({ fieldYardId, ...data }) => ({
         url: `/bookings/yards/${fieldYardId}/offline`,
         method: 'POST',
         body: data,
       }),
-      invalidatesTags: ['Booking'],
+      invalidatesTags: ['Booking', 'Availability'],
     }),
 
     getBookingsForCreateCasual: builder.query<ApiResponse<any[]>, void>({
@@ -194,6 +195,22 @@ export const bookingApi = createApi({
       }),
       providesTags: ['Booking'],
     }),
+
+    confirmArrival: builder.mutation<{ success: boolean; message: string }, string>({
+      query: (id) => ({
+        url: `/bookings/${id}/confirm-arrival`,
+        method: 'PATCH',
+      }),
+      invalidatesTags: ['Booking'],
+    }),
+
+    reclaimBooking: builder.mutation<{ success: boolean; message: string }, string>({
+      query: (id) => ({
+        url: `/bookings/${id}/reclaim`,
+        method: 'PATCH',
+      }),
+      invalidatesTags: ['Booking'],
+    }),
   }),
 });
 
@@ -216,4 +233,6 @@ export const {
   useGetBookingsForCreateCasualQuery,
   useOwnerCancelBookingMutation,
   useGetOwnerAnalyticsQuery,
+  useConfirmArrivalMutation,
+  useReclaimBookingMutation,
 } = bookingApi;
