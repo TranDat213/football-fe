@@ -32,8 +32,9 @@ export function getNotificationLink(notification: Notification): string {
 
     // ─── Admin nhận ────────────────────────────────────────────────────────────
     case 'FIELD_WAITING_APPROVAL':
-    case 'FIELD_UPDATE_WAITING':
       return ROUTES.adminFields;
+    case 'FIELD_UPDATE_WAITING':
+      return ROUTES.adminUpdateField;
 
     case 'OWNER_REGISTER_WAITING':
       return ROUTES.adminOwners;
