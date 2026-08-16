@@ -21,7 +21,6 @@ interface FieldFilterBarProps {
   districts: LocationOption[];
   className?: string;
 }
-
 /**
  * FilterBar riêng cho trang danh sách sân (Home / trang tìm sân).
  * Không tự giữ state — nhận `f` (kết quả của useFilters() ở component cha)

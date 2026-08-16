@@ -2,29 +2,37 @@
 
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
-import PostCard from '@/features/community/components/PostCard';
 import { Button } from '@/components/ui/button';
 import { Search, Loader2 } from 'lucide-react';
 import Link from 'next/link';
-import { useState } from 'react';
 import { useGetCasualMatchesQuery } from '@/features/casual-match/api/casualMatch.api';
 import { CasualMatchCard } from '@/features/casual-match/components/CasualMatchCard';
 import { Pagination } from '@/features/admin/component/Pagination';
 import { ROUTES } from '@/lib/route.constants';
+import { useCasualMatchFilters } from '@/features/casual-match/useCSMatchFilter';
+import { HCMC_DISTRICTS, PROVINCES } from '@/config/location.constants';
+import { LocationFilter } from '@/components/filter/Locationfilter';
 
 
 export default function CommunityPage() {
-  const [keyword, setKeyword] = useState('');
-  const [page, setPage] = useState(1);
+ const {
+    filters,
+    keywordInput,
+    setKeyword,
+    setProvince,
+    setDistrict,
+    setPage,
+  } = useCasualMatchFilters();
+
   const limit = 5;
 
   const { data: matches, isLoading } = useGetCasualMatchesQuery({
-    keyword: keyword || undefined,
-    page,
+    keyword: filters.keyword || undefined,
+    province: filters.province || undefined,
+    district: filters.district || undefined,
+    page: filters.page,
     limit,
   });
-
-  const meta = matches?.meta;
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -46,18 +54,25 @@ export default function CommunityPage() {
           {/* Main Feed (Center) */}
          <div className="lg:col-span-6 space-y-8">
             <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <input 
-                    type="text" 
-                    placeholder="Tìm trận vãng lai..." 
-                    value={keyword}
-                    onChange={(event) => {
-                      setKeyword(event.target.value);
-                      setPage(1);
-                    }}
-                    className="w-full bg-white border border-gray-100 rounded-xl pl-10 pr-4 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Tìm trận vãng lai..."
+                  value={keywordInput}
+                  onChange={(event) => setKeyword(event.target.value)}
+                  className="w-full bg-white border border-gray-100 rounded-xl pl-10 pr-4 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500"
                 />
-            </div>
+              </div>
+              <LocationFilter
+                province={filters.province}
+                district={filters.district}
+                provinces={PROVINCES}
+                districts={HCMC_DISTRICTS}
+                onChange={(province, district) => {
+                  setProvince(province);
+                  setDistrict(district);
+                }}
+              />
 
             <section className="space-y-4">
                 <h2 className="text-sm font-bold uppercase tracking-widest text-gray-400 px-1">Trận vãng lai đang mở</h2>
@@ -69,12 +84,12 @@ export default function CommunityPage() {
                     <>
                       {matches.data.map((match) => <CasualMatchCard key={match.id} match={match} />)}
                       
-                      <Pagination
-                        currentPage={page}
-                        itemsCount={matches.data.length}
-                        limit={limit}
-                        onPageChange={setPage}
-                      />
+                     <Pagination
+                    currentPage={filters.page}
+                    itemsCount={matches.data.length}
+                    limit={limit}
+                    onPageChange={setPage}
+                  />
                     </>
                 ) : (
                     <div className="rounded-2xl border border-dashed border-gray-200 bg-white p-5 text-center text-sm text-gray-500">

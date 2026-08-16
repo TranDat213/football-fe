@@ -40,7 +40,7 @@ export function LocationFilter({
       <select
         value={district}
         onChange={(e) => onChange(province, e.target.value)}
-        disabled={!province || districts.length === 0}
+        disabled={districts.length === 0}
         className="rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-700 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-400"
       >
         <option value="">Tất cả quận/huyện</option>
