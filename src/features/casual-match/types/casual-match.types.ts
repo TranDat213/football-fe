@@ -14,7 +14,7 @@ export type CasualMatchSkillLevel =
   | 'ANY'
   | 'BEGINNER'
   | 'INTERMEDIATE'
-  | 'ADVANCED';
+  | 'PRO'
 export type CasualMatchTeamSide = 'TEAM_A' | 'TEAM_B';
 
 export interface CasualMatchUser {

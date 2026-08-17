@@ -9,7 +9,7 @@ export const casualMatchSchema = z
     joinDeadline: z.string().min(1, 'Vui lòng chọn hạn tham gia'),
     visibility: z.enum(['PUBLIC', 'PRIVATE']),
     teamMode: z.enum(['NO_TEAM', 'OPTIONAL_TEAM', 'REQUIRED_TEAM']),
-    skillLevel: z.enum(['ANY', 'BEGINNER', 'INTERMEDIATE', 'ADVANCED']),
+    skillLevel: z.enum(['ANY', 'BEGINNER', 'INTERMEDIATE', 'PRO']),
     matchStartAt: z.string().optional(),
   })
   .superRefine((value, ctx) => {
