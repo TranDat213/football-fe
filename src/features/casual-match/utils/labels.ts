@@ -38,7 +38,7 @@ export const skillLevelLabels: Record<CasualMatchSkillLevel, string> = {
   ANY: 'Mọi trình độ',
   BEGINNER: 'Mới chơi',
   INTERMEDIATE: 'Trung bình',
-  ADVANCED: 'Nâng cao',
+  PRO: 'Nâng cao',
 };
 
 export const yardSlots: Record<string, number> = {

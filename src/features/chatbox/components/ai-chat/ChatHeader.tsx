@@ -18,7 +18,7 @@ export const ChatHeader = React.memo(({ onClose, onMinimize }: ChatHeaderProps) 
           <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-background bg-green-500" />
         </div>
         <div>
-          <h2 className="text-base font-semibold tracking-tight">AI Assistant</h2>
+          <h2 className="text-base font-semibold tracking-tight">AI hỗ trợ</h2>
           <p className="text-[12px] text-muted-foreground flex items-center gap-1">
             <span className="relative flex h-1.5 w-1.5">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
